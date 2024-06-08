@@ -1,0 +1,5 @@
+export module other;
+
+export char* this_is_good(void) {
+  return "I have aids.";
+}

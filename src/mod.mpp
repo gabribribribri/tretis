@@ -1,0 +1,7 @@
+export module my_module;
+
+export import other;
+
+export namespace my_module {
+  int bonsoir(void);
+} // namespace my_module
