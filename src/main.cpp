@@ -1,9 +1,9 @@
+import my_module;
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
-
-import my_module;
 
 int main() {
     int i = my_module::bonsoir();

@@ -1,5 +1,5 @@
 export module other;
 
 export char* this_is_good(void) {
-  return "I have aids.";
+  return const_cast<char *>("I have aids.");
 }
