@@ -13,7 +13,7 @@ target("tretis")
   add_links("sfml-graphics", "sfml-window", "sfml-system")
   set_warnings("all", "extra")
   add_cxxflags("-stdlib=libc++")
-  add_ldflags("-stdlib=libc++", "-Wl,-rpath,/usr/lib")
+  add_ldflags("-stdlib=libc++", "-Wl,-rpath,/usr/local/lib/x86_64-unknown-linux-gnu")
   set_policy("run.autobuild", true)
   if is_mode("release") then 
     set_optimize("fastest")
