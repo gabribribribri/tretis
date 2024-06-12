@@ -4,13 +4,12 @@
 /// Mieux une tête bien faite qu'un tête bien pleine - Montaigne
 /// ***
 
-// #include <SFML/Graphics/RenderWindow.hpp>
-// #include <SFML/Window.hpp>
-// #include <SFML/Graphics.hpp>
-#include <print>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
+#include <iostream>
 
 int main() {
-    std::println("sub to my balls");
 }
 
 

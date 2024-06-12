@@ -1,14 +1,14 @@
--- Something here doesn't work as it should...
--- Problem for tomorrow !
 -- TODO: README.md
+
 add_rules("mode.debug", "mode.release")
 set_languages("c++23")
 
 option("compiler-toolchain")
-  set_values("classic", "clang-with-custom-llvm-build")
+  set_values("classic", "clang-with-custom-llvm-build", "custom")
   set_default("classic")
   set_showmenu(true)
   set_description("Set the Compiler and the standard library to be used")
+option_end()
 
 toolchain("clang-with-custom-llvm-build")
   set_kind("standalone")
@@ -24,13 +24,14 @@ toolchain("classic")
 
 target("tretis")
   set_kind("binary")
+  add_options("compiler-toolchain")
   set_toolchains("myclang")
   add_files("src/*.cpp")
   add_links("sfml-graphics", "sfml-window", "sfml-system")
   set_warnings("all", "extra")
-  if has_config("compiler-toolchain", "clang-with-custom-llvm-build") then
+  if is_config("compiler-toolchain", "clang-with-custom-llvm-build", "custom") then
     set_toolchains("clang-with-custom-llvm-build")
-  elseif has_config("compiler-toolchain", "classic") then
+  elseif is_config("compiler-toolchain", "classic") then
     set_toolchains("classic")
   end
   set_policy("run.autobuild", true)
