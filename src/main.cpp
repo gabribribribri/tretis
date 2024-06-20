@@ -4,12 +4,12 @@
 /// Mieux une tête bien faite qu'un tête bien pleine - Montaigne
 /// ***
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include <functional>
+#include "game.hpp"
+
 
 int main() {
+    Game game;
+    game.run(std::bind(&Game::main_gameloop, &game)); // this is some level 26 c++ wizzard shit right there
 }
-
-
