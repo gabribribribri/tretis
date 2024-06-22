@@ -6,14 +6,15 @@
 #include <SFML/Graphics/View.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
-#include <SFML/Window/Keyboard.hpp>
-#include <SFML/Window/Window.hpp>
 #include <chrono>
 #include <cstdint>
 #include <functional>
 #include <iostream>
+#include <random>
 #include <thread>
+
 #include "grid.hpp"
+#include "pieces.hpp"
 
 constexpr float CELL_SIZE = 33.0f;
 
@@ -24,10 +25,12 @@ constexpr std::chrono::microseconds USEC_PER_FRAME =
 class Game {
 public:
     // Base init has everything you need
-    Game() = default;
+    Game() : m_gen(m_rnd()) {};
 
     Game(const uint32_t grid_width, const uint32_t grid_height)
-        : m_grid(grid_width, grid_height) {};
+        : m_blocks_grid(grid_width, grid_height),
+          m_print_grid(grid_width, grid_height),
+          m_gen(m_rnd()) {};
 
     // Oh I'm not so sure about that
     void run(std::function<void(Game&)> callback) {
@@ -63,7 +66,8 @@ public:
                     break;
                 case sf::Event::Resized:
                     m_win.setView(sf::View(
-                        sf::Vector2f(event.size.width/2.0, event.size.height/2.0),
+                        sf::Vector2f(event.size.width / 2.0,
+                                     event.size.height / 2.0),
                         sf::Vector2f(event.size.width, event.size.height)));
                     break;
                 case sf::Event::Closed:
@@ -74,14 +78,20 @@ public:
         }
     }
 
+    void select_new_piece() {
+        std::uniform_int_distribution<> distrib(0, Pieces::ALL.size());
+        m_fp_coo = {5, 1};
+        m_falling_piece = Pieces::ALL.at(distrib(m_gen));
+    }
+
     void display_cells() {
-        for (uint32_t yc = 0; yc < m_grid.height(); yc++) {
-            for (uint32_t xc = 0; xc < m_grid.width(); xc++) {
+        for (uint32_t yc = 0; yc < m_blocks_grid.height(); yc++) {
+            for (uint32_t xc = 0; xc < m_blocks_grid.width(); xc++) {
                 sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-                cell.setFillColor(m_grid.at(xc, yc));
+                cell.setFillColor(m_blocks_grid.at(xc, yc));
                 cell.setPosition(sf::Vector2f(
                     left_offset() + xc * CELL_SIZE,
-                    up_offset() + (m_grid.height() - yc) * CELL_SIZE));
+                    up_offset() + (m_blocks_grid.height() - yc) * CELL_SIZE));
                 m_win.draw(cell);
             }
         }
@@ -91,21 +101,31 @@ public:
         handle_events();
 
         m_win.clear(sf::Color(69, 69, 69));
+
         display_cells();
         m_win.display();
     }
 
     float left_offset() const {
         return (m_win.getSize().x / 2.0f) -
-               ((CELL_SIZE * m_grid.width()) / 2.0f);
+               ((CELL_SIZE * m_blocks_grid.width()) / 2.0f);
     }
     float up_offset() const {
         return (m_win.getSize().y / 2.0f) -
-               ((CELL_SIZE * m_grid.height()) / 2.0f);
+               ((CELL_SIZE * m_blocks_grid.height()) / 2.0f);
     }
 
 private:
-    Grid m_grid { 10, 20 };
+    Pieces::Piece m_falling_piece = Pieces::I;
+    Pieces::Coo m_fp_coo;
+    std::chrono::time_point<std::chrono::system_clock> m_last_downing_piece;
+    std::chrono::microseconds n_down_elapse = std::chrono::microseconds(1'200'000);
+    
+    Grid m_blocks_grid { 10, 20 };
+    Grid m_print_grid { 10, 20 };
     bool m_continue_gameloop = true;
     sf::RenderWindow m_win { sf::VideoMode(800, 600), std::string("Tretis") };
+
+    std::random_device m_rnd;
+    std::mt19937 m_gen;
 };

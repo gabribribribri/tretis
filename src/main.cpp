@@ -5,6 +5,7 @@
 /// ***
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <functional>
 #include "game.hpp"
 
