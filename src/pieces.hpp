@@ -1,11 +1,11 @@
+#include <SFML/Graphics/Color.hpp>
 #include <array>
-#include <cstdint>
 
 // is constexpr inline ?
 namespace Pieces {
 
 struct Coo {
-    int8_t x, y;
+    int x, y;
 };
 
 using Piece = std::array<std::array<Coo, 4>, 4>;
@@ -18,5 +18,8 @@ constexpr Piece I { {
 } };
 
 constexpr std::array<Piece, 1> ALL { { I } };
+inline std::array<sf::Color, 1> COLORS { {
+    sf::Color::Cyan // I
+} };
 
 }  // namespace Pieces
