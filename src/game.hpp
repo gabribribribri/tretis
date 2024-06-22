@@ -3,13 +3,12 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
-#include <SFML/System.hpp>
 #include <functional>
 #include <iostream>
 #include <random>
-#include <thread>
 
 #include "grid.hpp"
 #include "pieces.hpp"
@@ -39,7 +38,8 @@ public:
                 return;
             }
             sf::Time elapsedTime = clock.getElapsedTime();
-            sf::sleep(sf::microseconds(USEC_PER_FRAME-elapsedTime.asMicroseconds()));
+            sf::sleep(sf::microseconds(USEC_PER_FRAME -
+                                       elapsedTime.asMicroseconds()));
         }
     }
 
@@ -51,6 +51,9 @@ public:
                     switch (event.key.code) {
                         case sf::Keyboard::Key::W:
                             switch_rotation();
+                            break;
+                        case sf::Keyboard::Key::S:
+                            falling_piece_down();
                             break;
                         case sf::Keyboard::Key::Escape:
                             exit(0);
@@ -75,6 +78,34 @@ public:
 
     void switch_rotation() { m_fp_rotation = (m_fp_rotation + 1) % 4; }
 
+    void falling_piece_down() {
+        Pieces::Coo next_position {
+            m_fp_coo.x,
+            m_fp_coo.y+1
+        };
+        if (is_piece_placement_legal(next_position)) {
+            m_fp_coo.y += 1;
+        } else {
+            fix_in_block_grid_falling_piece();
+        }
+    }
+
+    bool is_piece_placement_legal(Pieces::Coo piece) {
+        std::vector<Pieces::Coo> cells = get_falling_cells(piece);
+        for (Pieces::Coo cell : cells) {
+            if (cell.x < 0 or cell.x >= m_blocks_grid.width() or cell.y < 0 or
+                cell.y >= m_blocks_grid.height() or
+                m_blocks_grid.at(cell.x, cell.y) != sf::Color::Black) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void fix_in_block_grid_falling_piece() {
+        // TODO
+    }
+
     void select_new_piece() {
         std::uniform_int_distribution<> distrib(0, Pieces::ALL.size() - 1);
         m_fp_coo = { 3, 1 };
@@ -82,26 +113,33 @@ public:
         m_fp_color = Pieces::COLORS.at(distrib(m_gen));
     }
 
+    std::vector<Pieces::Coo> get_falling_cells(Pieces::Coo piece) {
+        std::vector<Pieces::Coo> falling_cells;
+        for (Pieces::Coo falling_cell_offset : m_falling_piece[m_fp_rotation]) {
+            Pieces::Coo falling_cell {
+                piece.x + falling_cell_offset.x,
+                piece.y + falling_cell_offset.y,
+            };
+            falling_cells.push_back(falling_cell);
+        }
+        return falling_cells;
+    }
+
     void populate_print_grid() {
         m_print_grid.refresh_with(m_blocks_grid);
-        for (Pieces::Coo falling_cell_offset : m_falling_piece[m_fp_rotation]) {
-            // construct cell
-            Pieces::Coo falling_cell { m_fp_coo.x + falling_cell_offset.x,
-                                       m_fp_coo.y + falling_cell_offset.y };
-            // bornes check
-            assert(falling_cell.x >= 0);
-            assert(falling_cell.y >= 0);
-            assert(falling_cell.x < m_print_grid.width());
-            assert(falling_cell.y < m_print_grid.height());
-
+        for (Pieces::Coo falling_cell : get_falling_cells(m_fp_coo)) {
             // place on the grid
+            assert(falling_cell.x > 0);
+            assert(falling_cell.y > 0);
+            assert(falling_cell.x < m_blocks_grid.width());
+            assert(falling_cell.y < m_blocks_grid.height());
             m_print_grid.at(falling_cell.x, falling_cell.y) = m_fp_color;
         }
     }
 
     void display_cells() const {
-        for (uint32_t yc = 0; yc < m_blocks_grid.height(); yc++) {
-            for (uint32_t xc = 0; xc < m_blocks_grid.width(); xc++) {
+        for (int yc = 0; yc < m_blocks_grid.height(); yc++) {
+            for (int xc = 0; xc < m_blocks_grid.width(); xc++) {
                 sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
                 cell.setFillColor(m_print_grid.at(xc, yc));
                 cell.setPosition(sf::Vector2f(left_offset() + xc * CELL_SIZE,
@@ -146,7 +184,4 @@ private:
 
     std::random_device m_rnd;
     std::mt19937 m_gen;
-    std::chrono::time_point<std::chrono::system_clock> m_last_downing_piece;
-    std::chrono::microseconds n_down_elapse =
-        std::chrono::microseconds(1'200'000);
 };

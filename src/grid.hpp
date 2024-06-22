@@ -38,8 +38,8 @@ public:
         return m_grid[y * m_width + x];
     }
 
-    uint32_t width() const { return m_width; }
-    uint32_t height() const { return m_height; }
+    int width() const { return m_width; }
+    int height() const { return m_height; }
 
 private:
     std::vector<sf::Color> m_grid;
