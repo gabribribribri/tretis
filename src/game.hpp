@@ -32,7 +32,6 @@ public:
     };
 
     // Oh I'm not so sure about that
-    // version with sf::Clock
     void run(std::function<bool(Game&)> callback) {
         for (;;) {
             sf::Clock clock;
