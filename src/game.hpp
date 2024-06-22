@@ -3,7 +3,9 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/System.hpp>
 #include <functional>
 #include <iostream>
 #include <random>
@@ -14,9 +16,8 @@
 
 constexpr float CELL_SIZE = 33.0f;
 
-constexpr uint32_t FRAME_PER_SECOND = 120;
-constexpr std::chrono::microseconds USEC_PER_FRAME =
-    std::chrono::microseconds(1'000'000 / FRAME_PER_SECOND);
+constexpr uint64_t FRAME_PER_SECOND = 120;
+constexpr uint64_t USEC_PER_FRAME = 1'000'000 / FRAME_PER_SECOND;
 
 class Game {
 public:
@@ -31,19 +32,15 @@ public:
     };
 
     // Oh I'm not so sure about that
+    // version with sf::Clock
     void run(std::function<bool(Game&)> callback) {
         for (;;) {
-            const std::chrono::time_point start_frame =
-                std::chrono::high_resolution_clock::now();
+            sf::Clock clock;
             if (!callback(*this)) {
                 return;
             }
-            const std::chrono::time_point end_frame =
-                std::chrono::high_resolution_clock::now();
-            const std::chrono::duration frame_duration =
-                std::chrono::duration_cast<std::chrono::microseconds>(
-                    end_frame - start_frame);
-            std::this_thread::sleep_for(USEC_PER_FRAME - frame_duration);
+            sf::Time elapsedTime = clock.getElapsedTime();
+            sf::sleep(sf::microseconds(USEC_PER_FRAME-elapsedTime.asMicroseconds()));
         }
     }
 
@@ -97,6 +94,7 @@ public:
             assert(falling_cell.y >= 0);
             assert(falling_cell.x < m_print_grid.width());
             assert(falling_cell.y < m_print_grid.height());
+
             // place on the grid
             m_print_grid.at(falling_cell.x, falling_cell.y) = m_fp_color;
         }
@@ -141,7 +139,6 @@ private:
 
     Grid m_blocks_grid { 10, 20 };
     Grid m_print_grid { 10, 20 };
-    // bool m_continue_gameloop = true;
 
     Pieces::Piece m_falling_piece = Pieces::I;
     sf::Color m_fp_color = sf::Color::Cyan;
