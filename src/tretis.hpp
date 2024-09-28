@@ -5,11 +5,12 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <array>
+#include <iostream>
 
-#include "SFML/Graphics.hpp"
 
 const int GRID_HEIGHT = 20;
 const int GRID_WIDTH = 10;
+const int CELL_SIZE = 30;
 
 class Tretis {
 public:
@@ -22,25 +23,28 @@ public:
 
     void gameloop() {
         for (;;) {
-            for (int y = 0; y < GRID_HEIGHT; y+=50) {
-                for (int x = 0; x < GRID_WIDTH; x+=50) {
+            for (int y = 0; y < GRID_HEIGHT ; y++) {
+                for (int x = 0; x < GRID_WIDTH; x++) {
                     sf::RectangleShape& cell = grid[y*GRID_WIDTH+x];
-                    cell.setPosition(sf::Vector2f(x*50, y*50));
+                    cell = sf::RectangleShape(sf::Vector2f(50, 50));
+                    cell.setPosition(sf::Vector2f(x*CELL_SIZE, y*CELL_SIZE));
                     cell.setFillColor(sf::Color::Blue);
-                    cell.setSize(sf::Vector2f(50, 50));
                     render_window.draw(cell);
                 }
             }
+            render_window.display();
         }
     }
 
 private:
-    // ~Tretis() = delete;
-    Tretis();
+    ~Tretis() = default;
+    Tretis() = default;
     Tretis(const Tretis&) = delete;
     Tretis(Tretis&&) = delete;
-    void operator=(const Tretis&) = delete;
+    Tretis& operator=(const Tretis&) = delete;
     static Tretis tretis;
 };
 
+
+// shut up I hate ODR
 Tretis Tretis::tretis;
