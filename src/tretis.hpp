@@ -1,25 +1,29 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
-#include <array>
 #include <iostream>
 
+#include "grid.hpp"
 #include "time.hpp"
 
-const int GRID_HEIGHT = 20;
-const int GRID_WIDTH = 10;
-const int CELL_SIZE = 30;
-
 class Tretis {
+public:
+    Grid grid;
+    sf::RenderWindow render_window { sf::VideoMode(1200, 1200), "Tretis" };
+
+private:
+    TimeHandler frame_time { TIME_PER_FRAME };
+
 public:
     static Tretis& Get() { return tretis; }
 
     void gameloop() {
         while (render_window.isOpen()) {
             print_fps();
-            render_window.clear(sf::Color::Black);
+            render_window.clear(sf::Color(64, 64,64));
             handle_events();
             draw_grid();
             render_window.display();
@@ -39,9 +43,13 @@ public:
     }
 
     void draw_grid() {
-        for (auto& cell : grid) {
+        // the place block remove block thing is very ugly.
+        // I hope to find a better way in the future
+        grid.place_block();
+        for (sf::RectangleShape& cell : grid.val) {
             render_window.draw(cell);
         }
+        grid.remove_block();
     }
 
     void handle_events() {
@@ -52,7 +60,7 @@ public:
                     render_window.close();
                     break;
                 case sf::Event::Resized:
-                    resizeWindow(event.size.width, event.size.height);
+                    resize_window(event.size.width, event.size.height);
                     break;
                 default:
                     break;
@@ -60,44 +68,19 @@ public:
         }
     }
 
-    void resizeWindow(int width, int height) {
+    void resize_window(int width, int height) {
         sf::FloatRect visibleArea(0, 0, width, height);
         render_window.setView(sf::View(visibleArea));
-        set_cells_positions(0, 0);
+        grid.set_cells_positions(0, 0);
     }
 
-    void set_cells_positions(int x_offset, int y_offset) {
-        for (int y = 0; y < GRID_HEIGHT; y++) {
-            for (int x = 0; x < GRID_WIDTH; x++) {
-                grid_at(x, y).setPosition(sf::Vector2f(
-                    x_offset + x * CELL_SIZE, y_offset + y * CELL_SIZE));
-            }
-        }
-    }
-
-    sf::RectangleShape& grid_at(int x, int y) {
-        return grid[y * GRID_WIDTH + x];
-    }
-
-private:
-    TimeHandler frame_time { TIME_PER_FRAME };
-
-public:
-    std::array<sf::RectangleShape, GRID_HEIGHT * GRID_WIDTH>
-        grid;  // initialized in constructor
-    sf::RenderWindow render_window { sf::VideoMode(1200, 1200), "Tretis" };
 
 private:
     ~Tretis() = default;
-    Tretis() {
-        for (auto& cell : grid) {
-            cell = sf::RectangleShape(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-        }
-    };
+    Tretis() = default;
     Tretis(const Tretis&) = delete;
     Tretis(Tretis&&) = delete;
     Tretis& operator=(const Tretis&) = delete;
-
     static Tretis tretis;
 };
 
