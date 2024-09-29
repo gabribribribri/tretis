@@ -18,7 +18,7 @@ public:
 
     Coo center = Coo { 4, 1 };
     int rotation = 0;
-    const Rotations& block_cells;
+    const Rotations& block_cells; //TODO remove this reference with index to AllBlocks
     sf::Color block_color = sf::Color::Blue;
 
 public:
