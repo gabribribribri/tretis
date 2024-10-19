@@ -80,6 +80,18 @@ public:
                         case sf::Keyboard::S:
                             grid.move_block_down();
                             break;
+                        case sf::Keyboard::Left:
+                        case sf::Keyboard::A:
+                            grid.move_block_center(MOVE_LEFT);
+                            break;
+                        case sf::Keyboard::Right:
+                        case sf::Keyboard::D:
+                            grid.move_block_center(MOVE_RIGHT);
+                            break;
+                        case sf::Keyboard::Up:
+                        case sf::Keyboard::W:
+                            grid.rotate_block();
+                            break;
                         default:
                             break;
                     }

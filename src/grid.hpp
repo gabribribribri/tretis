@@ -17,16 +17,17 @@ const Coo CENTER_START_POINT = Coo { 4, 1 };
 
 const sf::Color EMPTY_CELL_COLOR = sf::Color::Black;
 
-const Coo UP = Coo { 0, -1 };
-const Coo LEFT = Coo { -1, 0 };
-const Coo RIGHT = Coo { 1, 0 };
-const Coo DOWN = Coo { 0, 1 };
+const Coo MOVE_UP = Coo { 0, -1 };
+const Coo MOVE_LEFT = Coo { -1, 0 };
+const Coo MOVE_RIGHT = Coo { 1, 0 };
+const Coo MOVE_DOWN = Coo { 0, 1 };
 
-// why is it static ?
+// WHY IS RNG IN C++ SO AWFUL
 static std::random_device random_device;
 static std::mt19937 rng(random_device());
+// I can't believe it's an inclusive range this is disgusting
 static std::uniform_int_distribution<> allblock_distrib(
-    0, Blocks::ALL_BLOCKS.size()-1);
+    0, Blocks::ALL_BLOCKS.size() - 1);
 
 class Grid {
 public:
@@ -79,7 +80,7 @@ public:
     }
 
     void move_block_down() {
-        if (is_block_movable_to(DOWN)) {
+        if (is_block_movable_to(MOVE_DOWN)) {
             block_center.y += 1;
         } else {
             place_block();
@@ -87,10 +88,20 @@ public:
         }
     }
 
+    void move_block_center(Coo direction) {
+        if (is_block_movable_to(direction)) {
+            block_center += direction;
+        }
+    }
+
+    void rotate_block() { rotation = (rotation + 1) % 4; }
+
     void select_new_block() {
         block_center = CENTER_START_POINT;
         rotation = 0;
-        allblocks_index = allblock_distrib(rng); // since .size() is like 7, it is accessing very ugly memory and breaking everything
+        allblocks_index =
+            allblock_distrib(rng);  // since .size() is like 7, it is accessing
+                                    // very ugly memory and breaking everything
     }
 
     void place_block() {
