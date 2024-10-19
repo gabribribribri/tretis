@@ -14,7 +14,7 @@ const Block T_up { { { -1, 0 }, { 0, -1 }, { 1, 0 }, { 0, 0 } } };
 
 const Block T_right { { { 0, -1 }, { 1, 0 }, { 0, 1 }, { 0, 0 } } };
 
-const Block T_down { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, -1 } } };
+const Block T_down { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } } };
 
 const Block T_left { { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 0, 1 } } };
 
