@@ -3,7 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Clock.hpp>
-#include <SFML/System/Time.hpp>
+ #include <SFML/System/Time.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 
 #include "grid.hpp"
@@ -15,18 +16,29 @@ public:
     sf::RenderWindow render_window { sf::VideoMode(1200, 1200), "Tretis" };
 
 private:
-    TimeHandler frame_time { TIME_PER_FRAME };
+    Chronometre frame_time { TIME_PER_FRAME };
+    Chronometre block_fall_by_one_countdown { BASE_BLOCK_FALL_BY_ONE};
 
 public:
     static Tretis& Get() { return tretis; }
 
     void gameloop() {
         while (render_window.isOpen()) {
+            // DEBUG
             print_fps();
-            render_window.clear(sf::Color(64, 64,64));
+
+            // GAME LOGIC
             handle_events();
+            if (block_fall_by_one_countdown.has_time_passed()) {
+                grid.move_block_down();
+            }
+
+            // DRAWING
+            render_window.clear(sf::Color(64, 64,64));
             draw_grid();
             render_window.display();
+
+            // WAITING
             frame_time.wait_until_time_has_passed();
         }
     }
@@ -61,6 +73,16 @@ public:
                     break;
                 case sf::Event::Resized:
                     resize_window(event.size.width, event.size.height);
+                    break;
+                case sf::Event::KeyPressed:
+                    switch (event.key.code) {
+                        case sf::Keyboard::Down:
+                        case sf::Keyboard::S:
+                            grid.move_block_down();
+                            break;
+                        default:
+                            break;
+                    }
                     break;
                 default:
                     break;

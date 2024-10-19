@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <array>
 
@@ -18,4 +19,11 @@ const Block T_down { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, -1 } } };
 const Block T_left { { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 0, 1 } } };
 
 const Rotations T { T_up, T_right, T_down, T_left };
+
+const std::array<Rotations, 1> ALL_BLOCKS {{ T }};
+
+const std::array<sf::Color, 1> BLOCK_COLOR {{
+    sf::Color::Magenta,
+}};
+
 }  // namespace Blocks

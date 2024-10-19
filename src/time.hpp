@@ -5,15 +5,18 @@
 
 const int FRAME_PER_SECONDS = 120;
 const sf::Time TIME_PER_FRAME = sf::milliseconds(1000/FRAME_PER_SECONDS);
+const sf::Time BASE_BLOCK_FALL_BY_ONE = sf::seconds(1.0);
 
-class TimeHandler {
+class Chronometre {
 public:
     sf::Clock clock;
     sf::Time time;
 
 public:
-    TimeHandler(sf::Time time) : time(time) {}
+    Chronometre(sf::Time time) : time(time) {}
 
+    /// if time has passed and
+    /// and if it has passed restart clock
     bool has_time_passed() {
         if (clock.getElapsedTime() > time) {
             clock.restart();
