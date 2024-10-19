@@ -26,7 +26,7 @@ const Coo DOWN = Coo { 0, 1 };
 static std::random_device random_device;
 static std::mt19937 rng(random_device());
 static std::uniform_int_distribution<> allblock_distrib(
-    0, Blocks::ALL_BLOCKS.size());
+    0, Blocks::ALL_BLOCKS.size()-1);
 
 class Grid {
 public:
@@ -90,7 +90,7 @@ public:
     void select_new_block() {
         block_center = CENTER_START_POINT;
         rotation = 0;
-        // allblocks_index = allblock_distrib(rng); // since .size() is 4, it is accessing very ugly memory and breaking everything
+        allblocks_index = allblock_distrib(rng); // since .size() is like 7, it is accessing very ugly memory and breaking everything
     }
 
     void place_block() {
@@ -108,7 +108,6 @@ public:
     sf::RectangleShape& at(int x, int y) {
         assert(x >= 0 && x < GRID_WIDTH);
         assert(y >= 0 && y < GRID_HEIGHT);
-        std::cout << x << " " << y << "\n";
         return val[y * GRID_WIDTH + x];
     }
 
@@ -117,7 +116,6 @@ public:
         assert(coo.x < GRID_WIDTH);
         assert(coo.y >= 0);
         assert(coo.y < GRID_HEIGHT);
-        // std::cout << coo.x << " " << coo.y << "\n";
         return val[coo.y * GRID_WIDTH + coo.x];
     }
 };
