@@ -17,7 +17,7 @@ public:
 
 private:
     Chronometre frame_time { TIME_PER_FRAME };
-    Chronometre block_fall_by_one_countdown { BASE_BLOCK_FALL_BY_ONE};
+    Chronometre crbl_fall_by_one_countdown { BASE_BLOCK_FALL_BY_ONE};
 
 public:
     static Tretis& Get() { return tretis; }
@@ -25,17 +25,17 @@ public:
     void gameloop() {
         while (render_window.isOpen()) {
             // DEBUG
-            print_fps();
+            debug_fps_cout();
 
             // GAME LOGIC
             handle_events();
-            if (block_fall_by_one_countdown.has_time_passed()) {
-                grid.move_block_down();
+            if (crbl_fall_by_one_countdown.has_time_passed()) {
+                grid.move_crbl_down_or_place();
             }
 
             // DRAWING
             render_window.clear(sf::Color(64, 64,64));
-            draw_grid();
+            draw_grid_with_crbl();
             render_window.display();
 
             // WAITING
@@ -43,7 +43,7 @@ public:
         }
     }
 
-    void print_fps() {
+    void debug_fps_cout() {
         static int fis = 0;
         static sf::Clock cl;
         fis++;
@@ -54,14 +54,14 @@ public:
         }
     }
 
-    void draw_grid() {
+    void draw_grid_with_crbl() {
         // the place block remove block thing is very ugly.
         // I hope to find a better way in the future
-        grid.place_block();
+        grid.place_crbl_on_grid();
         for (sf::RectangleShape& cell : grid.val) {
             render_window.draw(cell);
         }
-        grid.remove_block();
+        grid.remove_crbl_of_grid();
     }
 
     void handle_events() {
@@ -78,19 +78,22 @@ public:
                     switch (event.key.code) {
                         case sf::Keyboard::Down:
                         case sf::Keyboard::S:
-                            grid.move_block_down();
+                            if (!grid.move_crbl(MOVE_DOWN)) {
+                                grid.place_crbl_on_grid();
+                                grid.select_new_crbl();
+                            }
                             break;
                         case sf::Keyboard::Left:
                         case sf::Keyboard::A:
-                            grid.move_block_center(MOVE_LEFT);
+                            grid.move_crbl(MOVE_LEFT);
                             break;
                         case sf::Keyboard::Right:
                         case sf::Keyboard::D:
-                            grid.move_block_center(MOVE_RIGHT);
+                            grid.move_crbl(MOVE_RIGHT);
                             break;
                         case sf::Keyboard::Up:
                         case sf::Keyboard::W:
-                            grid.rotate_block();
+                            grid.rotate_block(1);
                             break;
                         default:
                             break;

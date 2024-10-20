@@ -13,7 +13,7 @@
 const int GRID_HEIGHT = 20;
 const int GRID_WIDTH = 10;
 const int CELL_SIZE = 30;
-const Coo CENTER_START_POINT = Coo { 4, 1 };
+const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 };
 
 const sf::Color EMPTY_CELL_COLOR = sf::Color::Black;
 
@@ -34,12 +34,14 @@ public:
     std::array<sf::RectangleShape, GRID_HEIGHT * GRID_WIDTH>
         val;  // initialized in constructor
 
-    Coo block_center = CENTER_START_POINT;
+    // CRBL means CURRENT_BLOCK, the block that is falling.
+    Coo crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
+
     // 0: UP
     // 1: RIGHT
     // 2: DOWN
     // 3: LEFT TODO: Make this shit less suckable
-    int rotation = 0;
+    int crbl_rotation = 0;
     int allblocks_index = 0;
 
 public:
@@ -51,10 +53,12 @@ public:
     }
 
     Block get_block_relative_cells() {
-        return Blocks::ALL_BLOCKS[allblocks_index][rotation];
+        return Blocks::ALL_BLOCKS[allblocks_index][crbl_rotation];
     }
 
-    sf::Color get_block_color() { return Blocks::BLOCK_COLOR[allblocks_index]; }
+    sf::Color get_block_color() {
+        return Blocks::ALL_BLOCKS_COLOR[allblocks_index];
+    }
 
     void set_cells_positions(int x_offset, int y_offset) {
         for (int y = 0; y < GRID_HEIGHT; y++) {
@@ -65,9 +69,9 @@ public:
         }
     }
 
-    bool is_block_movable_to(Coo direction) {
+    bool is_crbl_movable_to_relative(Coo direction) {
         for (Coo block_cell : get_block_relative_cells()) {
-            Coo new_pos = block_center + block_cell + direction;
+            Coo new_pos = crbl_center + block_cell + direction;
             if (new_pos.x < 0 || new_pos.x >= GRID_WIDTH || new_pos.y < 0 ||
                 new_pos.y >= GRID_HEIGHT) {
                 return false;
@@ -79,40 +83,34 @@ public:
         return true;
     }
 
-    void move_block_down() {
-        if (is_block_movable_to(MOVE_DOWN)) {
-            block_center.y += 1;
-        } else {
-            place_block();
-            select_new_block();
+    // returns success
+    bool move_crbl(Coo direction) {
+        if (is_crbl_movable_to_relative(direction)) {
+            crbl_center += direction;
+            return true;
         }
+        return false;
     }
 
-    void move_block_center(Coo direction) {
-        if (is_block_movable_to(direction)) {
-            block_center += direction;
-        }
+    void rotate_block(int rotation) { rotation = (rotation + 1) % 4; }
+
+    void select_new_crbl() {
+        crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
+        crbl_rotation = 0;
+        // since .size() is like 7, it is accessing
+        // very ugly memory and breaking everything
+        allblocks_index = allblock_distrib(rng);
     }
 
-    void rotate_block() { rotation = (rotation + 1) % 4; }
-
-    void select_new_block() {
-        block_center = CENTER_START_POINT;
-        rotation = 0;
-        allblocks_index =
-            allblock_distrib(rng);  // since .size() is like 7, it is accessing
-                                    // very ugly memory and breaking everything
-    }
-
-    void place_block() {
+    void place_crbl_on_grid() {
         for (Coo cell : get_block_relative_cells()) {
-            at(block_center + cell).setFillColor(get_block_color());
+            at(crbl_center + cell).setFillColor(get_block_color());
         }
     }
 
-    void remove_block() {
+    void remove_crbl_of_grid() {
         for (Coo cell : get_block_relative_cells()) {
-            at(block_center + cell).setFillColor(EMPTY_CELL_COLOR);
+            at(crbl_center + cell).setFillColor(EMPTY_CELL_COLOR);
         }
     }
 
