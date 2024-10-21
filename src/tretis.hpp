@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Clock.hpp>
- #include <SFML/System/Time.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 
@@ -78,10 +78,7 @@ public:
                     switch (event.key.code) {
                         case sf::Keyboard::Down:
                         case sf::Keyboard::S:
-                            if (!grid.move_crbl(MOVE_DOWN)) {
-                                grid.place_crbl_on_grid();
-                                grid.select_new_crbl();
-                            }
+                            grid.move_crbl_down_or_place();
                             break;
                         case sf::Keyboard::Left:
                         case sf::Keyboard::A:

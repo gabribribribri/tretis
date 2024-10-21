@@ -23,11 +23,11 @@ const Coo MOVE_RIGHT = Coo { 1, 0 };
 const Coo MOVE_DOWN = Coo { 0, 1 };
 
 // WHY IS RNG IN C++ SO AWFUL
-static std::random_device random_device;
-static std::mt19937 rng(random_device());
+std::random_device random_device;
+std::mt19937 rng(random_device());
 // I can't believe it's an inclusive range this is disgusting
-static std::uniform_int_distribution<> allblock_distrib(
-    0, Blocks::ALL_BLOCKS.size() - 1);
+std::uniform_int_distribution<> allblock_distrib(0,
+                                                 Blocks::ALL_BLOCKS.size() - 1);
 
 class Grid {
 public:
@@ -52,11 +52,11 @@ public:
         }
     }
 
-    Block get_block_relative_cells() {
+    Block get_block_relative_cells() const {
         return Blocks::ALL_BLOCKS[allblocks_index][crbl_rotation];
     }
 
-    sf::Color get_block_color() {
+    sf::Color get_block_color() const {
         return Blocks::ALL_BLOCKS_COLOR[allblocks_index];
     }
 
@@ -66,6 +66,13 @@ public:
                 at(x, y).setPosition(sf::Vector2f(x_offset + x * CELL_SIZE,
                                                   y_offset + y * CELL_SIZE));
             }
+        }
+    }
+
+    void move_crbl_down_or_place() {
+        if (!move_crbl(MOVE_DOWN)) {
+            place_crbl_on_grid();
+            select_new_crbl();
         }
     }
 
