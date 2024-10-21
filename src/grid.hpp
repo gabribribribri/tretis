@@ -10,7 +10,7 @@
 
 #include "blocks.hpp"
 
-const int GRID_HEIGHT = 20;
+const int GRID_HEIGHT = 22;
 const int GRID_WIDTH = 10;
 const int CELL_SIZE = 30;
 const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 };
@@ -26,13 +26,11 @@ const Coo MOVE_DOWN = Coo { 0, 1 };
 std::random_device random_device;
 std::mt19937 rng(random_device());
 // I can't believe it's an inclusive range this is disgusting
-std::uniform_int_distribution<> allblock_distrib(0,
-                                                 Blocks::ALL_BLOCKS.size() - 1);
+std::uniform_int_distribution<> allblock_distrib(0, BlockCoos::ALL.size() - 1);
 
 class Grid {
 public:
-    std::array<sf::RectangleShape, GRID_HEIGHT * GRID_WIDTH>
-        val;  // initialized in constructor
+    std::array<sf::RectangleShape, GRID_HEIGHT * GRID_WIDTH> val;  // initialized in constructor
 
     // CRBL means CURRENT_BLOCK, the block that is falling.
     Coo crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
@@ -52,19 +50,14 @@ public:
         }
     }
 
-    Block get_block_relative_cells() const {
-        return Blocks::ALL_BLOCKS[allblocks_index][crbl_rotation];
-    }
+    Block get_block_relative_cells() const { return BlockCoos::ALL[allblocks_index][crbl_rotation]; }
 
-    sf::Color get_block_color() const {
-        return Blocks::ALL_BLOCKS_COLOR[allblocks_index];
-    }
+    sf::Color get_block_color() const { return BlockColors::ALL[allblocks_index]; }
 
     void set_cells_positions(int x_offset, int y_offset) {
         for (int y = 0; y < GRID_HEIGHT; y++) {
             for (int x = 0; x < GRID_WIDTH; x++) {
-                at(x, y).setPosition(sf::Vector2f(x_offset + x * CELL_SIZE,
-                                                  y_offset + y * CELL_SIZE));
+                at(x, y).setPosition(sf::Vector2f(x_offset + x * CELL_SIZE, y_offset + y * CELL_SIZE));
             }
         }
     }
@@ -79,8 +72,7 @@ public:
     bool is_crbl_movable_to_relative(Coo direction) {
         for (Coo block_cell : get_block_relative_cells()) {
             Coo new_pos = crbl_center + block_cell + direction;
-            if (new_pos.x < 0 || new_pos.x >= GRID_WIDTH || new_pos.y < 0 ||
-                new_pos.y >= GRID_HEIGHT) {
+            if (new_pos.x < 0 or new_pos.x >= GRID_WIDTH or new_pos.y < 0 or new_pos.y >= GRID_HEIGHT) {
                 return false;
             }
             if (at(new_pos).getFillColor() != EMPTY_CELL_COLOR) {
@@ -99,7 +91,10 @@ public:
         return false;
     }
 
-    void rotate_block(int rotation) { rotation = (rotation + 1) % 4; }
+    void rotate_block(int rotation) {
+        
+    }
+
 
     void select_new_crbl() {
         crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
