@@ -93,7 +93,7 @@ public:
 
     void super_rotate_block(bool clockwise) {
         int next_rotation = get_next_rotation(clockwise);
-        for (const Coo offset : SuperRotationSystem::ALL[allblocks_index][next_rotation][clockwise]) {
+        for (const Coo offset : SuperRotationSystem::ALL[allblocks_index][crbl_rotation][clockwise]) {
             if (is_crbl_movable_to_relative(offset, next_rotation)) {
                 // rotate
                 crbl_center += offset;
