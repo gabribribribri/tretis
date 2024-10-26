@@ -11,11 +11,10 @@
 #include "time.hpp"
 
 class Tretis {
-public:
+private:
     Grid grid;
     sf::RenderWindow render_window { sf::VideoMode(1200, 1200), "Tretis" };
 
-private:
     Chronometre frame_time { TIME_PER_FRAME };
     Chronometre crbl_fall_by_one_countdown { BASE_BLOCK_FALL_BY_ONE};
 
@@ -90,7 +89,7 @@ public:
                             break;
                         case sf::Keyboard::Up:
                         case sf::Keyboard::W:
-                            grid.rotate_block(1);
+                            grid.super_rotate_block(true);
                             break;
                         default:
                             break;

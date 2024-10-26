@@ -23,10 +23,10 @@ const Coo MOVE_RIGHT = Coo { 1, 0 };
 const Coo MOVE_DOWN = Coo { 0, 1 };
 
 // WHY IS RNG IN C++ SO AWFUL
-std::random_device random_device;
-std::mt19937 rng(random_device());
+inline std::random_device random_device;
+inline std::mt19937 rng(random_device());
 // I can't believe it's an inclusive range this is disgusting
-std::uniform_int_distribution<> allblock_distrib(0, BlockCoos::ALL.size() - 1);
+inline std::uniform_int_distribution<> allblock_distrib(0, Tretominos::ALL.size() - 1);
 
 class Grid {
 public:
@@ -50,7 +50,7 @@ public:
         }
     }
 
-    Block get_block_relative_cells() const { return BlockCoos::ALL[allblocks_index][crbl_rotation]; }
+    Tretomino get_block_relative_cells(int rotation) const { return Tretominos::ALL[allblocks_index][rotation]; }
 
     sf::Color get_block_color() const { return BlockColors::ALL[allblocks_index]; }
 
@@ -69,8 +69,8 @@ public:
         }
     }
 
-    bool is_crbl_movable_to_relative(Coo direction) {
-        for (Coo block_cell : get_block_relative_cells()) {
+    bool is_crbl_movable_to_relative(Coo direction, int rotation) {
+        for (Coo block_cell : get_block_relative_cells(rotation)) {
             Coo new_pos = crbl_center + block_cell + direction;
             if (new_pos.x < 0 or new_pos.x >= GRID_WIDTH or new_pos.y < 0 or new_pos.y >= GRID_HEIGHT) {
                 return false;
@@ -84,15 +84,28 @@ public:
 
     // returns success
     bool move_crbl(Coo direction) {
-        if (is_crbl_movable_to_relative(direction)) {
+        if (is_crbl_movable_to_relative(direction, crbl_rotation)) {
             crbl_center += direction;
             return true;
         }
         return false;
     }
 
-    void rotate_block(int rotation) {
-        
+    void super_rotate_block(bool clockwise) {
+        int next_rotation = get_next_rotation(clockwise);
+        for (const Coo offset : SuperRotationSystem::ALL[allblocks_index][next_rotation][clockwise]) {
+            if (is_crbl_movable_to_relative(offset, next_rotation)) {
+                // rotate
+                crbl_center += offset;
+                crbl_rotation = next_rotation;
+                return;
+           }
+        }
+        // don't rotate
+    }
+
+    int get_next_rotation(bool clockwise) {
+        return (crbl_rotation + (clockwise ? 1 : -1))%4;
     }
 
 
@@ -105,13 +118,13 @@ public:
     }
 
     void place_crbl_on_grid() {
-        for (Coo cell : get_block_relative_cells()) {
+        for (Coo cell : get_block_relative_cells(crbl_rotation)) {
             at(crbl_center + cell).setFillColor(get_block_color());
         }
     }
 
     void remove_crbl_of_grid() {
-        for (Coo cell : get_block_relative_cells()) {
+        for (Coo cell : get_block_relative_cells(crbl_rotation)) {
             at(crbl_center + cell).setFillColor(EMPTY_CELL_COLOR);
         }
     }
