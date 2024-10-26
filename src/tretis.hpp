@@ -87,8 +87,12 @@ public:
                         case sf::Keyboard::D:
                             grid.move_crbl(MOVE_RIGHT);
                             break;
+                        case sf::Keyboard::Z:
+                            grid.super_rotate_block(false);
+                            break;
                         case sf::Keyboard::Up:
                         case sf::Keyboard::W:
+                        case sf::Keyboard::X:
                             grid.super_rotate_block(true);
                             break;
                         default:

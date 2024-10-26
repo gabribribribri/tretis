@@ -5,11 +5,11 @@
 #include <SFML/System/Vector3.hpp>
 #include <array>
 #include <cassert>
-#include <iostream>
 #include <random>
 
 #include "blocks.hpp"
 
+/// CONSTANTS ///
 const int GRID_HEIGHT = 22;
 const int GRID_WIDTH = 10;
 const int CELL_SIZE = 30;
@@ -22,11 +22,19 @@ const Coo MOVE_LEFT = Coo { -1, 0 };
 const Coo MOVE_RIGHT = Coo { 1, 0 };
 const Coo MOVE_DOWN = Coo { 0, 1 };
 
-// WHY IS RNG IN C++ SO AWFUL
+
+/// WHY IS RNG IN C++ SO AWFUL ///
 inline std::random_device random_device;
 inline std::mt19937 rng(random_device());
 // I can't believe it's an inclusive range this is disgusting
-inline std::uniform_int_distribution<> allblock_distrib(0, Tretominos::ALL.size() - 1);
+inline std::uniform_int_distribution<int> allblock_distrib(0, Tretominos::ALL.size() - 1);
+
+/// MODULUS WITH POSITIVE REMAINDER ///
+int good_mod(int lhs, int rhs) {
+    // Can't fucking believe C++ doesn't have one of those
+    int res = lhs%rhs;
+    return res >= 0 ? res : res+rhs;
+}
 
 class Grid {
 public:
@@ -35,10 +43,6 @@ public:
     // CRBL means CURRENT_BLOCK, the block that is falling.
     Coo crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
 
-    // 0: UP
-    // 1: RIGHT
-    // 2: DOWN
-    // 3: LEFT TODO: Make this shit less suckable
     int crbl_rotation = 0;
     int allblocks_index = 0;
 
@@ -50,7 +54,7 @@ public:
         }
     }
 
-    Tretomino get_block_relative_cells(int rotation) const { return Tretominos::ALL[allblocks_index][rotation]; }
+    TretominoRotation const& get_block_relative_cells(int rotation) const { return Tretominos::ALL[allblocks_index][rotation]; }
 
     sf::Color get_block_color() const { return BlockColors::ALL[allblocks_index]; }
 
@@ -95,17 +99,15 @@ public:
         int next_rotation = get_next_rotation(clockwise);
         for (const Coo offset : SuperRotationSystem::ALL[allblocks_index][crbl_rotation*2+clockwise]) {
             if (is_crbl_movable_to_relative(offset, next_rotation)) {
-                // rotate
                 crbl_center += offset;
                 crbl_rotation = next_rotation;
                 return;
            }
         }
-        // don't rotate
     }
 
     int get_next_rotation(bool clockwise) {
-        return (crbl_rotation + (clockwise ? 1 : -1))%4;
+        return good_mod(crbl_rotation + (clockwise ? 1 : -1), 4);
     }
 
 
