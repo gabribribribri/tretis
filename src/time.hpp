@@ -3,7 +3,7 @@
 #include <SFML/System/Sleep.hpp>
 #include <SFML/System/Time.hpp>
 
-const int FRAME_PER_SECONDS = 120;
+const int FRAME_PER_SECONDS = 240;
 const sf::Time TIME_PER_FRAME = sf::milliseconds(1000/FRAME_PER_SECONDS);
 const sf::Time BASE_BLOCK_FALL_BY_ONE = sf::seconds(1.0);
 
