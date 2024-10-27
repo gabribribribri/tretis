@@ -17,7 +17,11 @@ using OneTretominoRotations = std::array<CenterOffSets, 8>;
     1: O
     2: I
     3: L
+    4: J
+    5: S
+    6: Z
 */
+
 const int TRETOMINO_COUNT = 7;
 
 CenterOffSets operator*(CenterOffSets lhs, Coo rhs) {
@@ -76,7 +80,10 @@ OneTretominoRotations const& L { {
 } };
 
 const std::array<OneTretominoRotations, TRETOMINO_COUNT> ALL { {
-    T, O, I, L,
+    T,  //
+    O,  //
+    I,  //
+    L,  //
     L,  // J has the same pattern as L
     L,  // S has the same pattern as L
     L,  // Z has the same pattern as L
@@ -144,7 +151,7 @@ const std::array<sf::Color, TRETOMINO_COUNT> ALL { {
     sf::Color(0xff, 0x7f, 0x00),
     sf::Color::Blue,
     sf::Color::Green,
-    sf::Color::Red
+    sf::Color::Red,
 } };
 
 }
