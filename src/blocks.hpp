@@ -2,7 +2,6 @@
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <array>
 #include <ranges>
 
 using Coo = sf::Vector2i;

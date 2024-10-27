@@ -12,14 +12,15 @@
 
 class Tretis {
 private:
-    Grid grid;
     sf::RenderWindow render_window { sf::VideoMode(1200, 1200), "Tretis" };
-
     Chronometre frame_time { TIME_PER_FRAME };
-    Chronometre crbl_fall_by_one_countdown { BASE_BLOCK_FALL_BY_ONE};
+    Chronometre crbl_fall_by_one_countdown { BASE_BLOCK_FALL_BY_ONE };
 
 public:
-    static Tretis& Get() { return tretis; }
+    static Tretis& Get() { 
+        static Tretis instance;
+        return instance;
+    }
 
     void gameloop() {
         while (render_window.isOpen()) {
@@ -29,11 +30,11 @@ public:
             // GAME LOGIC
             handle_events();
             if (crbl_fall_by_one_countdown.has_time_passed()) {
-                grid.move_crbl_down_or_place();
+                Grid::Get().move_crbl_down_or_place();
             }
 
             // DRAWING
-            render_window.clear(sf::Color(64, 64,64));
+            render_window.clear(sf::Color(64, 64, 64));
             draw_grid_with_crbl();
             render_window.display();
 
@@ -56,11 +57,11 @@ public:
     void draw_grid_with_crbl() {
         // the place block remove block thing is very ugly.
         // I hope to find a better way in the future
-        grid.place_crbl_on_grid();
-        for (sf::RectangleShape& cell : grid.val) {
+        Grid::Get().place_crbl_on_grid();
+        for (sf::RectangleShape& cell : Grid::Get().val) {
             render_window.draw(cell);
         }
-        grid.remove_crbl_of_grid();
+        Grid::Get().remove_crbl_of_grid();
     }
 
     void handle_events() {
@@ -77,23 +78,23 @@ public:
                     switch (event.key.code) {
                         case sf::Keyboard::Down:
                         case sf::Keyboard::S:
-                            grid.move_crbl_down_or_place();
+                            Grid::Get().move_crbl_down_or_place();
                             break;
                         case sf::Keyboard::Left:
                         case sf::Keyboard::A:
-                            grid.move_crbl(MOVE_LEFT);
+                            Grid::Get().move_crbl(MOVE_LEFT);
                             break;
                         case sf::Keyboard::Right:
                         case sf::Keyboard::D:
-                            grid.move_crbl(MOVE_RIGHT);
+                            Grid::Get().move_crbl(MOVE_RIGHT);
                             break;
                         case sf::Keyboard::Z:
-                            grid.super_rotate_block(false);
+                            Grid::Get().super_rotate_block(false);
                             break;
                         case sf::Keyboard::Up:
                         case sf::Keyboard::W:
                         case sf::Keyboard::X:
-                            grid.super_rotate_block(true);
+                            Grid::Get().super_rotate_block(true);
                             break;
                         default:
                             break;
@@ -108,18 +109,14 @@ public:
     void resize_window(int width, int height) {
         sf::FloatRect visibleArea(0, 0, width, height);
         render_window.setView(sf::View(visibleArea));
-        grid.set_cells_positions(0, 0);
+        Grid::Get().set_cells_positions(0, 0);
     }
 
-
-private:
-    ~Tretis() = default;
-    Tretis() = default;
+public:
     Tretis(const Tretis&) = delete;
     Tretis(Tretis&&) = delete;
     Tretis& operator=(const Tretis&) = delete;
-    static Tretis tretis;
+private:
+    ~Tretis() = default;
+    Tretis() = default;
 };
-
-// shut up I hate ODR
-Tretis Tretis::tretis;

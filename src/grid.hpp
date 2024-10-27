@@ -22,7 +22,6 @@ const Coo MOVE_LEFT = Coo { -1, 0 };
 const Coo MOVE_RIGHT = Coo { 1, 0 };
 const Coo MOVE_DOWN = Coo { 0, 1 };
 
-
 /// WHY IS RNG IN C++ SO AWFUL ///
 inline std::random_device random_device;
 inline std::mt19937 rng(random_device());
@@ -32,14 +31,16 @@ inline std::uniform_int_distribution<int> allblock_distrib(0, Tretominos::ALL.si
 /// MODULUS WITH POSITIVE REMAINDER ///
 int good_mod(int lhs, int rhs) {
     // Can't fucking believe C++ doesn't have one of those
-    int res = lhs%rhs;
-    return res >= 0 ? res : res+rhs;
+    int res = lhs % rhs;
+    return res >= 0 ? res : res + rhs;
 }
 
+/// GRID ///
 class Grid {
 public:
     std::array<sf::RectangleShape, GRID_HEIGHT * GRID_WIDTH> val;  // initialized in constructor
 
+private:
     // CRBL means CURRENT_BLOCK, the block that is falling.
     Coo crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
 
@@ -47,14 +48,10 @@ public:
     int allblocks_index = 0;
 
 public:
-    Grid() {
-        for (sf::RectangleShape& cell : val) {
-            cell = sf::RectangleShape(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-            cell.setFillColor(sf::Color::Black);
-        }
-    }
 
-    TretominoRotation const& get_block_relative_cells(int rotation) const { return Tretominos::ALL[allblocks_index][rotation]; }
+    TretominoRotation const& get_block_relative_cells(int rotation) const {
+        return Tretominos::ALL[allblocks_index][rotation];
+    }
 
     sf::Color get_block_color() const { return BlockColors::ALL[allblocks_index]; }
 
@@ -97,19 +94,16 @@ public:
 
     void super_rotate_block(bool clockwise) {
         int next_rotation = get_next_rotation(clockwise);
-        for (const Coo offset : SuperRotationSystem::ALL[allblocks_index][crbl_rotation*2+clockwise]) {
+        for (const Coo offset : SuperRotationSystem::ALL[allblocks_index][crbl_rotation * 2 + clockwise]) {
             if (is_crbl_movable_to_relative(offset, next_rotation)) {
                 crbl_center += offset;
                 crbl_rotation = next_rotation;
                 return;
-           }
+            }
         }
     }
 
-    int get_next_rotation(bool clockwise) {
-        return good_mod(crbl_rotation + (clockwise ? 1 : -1), 4);
-    }
-
+    int get_next_rotation(bool clockwise) { return good_mod(crbl_rotation + (clockwise ? 1 : -1), 4); }
 
     void select_new_crbl() {
         crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
@@ -144,4 +138,22 @@ public:
         assert(coo.y < GRID_HEIGHT);
         return val[coo.y * GRID_WIDTH + coo.x];
     }
+
+    Grid(Grid const&) = delete;
+    Grid(Grid&&) = delete;
+    Grid operator=(Grid) = delete;
+
+    static Grid& Get() {
+        static Grid instance;
+        return instance;
+    }
+    
+private:
+    Grid() {
+        for (sf::RectangleShape& cell : val) {
+            cell = sf::RectangleShape(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+            cell.setFillColor(sf::Color::Black);
+        }
+    }
+    ~Grid() = default;
 };
