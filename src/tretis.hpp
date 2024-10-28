@@ -16,7 +16,7 @@ private:
     Chronometre frame_time { TIME_PER_FRAME };
 
 public:
-    static Tretis& Get() { 
+    static Tretis& Get() {
         static Tretis instance;
         return instance;
     }
@@ -54,13 +54,18 @@ public:
     void draw_grid() {
         // the place block remove block thing is very ugly.
         // I hope to find a better way in the future
-        for (sf::RectangleShape& cell : Grid::Get().val) {
+        Grid& grid = Grid::Get();
+
+        for (sf::RectangleShape& cell : grid.val) {
             render_window.draw(cell);
         }
-        for (sf::RectangleShape const& cell : Grid::Get().get_phbl_shapes()) {
-            render_window.draw(cell);
+
+        if (grid.is_phantom_enabled()) {
+            for (sf::RectangleShape const& cell : grid.get_phbl_shapes()) {
+                render_window.draw(cell);
+            }
         }
-        for (sf::RectangleShape const& cell : Grid::Get().get_crbl_shapes()) {
+        for (sf::RectangleShape const& cell : grid.get_crbl_shapes()) {
             render_window.draw(cell);
         }
     }
@@ -96,6 +101,9 @@ public:
                         case sf::Keyboard::W:
                         case sf::Keyboard::X:
                             Grid::Get().super_rotate_block(true);
+                            break;
+                        case sf::Keyboard::P:
+                            Grid::Get().switch_phantom_block();
                             break;
                         default:
                             break;
@@ -133,6 +141,7 @@ public:
     Tretis(const Tretis&) = delete;
     Tretis(Tretis&&) = delete;
     Tretis& operator=(const Tretis&) = delete;
+
 private:
     ~Tretis() = default;
     Tretis() = default;

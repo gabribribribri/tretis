@@ -42,7 +42,7 @@ int good_mod(int lhs, int rhs) {
 }
 
 sf::RectangleShape create_grid_cell() {
-    sf::RectangleShape cell {sf::Vector2f(CELL_SIZE, CELL_SIZE)};
+    sf::RectangleShape cell { sf::Vector2f(CELL_SIZE, CELL_SIZE) };
     cell.setOutlineThickness(2.0);
     cell.setOutlineColor(sf::Color(32, 32, 32));
     return cell;
@@ -55,20 +55,19 @@ public:
 
 private:
     // CRBL means CURRENT_BLOCK, the block that is falling.
-    Coo crbl_center; // in constructor
+    Coo crbl_center;  // in constructor
     // PHBL means PHANTOM_BLOCK
-    Coo phbl_center; // in constructor
+    Coo phbl_center;  // in constructor
 
     // phbl use crbl_rotation because always the same
     int crbl_rotation = 0;
-    int allblocks_index; // in constructor
+    int allblocks_index;  // in constructor
 
-    TretominoShape crbl_shape; // in constructor
+    TretominoShape crbl_shape;  // in constructor
     Coo crbl_shape_center;
     int crbl_shape_rotation;
     sf::Color crbl_shape_color;
-    TretominoShape phbl_shape; // in constructor
-
+    TretominoShape phbl_shape;  // in constructor
 
     bool phantom_enabled = true;
 
@@ -139,15 +138,22 @@ public:
         allblocks_index = allblock_distrib(rng);
     }
 
+    void place_crbl_on_grid() {
+        for (Coo cell : get_block_relative_cells(crbl_rotation)) {
+            at(crbl_center + cell).setFillColor(get_block_color());
+        }
+    }
+
     void adjust_crbl_shape_position() {
-        for (auto [i,cell] : get_block_relative_cells(crbl_shape_rotation) | std::ranges::views::enumerate) {
+        for (auto [i, cell] : get_block_relative_cells(crbl_shape_rotation) | std::ranges::views::enumerate) {
             // ugly but useful implicit int to float conversion
-            crbl_shape[i].setPosition(sf::Vector2f(CELL_SIZE * (crbl_shape_center.x + cell.x), CELL_SIZE * (crbl_shape_center.y + cell.y)));
+            crbl_shape[i].setPosition(
+                sf::Vector2f(CELL_SIZE * (crbl_shape_center.x + cell.x), CELL_SIZE * (crbl_shape_center.y + cell.y)));
         }
     }
 
     void adjust_crbl_shape_color() {
-        for(sf::RectangleShape& cell : crbl_shape) {
+        for (sf::RectangleShape& cell : crbl_shape) {
             cell.setFillColor(get_block_color());
         }
     }
@@ -157,7 +163,8 @@ public:
     void adjust_phbl_shape_position() {
         for (auto [i, cell] : get_block_relative_cells(crbl_shape_rotation) | std::ranges::views::enumerate) {
             // ugly but useful implicit int to float conversion
-            phbl_shape[i].setPosition(sf::Vector2f(CELL_SIZE * (phbl_center.x + cell.x), CELL_SIZE * (phbl_center.y + cell.y)));
+            phbl_shape[i].setPosition(
+                sf::Vector2f(CELL_SIZE * (phbl_center.x + cell.x), CELL_SIZE * (phbl_center.y + cell.y)));
         }
     }
 
@@ -172,15 +179,9 @@ public:
         phbl_center = potential_phbl_center;
     }
 
-
-    void place_crbl_on_grid() {
-        for (Coo cell : get_block_relative_cells(crbl_rotation)) {
-            at(crbl_center + cell).setFillColor(get_block_color());
-        }
-    }
-
     void adjust_everything_if_moved() {
-        if (crbl_shape_rotation != crbl_rotation or crbl_center.x != crbl_shape_center.x or crbl_center.y < crbl_shape_center.y) {
+        if (crbl_shape_rotation != crbl_rotation or crbl_center.x != crbl_shape_center.x or
+            crbl_center.y < crbl_shape_center.y) {
             crbl_shape_center = crbl_center;
             crbl_shape_rotation = crbl_rotation;
             adjust_crbl_shape_position();
@@ -201,12 +202,10 @@ public:
         return crbl_shape;
     }
 
-
     std::array<sf::RectangleShape, 4> const& get_phbl_shapes() {
         adjust_everything_if_moved();
         return phbl_shape;
     }
-
 
     sf::RectangleShape& at(int x, int y) {
         assert(x >= 0 && x < GRID_WIDTH);
@@ -223,6 +222,7 @@ public:
     }
 
     void switch_phantom_block() { phantom_enabled = !phantom_enabled; }
+    bool is_phantom_enabled() { return phantom_enabled; }
 
 public:
     Grid(Grid const&) = delete;
