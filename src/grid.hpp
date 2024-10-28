@@ -65,11 +65,14 @@ public:
         }
     }
 
-    void move_crbl_down_or_place() {
+    /// returns true if block has been placed, false if not
+    bool move_crbl_down_or_place() {
         if (!move_crbl(MOVE_DOWN)) {
             place_crbl_on_grid();
             select_new_crbl();
+            return true;
         }
+        return false;
     }
 
     bool is_crbl_movable_to_relative(Coo direction, int rotation) {
