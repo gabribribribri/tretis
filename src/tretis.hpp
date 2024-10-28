@@ -105,6 +105,9 @@ public:
                         case sf::Keyboard::P:
                             Grid::Get().switch_phantom_block();
                             break;
+                        case sf::Keyboard::Space:
+                            Grid::Get().hard_drop();
+                            break;
                         default:
                             break;
                     }

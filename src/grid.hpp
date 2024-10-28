@@ -17,7 +17,7 @@ using TretominoShape = std::array<sf::RectangleShape, 4>;
 /// CONSTANTS ///
 const int GRID_HEIGHT = 22;
 const int GRID_WIDTH = 10;
-const int CELL_SIZE = 30;
+const int CELL_SIZE = 35;
 const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 };
 
 const sf::Color EMPTY_CELL_COLOR = sf::Color::Black;
@@ -136,6 +136,12 @@ public:
         crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
         crbl_rotation = 0;
         allblocks_index = allblock_distrib(rng);
+    }
+
+    void hard_drop() {
+        crbl_center = phbl_center;
+        place_crbl_on_grid();
+        select_new_crbl();
     }
 
     void place_crbl_on_grid() {
