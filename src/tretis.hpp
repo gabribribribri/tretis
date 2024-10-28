@@ -7,6 +7,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 
+#include "grid.hpp"
 #include "movements.hpp"
 
 class Tretis {
@@ -31,7 +32,7 @@ public:
 
             // DRAWING
             render_window.clear(sf::Color::Black);
-            draw_grid_with_crbl();
+            draw_grid();
             render_window.display();
 
             // WAITING
@@ -50,14 +51,18 @@ public:
         }
     }
 
-    void draw_grid_with_crbl() {
+    void draw_grid() {
         // the place block remove block thing is very ugly.
         // I hope to find a better way in the future
-        Grid::Get().place_crbl_on_grid();
         for (sf::RectangleShape& cell : Grid::Get().val) {
             render_window.draw(cell);
         }
-        Grid::Get().remove_crbl_of_grid();
+        for (sf::RectangleShape const& cell : Grid::Get().get_phbl_shapes()) {
+            render_window.draw(cell);
+        }
+        for (sf::RectangleShape const& cell : Grid::Get().get_crbl_shapes()) {
+            render_window.draw(cell);
+        }
     }
 
     void handle_events() {
@@ -121,7 +126,7 @@ public:
     void resize_window(int width, int height) {
         sf::FloatRect visibleArea(0, 0, width, height);
         render_window.setView(sf::View(visibleArea));
-        Grid::Get().set_cells_positions(0, 0);
+        Grid::Get().set_cells_positions();
     }
 
 public:
