@@ -8,6 +8,8 @@
 #include <random>
 
 #include "blocks.hpp"
+#include "movements.hpp"
+
 
 /// CONSTANTS ///
 const int GRID_HEIGHT = 22;
@@ -30,7 +32,7 @@ inline std::uniform_int_distribution<int> allblock_distrib(0, Tretominos::ALL.si
 
 /// MODULUS WITH POSITIVE REMAINDER ///
 int good_mod(int lhs, int rhs) {
-    // Can't fucking believe C++ doesn't have one of those
+    // Can't believe C++ doesn't have one of those
     int res = lhs % rhs;
     return res >= 0 ? res : res + rhs;
 }
@@ -152,7 +154,9 @@ private:
     Grid() {
         for (sf::RectangleShape& cell : val) {
             cell = sf::RectangleShape(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-            cell.setFillColor(sf::Color::Black);
+            cell.setFillColor(EMPTY_CELL_COLOR);
+            cell.setOutlineThickness(2.0);
+            cell.setOutlineColor(sf::Color(32, 32, 32));
         }
     }
     ~Grid() = default;

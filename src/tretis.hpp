@@ -7,14 +7,12 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 
-#include "grid.hpp"
-#include "time.hpp"
+#include "movements.hpp"
 
 class Tretis {
 private:
-    sf::RenderWindow render_window { sf::VideoMode(1200, 1200), "Tretis" };
+    sf::RenderWindow render_window { sf::VideoMode(1280, 720), "Tretis" };
     Chronometre frame_time { TIME_PER_FRAME };
-    Chronometre crbl_fall_by_one_countdown { BASE_BLOCK_FALL_BY_ONE };
 
 public:
     static Tretis& Get() { 
@@ -29,12 +27,10 @@ public:
 
             // GAME LOGIC
             handle_events();
-            if (crbl_fall_by_one_countdown.has_time_passed()) {
-                Grid::Get().move_crbl_down_or_place();
-            }
+            Movements::Get().ping();
 
             // DRAWING
-            render_window.clear(sf::Color(64, 64, 64));
+            render_window.clear(sf::Color::Black);
             draw_grid_with_crbl();
             render_window.display();
 
@@ -78,15 +74,15 @@ public:
                     switch (event.key.code) {
                         case sf::Keyboard::Down:
                         case sf::Keyboard::S:
-                            Grid::Get().move_crbl_down_or_place();
+                            Movements::Get().go_vertical();
                             break;
                         case sf::Keyboard::Left:
                         case sf::Keyboard::A:
-                            Grid::Get().move_crbl(MOVE_LEFT);
+                            Movements::Get().go_lateral(MOVE_LEFT);
                             break;
                         case sf::Keyboard::Right:
                         case sf::Keyboard::D:
-                            Grid::Get().move_crbl(MOVE_RIGHT);
+                            Movements::Get().go_lateral(MOVE_RIGHT);
                             break;
                         case sf::Keyboard::Z:
                             Grid::Get().super_rotate_block(false);
@@ -95,6 +91,22 @@ public:
                         case sf::Keyboard::W:
                         case sf::Keyboard::X:
                             Grid::Get().super_rotate_block(true);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case sf::Event::KeyReleased:
+                    switch (event.key.code) {
+                        case sf::Keyboard::Down:
+                        case sf::Keyboard::S:
+                            Movements::Get().stop_vertical();
+                            break;
+                        case sf::Keyboard::Left:
+                        case sf::Keyboard::A:
+                        case sf::Keyboard::Right:
+                        case sf::Keyboard::D:
+                            Movements::Get().stop_lateral();
                             break;
                         default:
                             break;
