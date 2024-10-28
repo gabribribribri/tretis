@@ -56,13 +56,19 @@ public:
 private:
     // CRBL means CURRENT_BLOCK, the block that is falling.
     Coo crbl_center; // in constructor
+    // PHBL means PHANTOM_BLOCK
     Coo phbl_center; // in constructor
 
-    TretominoShape crbl_shape; // in constructor
-    TretominoShape phbl_shape; // in constructor
-
+    // phbl use crbl_rotation because always the same
     int crbl_rotation = 0;
     int allblocks_index; // in constructor
+
+    TretominoShape crbl_shape; // in constructor
+    Coo crbl_shape_center;
+    int crbl_shape_rotation;
+    sf::Color crbl_shape_color;
+    TretominoShape phbl_shape; // in constructor
+
 
     bool phantom_enabled = true;
 
@@ -98,8 +104,6 @@ public:
                 return false;
             }
             if (at(new_pos).getFillColor() != EMPTY_CELL_COLOR) {
-            std::cout << (int)at(new_pos).getFillColor().r << (int)at(new_pos).getFillColor().g << (int)at(new_pos).getFillColor().b << "\n";
-            std::cout << "nuhuh\n";
                 return false;
             }
         }
@@ -110,21 +114,18 @@ public:
     bool move_crbl(Coo direction) {
         if (is_block_movable_to(crbl_center + direction, crbl_rotation)) {
             crbl_center += direction;
-            adjust_crbl_shape_position();
-            adjust_phbl();
             return true;
         }
         return false;
     }
 
     void super_rotate_block(bool clockwise) {
+        std::cout << "SUPER ROTATION SYSTEM\n";
         int next_rotation = get_next_rotation(clockwise);
         for (const Coo offset : SuperRotationSystem::ALL[allblocks_index][crbl_rotation * 2 + clockwise]) {
             if (is_block_movable_to(crbl_center + offset, next_rotation)) {
                 crbl_center += offset;
                 crbl_rotation = next_rotation;
-                adjust_crbl_shape_position();
-                adjust_phbl();
                 return;
             }
         }
@@ -136,15 +137,12 @@ public:
         crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
         crbl_rotation = 0;
         allblocks_index = allblock_distrib(rng);
-        adjust_crbl_shape_position();
-        adjust_crbl_shape_color();
-        adjust_phbl();
     }
 
     void adjust_crbl_shape_position() {
-        for (auto [i,cell] : get_block_relative_cells(crbl_rotation) | std::ranges::views::enumerate) {
+        for (auto [i,cell] : get_block_relative_cells(crbl_shape_rotation) | std::ranges::views::enumerate) {
             // ugly but useful implicit int to float conversion
-            crbl_shape[i].setPosition(sf::Vector2f(CELL_SIZE * (crbl_center.x + cell.x), CELL_SIZE * (crbl_center.y + cell.y)));
+            crbl_shape[i].setPosition(sf::Vector2f(CELL_SIZE * (crbl_shape_center.x + cell.x), CELL_SIZE * (crbl_shape_center.y + cell.y)));
         }
     }
 
@@ -154,11 +152,24 @@ public:
         }
     }
 
+    /// DOESN'T MODIFY phbl_center
+    /// Put phbl_shape at the correct place
     void adjust_phbl_shape_position() {
-        for (auto [i, cell] : get_block_relative_cells(crbl_rotation) | std::ranges::views::enumerate) {
+        for (auto [i, cell] : get_block_relative_cells(crbl_shape_rotation) | std::ranges::views::enumerate) {
             // ugly but useful implicit int to float conversion
             phbl_shape[i].setPosition(sf::Vector2f(CELL_SIZE * (phbl_center.x + cell.x), CELL_SIZE * (phbl_center.y + cell.y)));
         }
+    }
+
+    void adjust_phbl_center() {
+        std::cout << "ADJUSTING PHBL CENTER\n";
+        assert(crbl_rotation == crbl_shape_rotation);
+        assert(crbl_center == crbl_shape_center);
+        Coo potential_phbl_center { crbl_shape_center.x, GRID_HEIGHT - 1 };
+        while (!is_block_movable_to(potential_phbl_center, crbl_shape_rotation)) {
+            potential_phbl_center.y -= 1;
+        }
+        phbl_center = potential_phbl_center;
     }
 
 
@@ -168,12 +179,31 @@ public:
         }
     }
 
+    void adjust_everything_if_moved() {
+        if (crbl_shape_rotation != crbl_rotation or crbl_center.x != crbl_shape_center.x or crbl_center.y < crbl_shape_center.y) {
+            crbl_shape_center = crbl_center;
+            crbl_shape_rotation = crbl_rotation;
+            adjust_crbl_shape_position();
+            adjust_phbl_center();
+            adjust_phbl_shape_position();
+        } else if (crbl_shape_center != crbl_center) {
+            crbl_shape_center = crbl_center;
+            adjust_crbl_shape_position();
+        }
+        if (get_block_color() != crbl_shape_color) {
+            crbl_shape_color = get_block_color();
+            adjust_crbl_shape_color();
+        }
+    }
+
     std::array<sf::RectangleShape, 4> const& get_crbl_shapes() {
+        adjust_everything_if_moved();
         return crbl_shape;
     }
 
 
     std::array<sf::RectangleShape, 4> const& get_phbl_shapes() {
+        adjust_everything_if_moved();
         return phbl_shape;
     }
 
@@ -190,16 +220,6 @@ public:
         assert(coo.y >= 0);
         assert(coo.y < GRID_HEIGHT);
         return val[coo.y * GRID_WIDTH + coo.x];
-    }
-
-    void adjust_phbl() {
-        Coo potential_phbl_center { crbl_center.x, GRID_HEIGHT - 1 };
-        while (!is_block_movable_to(potential_phbl_center, crbl_rotation)) {
-            std::cout << "{ " << potential_phbl_center.x << ", " << potential_phbl_center.y << " }\n"; 
-            potential_phbl_center.y -= 1;
-        }
-        phbl_center = potential_phbl_center;
-        adjust_phbl_shape_position();
     }
 
     void switch_phantom_block() { phantom_enabled = !phantom_enabled; }
@@ -231,6 +251,14 @@ private:
         }
 
         select_new_crbl();
+
+        crbl_shape_center = crbl_center;
+        crbl_shape_color = get_block_color();
+        crbl_shape_rotation = crbl_rotation;
+        adjust_crbl_shape_color();
+        adjust_crbl_shape_position();
+        adjust_phbl_center();
+        adjust_phbl_shape_position();
     }
     ~Grid() = default;
 };
