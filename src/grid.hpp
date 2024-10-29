@@ -86,15 +86,6 @@ public:
         }
     }
 
-    /// returns true if block has been placed, false if not
-    bool move_crbl_down_or_place() {
-        if (!move_crbl(MOVE_DOWN)) {
-            place_crbl_on_grid();
-            select_new_crbl();
-            return true;
-        }
-        return false;
-    }
 
     bool is_block_movable_to(Coo center, int rotation) {
         for (Coo block_cell : get_block_relative_cells(rotation)) {
@@ -132,22 +123,40 @@ public:
 
     int get_next_rotation(bool clockwise) { return good_mod(crbl_rotation + (clockwise ? 1 : -1), 4); }
 
-    void select_new_crbl() {
-        crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
-        crbl_rotation = 0;
-        allblocks_index = allblock_distrib(rng);
+    /// returns true if block has been placed, false if not
+    bool move_crbl_down_or_place() {
+        if (!move_crbl(MOVE_DOWN)) {
+            place_and_select_crbl();
+            return true;
+        }
+        return false;
     }
 
     void hard_drop() {
         crbl_center = phbl_center;
+        place_and_select_crbl();
+    }
+
+    void place_and_select_crbl() {
         place_crbl_on_grid();
         select_new_crbl();
+        crbl_shape_center = crbl_center;
+        crbl_shape_rotation = crbl_rotation;
+        adjust_crbl_shape_position();
+        adjust_phbl_center();
+        adjust_phbl_shape_position();
     }
 
     void place_crbl_on_grid() {
         for (Coo cell : get_block_relative_cells(crbl_rotation)) {
             at(crbl_center + cell).setFillColor(get_block_color());
         }
+    }
+
+    void select_new_crbl() {
+        crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
+        crbl_rotation = 0;
+        allblocks_index = allblock_distrib(rng);
     }
 
     void adjust_crbl_shape_position() {
@@ -186,8 +195,7 @@ public:
     }
 
     void adjust_everything_if_moved() {
-        if (crbl_shape_rotation != crbl_rotation or crbl_center.x != crbl_shape_center.x or
-            crbl_center.y < crbl_shape_center.y) {
+        if (crbl_shape_rotation != crbl_rotation or crbl_center.x != crbl_shape_center.x) {
             crbl_shape_center = crbl_center;
             crbl_shape_rotation = crbl_rotation;
             adjust_crbl_shape_position();
@@ -214,8 +222,8 @@ public:
     }
 
     sf::RectangleShape& at(int x, int y) {
-        assert(x >= 0 && x < GRID_WIDTH);
-        assert(y >= 0 && y < GRID_HEIGHT);
+        assert(x >= 0 and x < GRID_WIDTH);
+        assert(y >= 0 and y < GRID_HEIGHT);
         return val[y * GRID_WIDTH + x];
     }
 
