@@ -2,7 +2,7 @@
 
 add_rules("mode.debug", "mode.release")
 set_languages("c++23")
-add_requires("sfml")
+-- add_requires("sfml")
 
 option("compiler-toolchain")
   set_values("classic", "clang-with-custom-llvm-build", "custom")
@@ -26,10 +26,9 @@ toolchain("classic")
 target("tretis")
   set_kind("binary")
   add_options("compiler-toolchain")
-  set_toolchains("myclang")
   add_files("src/*.cpp")
   add_links("sfml-graphics", "sfml-window", "sfml-system")
-  add_packages("sfml")  
+  -- add_packages("sfml")  
   set_warnings("all", "extra")
   if is_config("compiler-toolchain", "clang-with-custom-llvm-build", "custom") then
     set_toolchains("clang-with-custom-llvm-build")

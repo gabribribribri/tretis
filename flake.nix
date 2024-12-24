@@ -21,17 +21,15 @@
           xmake
         ];
         buildInputs = with pkgs; [
-          cppcheck
+          sfml # developpement library
 
+          cppcheck
           # /!\ Will need updates
           lldb_19
-          clang_19
           (with llvmPackages_19; [
-            stdenv
             clang-tools
             llvm-manpages
-            # libunwind
-            # libllvm
+            libunwind
             libcxx
             bintools
           ])
