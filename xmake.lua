@@ -28,6 +28,7 @@ target("tretis")
   add_options("compiler-toolchain")
   set_toolchains("myclang")
   add_files("src/*.cpp")
+  add_links("sfml-graphics", "sfml-window", "sfml-system")
   add_packages("sfml")  
   set_warnings("all", "extra")
   if is_config("compiler-toolchain", "clang-with-custom-llvm-build", "custom") then
