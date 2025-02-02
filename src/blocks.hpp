@@ -24,12 +24,13 @@ const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 };
 const sf::Vector2f GRID_ORIGIN = sf::Vector2f(-50.0, -50.0);
 const int CELL_SIZE = 35;
 const sf::Vector2f GAME_DELIMITER_SIZE = sf::Vector2f(720, 870);
-const float LINE_THICKNESS = 2.0;
+const float BETWEEN_CELL_LINE_THICKNESS = 2.0;
+const float GAME_DELIMITER_LINE_THICHNESS = 4.0;
 
 // Colors
 const sf::Color EMPTY_CELL_COLOR = sf::Color::Black;
 const sf::Color PHANTOM_BLOCK_COLOR = sf::Color(64, 64, 64);
-const sf::Color CELL_LINE_COLOR = sf::Color(32, 32, 32);
+const sf::Color BETWEEN_CELL_LINE_COLOR = sf::Color(32, 32, 32);
 
 // Movements
 const Coo MOVE_UP = Coo { 0, -1 };

@@ -160,13 +160,24 @@ public:
         }
     }
 
-    void resize_window(float width, float height) {
-        float potential_width = std::max(width, GAME_DELIMITER_SIZE.x);
-        float potential_height = std::max(height, GAME_DELIMITER_SIZE.y);
-
+    void resize_window(float screen_width, float screen_height) {
+        // I finallly mother flipping did this
+        // I am having a stroke at the moment
+        float screen_ratio = screen_width/screen_height;
+        float view_height, view_width;
         
-        // sf::FloatRect visibleArea(0, 0, adjusted_width,adjusted_height);
-        sf::FloatRect visibleArea(0, 0, potential_width,potential_height);
+        if (screen_ratio >= GAME_DELIMITER_SIZE.x/GAME_DELIMITER_SIZE.y) {
+            view_height = GAME_DELIMITER_SIZE.y;
+            view_width = GAME_DELIMITER_SIZE.y * screen_ratio;
+        } else {
+            view_width = GAME_DELIMITER_SIZE.x;
+            view_height = GAME_DELIMITER_SIZE.x / screen_ratio;
+        }
+
+        view_width = std::max(view_width, screen_width);
+        view_height = std::max(view_height, screen_height);
+        
+        sf::FloatRect visibleArea(0, 0, view_width, view_height);
         render_window.setView(sf::View(visibleArea));
     }
 
@@ -180,9 +191,9 @@ private:
     Tretis() {
         // Whole game delimiter initialization
         whole_game_delimiter.setFillColor(sf::Color::Transparent);
-        whole_game_delimiter.setPosition(sf::Vector2f(0, 0));
-        whole_game_delimiter.setOutlineColor(CELL_LINE_COLOR);
-        whole_game_delimiter.setOutlineThickness(LINE_THICKNESS);
+        whole_game_delimiter.setPosition(sf::Vector2f(GAME_DELIMITER_LINE_THICHNESS, GAME_DELIMITER_LINE_THICHNESS));
+        whole_game_delimiter.setOutlineColor(BETWEEN_CELL_LINE_COLOR);
+        whole_game_delimiter.setOutlineThickness(GAME_DELIMITER_LINE_THICHNESS);
 
         // Vertical Lines initialization
         for (auto [i, line] :
@@ -190,9 +201,9 @@ private:
             line = sf::RectangleShape(
                 sf::Vector2f(2, GRID_HEIGHT * CELL_SIZE + 1));
             line.setOrigin(GRID_ORIGIN);
-            line.setPosition(sf::Vector2f(i * CELL_SIZE - LINE_THICKNESS / 2,
-                                          -LINE_THICKNESS / 2));
-            line.setFillColor(CELL_LINE_COLOR);
+            line.setPosition(sf::Vector2f(i * CELL_SIZE - BETWEEN_CELL_LINE_THICKNESS / 2,
+                                          -BETWEEN_CELL_LINE_THICKNESS / 2));
+            line.setFillColor(BETWEEN_CELL_LINE_COLOR);
         }
 
         // Horizontal Lines initialization
@@ -202,7 +213,7 @@ private:
                 sf::RectangleShape(sf::Vector2f(GRID_WIDTH * CELL_SIZE + 1, 2));
             line.setOrigin(GRID_ORIGIN);
             line.setPosition(sf::Vector2f(-1, i * CELL_SIZE - 1));
-            line.setFillColor(CELL_LINE_COLOR);
+            line.setFillColor(BETWEEN_CELL_LINE_COLOR);
         }
     };
 };

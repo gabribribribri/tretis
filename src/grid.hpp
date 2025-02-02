@@ -30,9 +30,6 @@ int good_mod(int lhs, int rhs) {
 
 sf::RectangleShape create_grid_cell() {
     sf::RectangleShape cell { sf::Vector2f(CELL_SIZE, CELL_SIZE) };
-    /// Outline has been removed
-    // cell.setOutlineThickness(2.0);
-    // cell.setOutlineColor(sf::Color(32, 32, 32));
     return cell;
 }
 
