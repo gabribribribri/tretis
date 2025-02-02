@@ -186,7 +186,7 @@ public:
         std::cout << "ADJUSTING PHBL CENTER\n";
         assert(crbl_rotation == crbl_shape_rotation);
         assert(crbl_center == crbl_shape_center);
-        Coo potential_phbl_center { crbl_shape_center.x, 0 };
+        Coo potential_phbl_center = crbl_shape_center;
         while (
             is_block_movable_to(potential_phbl_center + MOVE_DOWN, crbl_shape_rotation)) {
             potential_phbl_center.y += 1;
