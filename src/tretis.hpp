@@ -1,12 +1,16 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
+#include <ranges>
 
+#include "blocks.hpp"
 #include "grid.hpp"
 #include "movements.hpp"
 
@@ -14,6 +18,14 @@ class Tretis {
 private:
     sf::RenderWindow render_window { sf::VideoMode(1280, 720), "Tretis" };
     Chronometre frame_time { TIME_PER_FRAME };
+    sf::RectangleShape whole_game_delimiter =
+        sf::RectangleShape(GAME_DELIMITER_SIZE);
+    sf::RectangleShape grid_background = sf::RectangleShape(sf::Vector2f(
+        GRID_WIDTH * CELL_SIZE, GRID_HEIGHT* CELL_SIZE));  // in constructor
+    std::array<sf::RectangleShape, GRID_WIDTH + 1>
+        vertical_cell_lines;  // in constructor
+    std::array<sf::RectangleShape, GRID_HEIGHT + 1>
+        horizontal_cell_lines;  // in constructor
 
 public:
     static Tretis& Get() {
@@ -56,17 +68,37 @@ public:
         // I hope to find a better way in the future
         Grid& grid = Grid::Get();
 
+        // Draw the whole game delimiter (Nothing should be drawn outside of it)
+        render_window.draw(whole_game_delimiter);
+
+        // Draw the Background
+        render_window.draw(grid_background);
+
+        // Draw the grid cells
         for (sf::RectangleShape& cell : grid.val) {
-            render_window.draw(cell);
+            if (cell.getFillColor() != EMPTY_CELL_COLOR) {
+                render_window.draw(cell);
+            }
         }
 
+        // Draw the phantom block
         if (grid.is_phantom_enabled()) {
             for (sf::RectangleShape const& cell : grid.get_phbl_shapes()) {
                 render_window.draw(cell);
             }
         }
+
+        // Draw the current block
         for (sf::RectangleShape const& cell : grid.get_crbl_shapes()) {
             render_window.draw(cell);
+        }
+
+        // Draw Separation lines
+        for (sf::RectangleShape const& line : vertical_cell_lines) {
+            render_window.draw(line);
+        }
+        for (sf::RectangleShape const& line : horizontal_cell_lines) {
+            render_window.draw(line);
         }
     }
 
@@ -135,9 +167,8 @@ public:
     }
 
     void resize_window(int width, int height) {
-        sf::FloatRect visibleArea(0, 0, width, height);
+        sf::FloatRect visibleArea(-50, -50, width + 50, height + 50);
         render_window.setView(sf::View(visibleArea));
-        Grid::Get().set_cells_positions();
     }
 
 public:
@@ -147,5 +178,36 @@ public:
 
 private:
     ~Tretis() = default;
-    Tretis() = default;
+    Tretis() {
+        // Whole game delimiter initialization
+        whole_game_delimiter.setFillColor(sf::Color::Transparent);
+        whole_game_delimiter.setPosition(sf::Vector2f(0, 0));
+        whole_game_delimiter.setOutlineColor(CELL_LINE_COLOR);
+        whole_game_delimiter.setOutlineThickness(LINE_THICKNESS);
+
+        // Background initialization
+        grid_background.setFillColor(EMPTY_CELL_COLOR);
+        grid_background.setOrigin(GRID_ORIGIN);
+
+        // Vertical Lines initialization
+        for (auto [i, line] :
+             vertical_cell_lines | std::ranges::views::enumerate) {
+            line = sf::RectangleShape(
+                sf::Vector2f(2, GRID_HEIGHT * CELL_SIZE + 1));
+            line.setOrigin(GRID_ORIGIN);
+            line.setPosition(sf::Vector2f(i * CELL_SIZE - LINE_THICKNESS / 2,
+                                          -LINE_THICKNESS / 2));
+            line.setFillColor(CELL_LINE_COLOR);
+        }
+
+        // Horizontal Lines initialization
+        for (auto [i, line] :
+             horizontal_cell_lines | std::ranges::views::enumerate) {
+            line =
+                sf::RectangleShape(sf::Vector2f(GRID_WIDTH * CELL_SIZE + 1, 2));
+            line.setOrigin(GRID_ORIGIN);
+            line.setPosition(sf::Vector2f(-1, i * CELL_SIZE - 1));
+            line.setFillColor(CELL_LINE_COLOR);
+        }
+    };
 };

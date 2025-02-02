@@ -11,6 +11,32 @@ using AllTretominoRotations = std::array<TretominoRotation, 4>;
 using CenterOffSets = std::array<Coo, 5>;
 using OneTretominoRotations = std::array<CenterOffSets, 8>;
 
+/// CONSTANTS ///
+
+
+
+// Grid logic related
+const int GRID_HEIGHT = 22;
+const int GRID_WIDTH = 10;
+const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 };
+
+// Game Rendering related
+const sf::Vector2f GRID_ORIGIN = sf::Vector2f(-50.0, -50.0);
+const int CELL_SIZE = 35;
+const sf::Vector2f GAME_DELIMITER_SIZE = sf::Vector2f(720, 870);
+const float LINE_THICKNESS = 2.0;
+
+// Colors
+const sf::Color EMPTY_CELL_COLOR = sf::Color::Black;
+const sf::Color PHANTOM_BLOCK_COLOR = sf::Color(64, 64, 64);
+const sf::Color CELL_LINE_COLOR = sf::Color(32, 32, 32);
+
+// Movements
+const Coo MOVE_UP = Coo { 0, -1 };
+const Coo MOVE_LEFT = Coo { -1, 0 };
+const Coo MOVE_RIGHT = Coo { 1, 0 };
+const Coo MOVE_DOWN = Coo { 0, 1 };
+
 /*
     0: T
     1: O
