@@ -7,6 +7,7 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <algorithm>
 #include <iostream>
 #include <ranges>
 
@@ -20,8 +21,6 @@ private:
     Chronometre frame_time { TIME_PER_FRAME };
     sf::RectangleShape whole_game_delimiter =
         sf::RectangleShape(GAME_DELIMITER_SIZE);
-    sf::RectangleShape grid_background = sf::RectangleShape(sf::Vector2f(
-        GRID_WIDTH * CELL_SIZE, GRID_HEIGHT* CELL_SIZE));  // in constructor
     std::array<sf::RectangleShape, GRID_WIDTH + 1>
         vertical_cell_lines;  // in constructor
     std::array<sf::RectangleShape, GRID_HEIGHT + 1>
@@ -71,14 +70,9 @@ public:
         // Draw the whole game delimiter (Nothing should be drawn outside of it)
         render_window.draw(whole_game_delimiter);
 
-        // Draw the Background
-        render_window.draw(grid_background);
-
         // Draw the grid cells
         for (sf::RectangleShape& cell : grid.val) {
-            if (cell.getFillColor() != EMPTY_CELL_COLOR) {
-                render_window.draw(cell);
-            }
+            render_window.draw(cell);
         }
 
         // Draw the phantom block
@@ -166,8 +160,13 @@ public:
         }
     }
 
-    void resize_window(int width, int height) {
-        sf::FloatRect visibleArea(-50, -50, width + 50, height + 50);
+    void resize_window(float width, float height) {
+        float potential_width = std::max(width, GAME_DELIMITER_SIZE.x);
+        float potential_height = std::max(height, GAME_DELIMITER_SIZE.y);
+
+        
+        // sf::FloatRect visibleArea(0, 0, adjusted_width,adjusted_height);
+        sf::FloatRect visibleArea(0, 0, potential_width,potential_height);
         render_window.setView(sf::View(visibleArea));
     }
 
@@ -184,10 +183,6 @@ private:
         whole_game_delimiter.setPosition(sf::Vector2f(0, 0));
         whole_game_delimiter.setOutlineColor(CELL_LINE_COLOR);
         whole_game_delimiter.setOutlineThickness(LINE_THICKNESS);
-
-        // Background initialization
-        grid_background.setFillColor(EMPTY_CELL_COLOR);
-        grid_background.setOrigin(GRID_ORIGIN);
 
         // Vertical Lines initialization
         for (auto [i, line] :
