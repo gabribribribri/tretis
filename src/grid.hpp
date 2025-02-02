@@ -44,19 +44,19 @@ public:
 
 private:
     // CRBL means CURRENT_BLOCK, the block that is falling.
-    Coo crbl_center;  // in constructor
+    Coo crbl_center;  
     // PHBL means PHANTOM_BLOCK
-    Coo phbl_center;  // in constructor
+    Coo phbl_center;  
 
     // phbl use crbl_rotation because always the same
     int crbl_rotation = 0;
-    int allblocks_index;  // in constructor
+    int allblocks_index;  
 
-    TretominoShape crbl_shape;  // in constructor
+    TretominoShape crbl_shape;  
     Coo crbl_shape_center;
     int crbl_shape_rotation;
     sf::Color crbl_shape_color;
-    TretominoShape phbl_shape;  // in constructor
+    TretominoShape phbl_shape;  
 
     bool phantom_enabled = true;
 
@@ -167,6 +167,7 @@ public:
     }
 
     void adjust_crbl_shape_color() {
+        assert(crbl_shape_color == get_block_color());
         for (sf::RectangleShape& cell : crbl_shape) {
             cell.setFillColor(get_block_color());
         }
@@ -188,10 +189,10 @@ public:
         std::cout << "ADJUSTING PHBL CENTER\n";
         assert(crbl_rotation == crbl_shape_rotation);
         assert(crbl_center == crbl_shape_center);
-        Coo potential_phbl_center { crbl_shape_center.x, GRID_HEIGHT - 1 };
+        Coo potential_phbl_center { crbl_shape_center.x, 0 };
         while (
-            !is_block_movable_to(potential_phbl_center, crbl_shape_rotation)) {
-            potential_phbl_center.y -= 1;
+            is_block_movable_to(potential_phbl_center + MOVE_DOWN, crbl_shape_rotation)) {
+            potential_phbl_center.y += 1;
         }
         phbl_center = potential_phbl_center;
     }
@@ -253,30 +254,31 @@ public:
 
 private:
     Grid() {
+        // Init every cell of the grid
         for (sf::RectangleShape& cell : val) {
             cell = create_grid_cell();
             cell.setFillColor(EMPTY_CELL_COLOR);
         }
-
-        for (sf::RectangleShape& shape : crbl_shape) {
-            shape = create_grid_cell();
-            shape.setOrigin(GRID_ORIGIN);
-        }
-
-        for (sf::RectangleShape& shape : phbl_shape) {
-            shape = create_grid_cell();
-            shape.setFillColor(PHANTOM_BLOCK_COLOR);
-            shape.setOrigin(GRID_ORIGIN);
-        }
-
-        select_new_crbl();
-
-        crbl_shape_center = crbl_center;
-        crbl_shape_color = get_block_color();
-        crbl_shape_rotation = crbl_rotation;
         set_cells_positions();
+
+        // Init the current block
+        for (sf::RectangleShape& cell : crbl_shape) {
+            cell = create_grid_cell();
+            cell.setOrigin(GRID_ORIGIN);
+        }
+        select_new_crbl();
+        crbl_shape_color = get_block_color();
         adjust_crbl_shape_color();
+        crbl_shape_center = crbl_center;
+        crbl_shape_rotation = crbl_rotation;
         adjust_crbl_shape_position();
+
+        // Init the phantom block
+        for (sf::RectangleShape& cell : phbl_shape) {
+            cell = create_grid_cell();
+            cell.setFillColor(PHANTOM_BLOCK_COLOR);
+            cell.setOrigin(GRID_ORIGIN);
+        }
         adjust_phbl_center();
         adjust_phbl_shape_position();
     }
