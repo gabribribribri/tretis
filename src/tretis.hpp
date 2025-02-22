@@ -163,10 +163,10 @@ public:
     void resize_window(float screen_width, float screen_height) {
         // I finallly mother flipping did this
         // I am having a stroke at the moment
-        float screen_ratio = screen_width/screen_height;
+        float screen_ratio = screen_width / screen_height;
         float view_height, view_width;
-        
-        if (screen_ratio >= GAME_DELIMITER_SIZE.x/GAME_DELIMITER_SIZE.y) {
+
+        if (screen_ratio >= GAME_DELIMITER_SIZE.x / GAME_DELIMITER_SIZE.y) {
             view_height = GAME_DELIMITER_SIZE.y;
             view_width = GAME_DELIMITER_SIZE.y * screen_ratio;
         } else {
@@ -176,7 +176,12 @@ public:
 
         view_width = std::max(view_width, screen_width);
         view_height = std::max(view_height, screen_height);
-        
+
+        // fuck this shit i'm out
+        float rectLeft = view_width / 2 - screen_width / 2;
+        float rectTop = view_height / 2 - screen_height / 2;
+
+        // sf::FloatRect visibleArea(rectLeft, rectTop, view_width, view_height);
         sf::FloatRect visibleArea(0, 0, view_width, view_height);
         render_window.setView(sf::View(visibleArea));
     }
@@ -191,7 +196,8 @@ private:
     Tretis() {
         // Whole game delimiter initialization
         whole_game_delimiter.setFillColor(sf::Color::Transparent);
-        whole_game_delimiter.setPosition(sf::Vector2f(GAME_DELIMITER_LINE_THICHNESS, GAME_DELIMITER_LINE_THICHNESS));
+        whole_game_delimiter.setPosition(sf::Vector2f(
+            GAME_DELIMITER_LINE_THICHNESS, GAME_DELIMITER_LINE_THICHNESS));
         whole_game_delimiter.setOutlineColor(BETWEEN_CELL_LINE_COLOR);
         whole_game_delimiter.setOutlineThickness(GAME_DELIMITER_LINE_THICHNESS);
 
@@ -201,8 +207,9 @@ private:
             line = sf::RectangleShape(
                 sf::Vector2f(2, GRID_HEIGHT * CELL_SIZE + 1));
             line.setOrigin(GRID_ORIGIN);
-            line.setPosition(sf::Vector2f(i * CELL_SIZE - BETWEEN_CELL_LINE_THICKNESS / 2,
-                                          -BETWEEN_CELL_LINE_THICKNESS / 2));
+            line.setPosition(
+                sf::Vector2f(i * CELL_SIZE - BETWEEN_CELL_LINE_THICKNESS / 2,
+                             -BETWEEN_CELL_LINE_THICKNESS / 2));
             line.setFillColor(BETWEEN_CELL_LINE_COLOR);
         }
 

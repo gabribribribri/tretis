@@ -6,6 +6,7 @@
 #include <SFML/System/Vector3.hpp>
 #include <array>
 #include <cassert>
+#include <cstring>
 #include <iostream>
 #include <random>
 #include <ranges>
@@ -41,19 +42,19 @@ public:
 
 private:
     // CRBL means CURRENT_BLOCK, the block that is falling.
-    Coo crbl_center;  
+    Coo crbl_center;
     // PHBL means PHANTOM_BLOCK
-    Coo phbl_center;  
+    Coo phbl_center;
 
     // phbl use crbl_rotation because always the same
     int crbl_rotation = 0;
-    int allblocks_index;  
+    int allblocks_index;
 
-    TretominoShape crbl_shape;  
+    TretominoShape crbl_shape;
     Coo crbl_shape_center;
     int crbl_shape_rotation;
     sf::Color crbl_shape_color;
-    TretominoShape phbl_shape;  
+    TretominoShape phbl_shape;
 
     bool phantom_enabled = true;
 
@@ -133,6 +134,7 @@ public:
 
     void place_and_select_crbl() {
         place_crbl_on_grid();
+        clear_potential_lines();
         select_new_crbl();
         crbl_shape_center = crbl_center;
         crbl_shape_rotation = crbl_rotation;
@@ -151,6 +153,32 @@ public:
         crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
         crbl_rotation = 0;
         allblocks_index = allblock_distrib(rng);
+    }
+
+    void clear_potential_lines() {
+        for (int y_slider = GRID_HEIGHT - 1; y_slider >= 0; y_slider--) {
+            if (is_line_full(y_slider)) {
+                std::cout << "A LINE MUST BE CLEARED\n";
+                clear_line(y_slider);
+                y_slider++;
+            }
+        }
+    }
+
+    bool is_line_full(int y_index) {
+        for (int x_slider = 0; x_slider < GRID_WIDTH; x_slider++) {
+            if (at(x_slider, y_index).getFillColor() == EMPTY_CELL_COLOR) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void clear_line(int y_index) {
+        // borken memcpy shenanegans breaking time and space
+        std::memcpy(static_cast<void*>(val.data() + GRID_WIDTH),
+                    static_cast<void*>(val.data()),
+                    y_index * GRID_WIDTH * sizeof(sf::RectangleShape));
     }
 
     void adjust_crbl_shape_position() {
@@ -187,8 +215,8 @@ public:
         assert(crbl_rotation == crbl_shape_rotation);
         assert(crbl_center == crbl_shape_center);
         Coo potential_phbl_center = crbl_shape_center;
-        while (
-            is_block_movable_to(potential_phbl_center + MOVE_DOWN, crbl_shape_rotation)) {
+        while (is_block_movable_to(potential_phbl_center + MOVE_DOWN,
+                                   crbl_shape_rotation)) {
             potential_phbl_center.y += 1;
         }
         phbl_center = potential_phbl_center;
