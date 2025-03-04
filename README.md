@@ -19,7 +19,6 @@ xmake run
 - Functionning hard drop
 - Complete implementation of the **Super Rotation System** !
 - Proper windows scaling
-- 
 
 
 ### Controls
@@ -29,19 +28,22 @@ xmake run
 - **space** : Hard drop
 - **P** : On/Off phantom block
 
+
 ## TODO
+- [x] xmake.lua refactoring
 - [ ] SCORE
-- [ ] Removing lines (with animations ??)
+- [ ] Removing lines
+- [ ] Animations
 - [ ] Random block selection
 - [ ] Block queue
 - [ ] Levels (going faster)
 - [ ] Stash block
 - [ ] Mouse control
-- [ ] xmake.lua refactoring
 - [ ] SFML installed from xmake.lua
 - [ ] build on NixOS
 - [ ] A LOT of esthetical and functional refactoring
 - [ ] Switching Keyboards
+- [ ] Pause menu
 
 
 (I won't make sound, I don't like sound).

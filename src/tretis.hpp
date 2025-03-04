@@ -178,11 +178,11 @@ public:
         view_height = std::max(view_height, screen_height);
 
         // fuck this shit i'm out
-        float rectLeft = view_width / 2 - screen_width / 2;
-        float rectTop = view_height / 2 - screen_height / 2;
+        float rectLeft = - view_width / 2 + GAME_DELIMITER_SIZE.x / 2;
+        float rectTop = - view_height / 2 + GAME_DELIMITER_SIZE.y / 2;
 
-        // sf::FloatRect visibleArea(rectLeft, rectTop, view_width, view_height);
-        sf::FloatRect visibleArea(0, 0, view_width, view_height);
+        sf::FloatRect visibleArea(rectLeft, rectTop, view_width, view_height);
+        // sf::FloatRect visibleArea(0, 0, view_width, view_height);
         render_window.setView(sf::View(visibleArea));
     }
 

@@ -134,7 +134,7 @@ public:
 
     void place_and_select_crbl() {
         place_crbl_on_grid();
-        clear_potential_lines();
+        // clear_potential_lines();
         select_new_crbl();
         crbl_shape_center = crbl_center;
         crbl_shape_rotation = crbl_rotation;
@@ -175,10 +175,6 @@ public:
     }
 
     void clear_line(int y_index) {
-        // borken memcpy shenanegans breaking time and space
-        std::memcpy(static_cast<void*>(val.data() + GRID_WIDTH),
-                    static_cast<void*>(val.data()),
-                    y_index * GRID_WIDTH * sizeof(sf::RectangleShape));
     }
 
     void adjust_crbl_shape_position() {
@@ -265,7 +261,7 @@ public:
     }
 
     void switch_phantom_block() { phantom_enabled = !phantom_enabled; }
-    bool is_phantom_enabled() { return phantom_enabled; }
+    bool is_phantom_enabled() const { return phantom_enabled; }
 
 public:
     Grid(Grid const&) = delete;
