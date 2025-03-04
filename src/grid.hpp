@@ -1,8 +1,10 @@
 #pragma once
 
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <iostream>
 #include <random>
 #include <ranges>
@@ -129,8 +131,8 @@ public:
     }
 
     void place_and_select_crbl() {
-        place_crbl_on_grid();
-        // clear_potential_lines();
+        uint64_t modified_lines_index_mask = place_crbl_on_grid();
+        potential_clear_modified_lines(modified_lines_index_mask);
         select_new_crbl();
         crbl_shape_center = crbl_center;
         crbl_shape_rotation = crbl_rotation;
@@ -139,10 +141,23 @@ public:
         adjust_phbl_shape_position();
     }
 
-    void place_crbl_on_grid() {
-        for (Coo cell : get_block_relative_cells(crbl_rotation)) {
-            at(crbl_center + cell).setFillColor(get_block_color());
+    // returns a 64 bits (just in case) bitmask of every line index that has
+    // been modified
+    //  0b0000000000000000000000000000000000000000000000000000000000000000
+    //    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^---------------------^
+    //                                             useless from here     y=0 of
+    //                                             grid because height=22
+    //                                             because 1<<0
+    uint64_t place_crbl_on_grid() {
+        uint64_t modified_lines_index_mask = 0b0;
+        for (Coo cell_relative_position :
+             get_block_relative_cells(crbl_rotation)) {
+            sf::Vector2i cell_absolute_position =
+                crbl_center + cell_relative_position;
+            modified_lines_index_mask |= 0b1 << cell_absolute_position.y;
+            at(cell_absolute_position).setFillColor(get_block_color());
         }
+        return modified_lines_index_mask;
     }
 
     void select_new_crbl() {
@@ -151,13 +166,17 @@ public:
         allblocks_index = allblock_distrib(rng);
     }
 
-    void clear_potential_lines() {
-        for (int y_slider = GRID_HEIGHT - 1; y_slider >= 0; y_slider--) {
-            if (is_line_full(y_slider)) {
-                std::cout << "A LINE MUST BE CLEARED\n";
-                clear_line(y_slider);
-                y_slider++;
+    void potential_clear_modified_lines(uint64_t modified_lines_index_mask) {
+        uint64_t lines_to_clear_index_mask = 0b0;
+        for (uint8_t y_index = 0; y_index < GRID_HEIGHT; y_index++) {
+            if ((modified_lines_index_mask & (0b1 << y_index)) != 0) {
+                if (is_line_full(y_index)) {
+                    lines_to_clear_index_mask |= 0b1 << y_index;
+                }
             }
+        }
+        if (lines_to_clear_index_mask != 0) {
+            clear_lines(lines_to_clear_index_mask);
         }
     }
 
@@ -170,7 +189,22 @@ public:
         return true;
     }
 
-    void clear_line(int y_index) {
+    void clear_lines(uint64_t lines_to_clear_index_mask) {
+        std::cout << "Woaw ! We are going to clear some liiiiines\n";
+        int lines_to_clear_under = 0;
+        for (int y_index = GRID_HEIGHT - 1; y_index >= 0; y_index--) {
+            if ((lines_to_clear_index_mask & (0b1 << y_index)) != 0) {
+                lines_to_clear_under += 1;
+            } else if (lines_to_clear_under != 0) {
+                move_line(y_index, y_index + lines_to_clear_under);
+            }
+        }
+    }
+
+    void move_line(int from, int to) {
+        for (int x_index = 0; x_index < GRID_WIDTH; x_index++) {
+            at(x_index, to).setFillColor(at(x_index, from).getFillColor());
+        }
     }
 
     void adjust_crbl_shape_position() {
@@ -243,8 +277,10 @@ public:
     }
 
     sf::RectangleShape& at(int x, int y) {
-        assert(x >= 0 and x < GRID_WIDTH);
-        assert(y >= 0 and y < GRID_HEIGHT);
+        assert(x >= 0);
+        assert(x < GRID_WIDTH);
+        assert(y >= 0);
+        assert(y < GRID_HEIGHT);
         return val[y * GRID_WIDTH + x];
     }
 

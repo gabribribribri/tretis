@@ -16,7 +16,7 @@ using OneTretominoRotations = std::array<CenterOffSets, 8>;
 
 
 // Grid logic related
-const int GRID_HEIGHT = 22;
+const int GRID_HEIGHT = 22; // MUST NOT EXCEED 64 because of bitshifting dark magic happening in clearing lines process
 const int GRID_WIDTH = 10;
 const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 };
 
