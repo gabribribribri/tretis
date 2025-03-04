@@ -1,12 +1,8 @@
 #pragma once
 
-#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/System/Vector3.hpp>
 #include <array>
 #include <cassert>
-#include <cstring>
 #include <iostream>
 #include <random>
 #include <ranges>
@@ -23,7 +19,7 @@ inline std::uniform_int_distribution<int> allblock_distrib(
     0, Tretominos::ALL.size() - 1);
 
 /// MODULUS WITH POSITIVE REMAINDER ///
-int good_mod(int lhs, int rhs) {
+int pos_rem_mod(int lhs, int rhs) {
     // Can't believe C++ doesn't have one of those
     int res = lhs % rhs;
     return res >= 0 ? res : res + rhs;
@@ -115,7 +111,7 @@ public:
     }
 
     int get_next_rotation(bool clockwise) {
-        return good_mod(crbl_rotation + (clockwise ? 1 : -1), 4);
+        return pos_rem_mod(crbl_rotation + (clockwise ? 1 : -1), 4);
     }
 
     /// returns true if block has been placed, false if not
