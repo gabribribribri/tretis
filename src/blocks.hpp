@@ -29,12 +29,17 @@ const sf::Vector2f GAME_DELIMITER_SIZE = sf::Vector2f(980, 870);
 const float BETWEEN_CELL_LINE_THICKNESS = 2.0;
 const float GAME_DELIMITER_LINE_THICHNESS = 4.0;
 const sf::Vector2f HOLD_PIECE_DELIMITER_SIZE = sf::Vector2f(170, 170);
-const sf::Vector2f HOLD_PIECE_DELIMITER_POS  = sf::Vector2f(80, 50 + BETWEEN_CELL_LINE_THICKNESS);
+const sf::Vector2f HOLD_PIECE_DELIMITER_POS =
+    sf::Vector2f(80, 50 + BETWEEN_CELL_LINE_THICKNESS);
+const sf::Vector2f NEXT_QUEUE_POS = sf::Vector2f(500, 50);
+const float NEXT_QUEUE_HEIGHT = 770;
+
 
 // Colors
 const sf::Color EMPTY_CELL_COLOR = sf::Color::Black;
 const sf::Color PHANTOM_BLOCK_COLOR = sf::Color(64, 64, 64);
 const sf::Color BETWEEN_CELL_LINE_COLOR = sf::Color(32, 32, 32);
+
 
 // Movements
 const Coo MOVE_UP = Coo { 0, -1 };
@@ -42,15 +47,14 @@ const Coo MOVE_LEFT = Coo { -1, 0 };
 const Coo MOVE_RIGHT = Coo { 1, 0 };
 const Coo MOVE_DOWN = Coo { 0, 1 };
 
-
 enum Tretomino : int {
-    T = 0,
-    O = 1,
-    I = 2,
-    L = 3,
-    J = 4,
-    S = 5,
-    Z = 6,
+    T = 0,  // Magenta
+    O = 1,  // Yellow
+    I = 2,  // Cyan
+    L = 3,  // Orange
+    J = 4,  // Blue
+    S = 5,  // Green
+    Z = 6,  // Red
 };
 
 const int TRETOMINO_COUNT = 7;
@@ -211,9 +215,6 @@ const std::array<AllTretominoRotations, TRETOMINO_COUNT> ALL { {
     Z,
 } };
 
-  // namespace Tretominos
-
-
 const std::array<sf::Color, TRETOMINO_COUNT> ALL_COLORS { {
     sf::Color::Magenta,
     sf::Color::Yellow,
@@ -224,4 +225,4 @@ const std::array<sf::Color, TRETOMINO_COUNT> ALL_COLORS { {
     sf::Color::Red,
 } };
 
-}
+}  // namespace Tretominos

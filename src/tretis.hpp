@@ -14,7 +14,8 @@
 
 class Tretis {
 private:
-    sf::RenderWindow render_window { sf::VideoMode(1280, 720), "Tretis" };
+    mutable sf::RenderWindow render_window { sf::VideoMode(1280, 720),
+                                             "Tretis" };
 
     Chronometre frame_time { TIME_PER_FRAME };
 
@@ -32,6 +33,8 @@ private:
 
     TretominoRenderShape hold_shape {};
 
+    std::array<TretominoRenderShape, NEXT_QUEUE_SIZE> next_queue_shapes {};
+
 public:
     static Tretis& Get() {
         static Tretis instance;
@@ -46,6 +49,7 @@ public:
             // GAME LOGIC
             handle_events();
             Movements::Get().ping();
+            Grid::Get().adjust_everything_if_moved();
 
             // DRAWING
             render_window.clear(sf::Color::Black);
@@ -68,7 +72,7 @@ public:
         }
     }
 
-    void draw_game() {
+    void draw_game() const {
         // the place block remove block thing is very ugly.
         // I hope to find a better way in the future
         Grid& grid = Grid::Get();
@@ -86,16 +90,17 @@ public:
             }
         }
 
+        // Draw the next queue shapes
+        for (size_t i = 0; i < NEXT_QUEUE_SIZE; i++) {
+            for (sf::RectangleShape const& cell : hold_shape.shape) {
+                render_window.draw(cell);
+            }
+        }
+
         // Draw the grid cells
         for (sf::RectangleShape& cell : grid.val) {
             render_window.draw(cell);
         }
-
-
-        // THERE IS A CALL TO adjust_everything_if_moved EEEVERY FRAME ????
-        // THIS IS UNACCEPTABLE AND NEED TO BE PATCHED !!!!
-        // I WILL PUT IT IN  THE TODO LIST
-        grid.adjust_everything_if_moved();
 
         // Draw the phantom block
         if (grid.is_phantom_enabled()) {
@@ -207,12 +212,10 @@ public:
         view_width = std::max(view_width, screen_width);
         view_height = std::max(view_height, screen_height);
 
-        // fuck this shit i'm out
         float rectLeft = -view_width / 2 + GAME_DELIMITER_SIZE.x / 2;
         float rectTop = -view_height / 2 + GAME_DELIMITER_SIZE.y / 2;
 
         sf::FloatRect visibleArea(rectLeft, rectTop, view_width, view_height);
-        // sf::FloatRect visibleArea(0, 0, view_width, view_height);
         render_window.setView(sf::View(visibleArea));
     }
 
@@ -238,8 +241,15 @@ private:
         hold_piece_delimiter.setOutlineThickness(GAME_DELIMITER_LINE_THICHNESS);
 
         // Hold Tretomino Shape
-        hold_shape.set_origin({ -HOLD_PIECE_DELIMITER_POS.x - 20,
-                                -HOLD_PIECE_DELIMITER_POS.y - 20 });
+        hold_shape.set_origin(-HOLD_PIECE_DELIMITER_POS);
+
+        // Next Queue Shapes
+        for (size_t i = 0; i < NEXT_QUEUE_SIZE; i++) {
+            next_queue_shapes[i].set_origin({
+                NEXT_QUEUE_POS.x,
+                NEXT_QUEUE_POS.y + (NEXT_QUEUE_HEIGHT / NEXT_QUEUE_SIZE) * i,
+            });
+        }
 
         // Vertical Lines initialization
         for (auto [i, line] :

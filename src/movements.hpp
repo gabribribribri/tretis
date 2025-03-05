@@ -96,7 +96,7 @@ public:
         return instance;
     }
 
-    Movements(const Movements&) = delete;
+    Movements(Movements const&) = delete;
     Movements(Movements&&) = delete;
     Movements operator=(Movements) = delete;
 };
