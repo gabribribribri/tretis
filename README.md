@@ -22,26 +22,29 @@ xmake run
 
 
 ### Controls
+***TODO : Complete this***
 - **A, D** : go left and right
 - **W** : Rotate block
 - **S** : Make block fall slowly
 - **space** : Hard drop
+- **C** : Hold
 - **P** : On/Off phantom block
 
 
 ## TODO
 - [x] xmake.lua refactoring
 - [ ] SCORE
-- [ ] Removing lines
+- [x] Removing lines
 - [ ] Animations
-- [ ] Random block selection
+- [x] Random block selection
 - [ ] Block queue
 - [ ] Levels (going faster)
-- [ ] Stash block
+- [x] Hold block
 - [ ] Mouse control
 - [ ] SFML installed from xmake.lua
 - [ ] build on NixOS
 - [ ] A LOT of esthetical and functional refactoring
+  - [ ] remove the call to adjust_everything_if_moved EVERY FRAME
 - [ ] Switching Keyboards
 - [ ] Pause menu
 

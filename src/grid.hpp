@@ -281,12 +281,13 @@ public:
     }
 
     std::array<sf::RectangleShape, 4> const& get_crbl_shapes() {
-        adjust_everything_if_moved();
         return crbl_shape;
     }
 
+    // THERE IS A CALL TO adjust_everything_if_moved EEEVERY FRAME ????
+    // THIS IS UNACCEPTABLE AND NEED TO BE PATCHED !!!!
+    // I WILL PUT IT IN  THE TODO LIST
     std::array<sf::RectangleShape, 4> const& get_phbl_shapes() {
-        adjust_everything_if_moved();
         return phbl_shape;
     }
 

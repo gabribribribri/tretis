@@ -91,6 +91,12 @@ public:
             render_window.draw(cell);
         }
 
+
+        // THERE IS A CALL TO adjust_everything_if_moved EEEVERY FRAME ????
+        // THIS IS UNACCEPTABLE AND NEED TO BE PATCHED !!!!
+        // I WILL PUT IT IN  THE TODO LIST
+        grid.adjust_everything_if_moved();
+
         // Draw the phantom block
         if (grid.is_phantom_enabled()) {
             for (sf::RectangleShape const& cell : grid.get_phbl_shapes()) {
