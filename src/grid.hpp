@@ -63,8 +63,8 @@ public:
     void set_cells_positions() {
         for (int y = 0; y < GRID_HEIGHT; y++) {
             for (int x = 0; x < GRID_WIDTH; x++) {
-                at(x, y).setOrigin(GRID_ORIGIN);
-                at(x, y).setPosition(
+                grid_at(x, y).setOrigin(GRID_ORIGIN);
+                grid_at(x, y).setPosition(
                     sf::Vector2f(x * CELL_SIZE, y * CELL_SIZE));
             }
         }
@@ -77,7 +77,7 @@ public:
                 new_pos.y >= GRID_HEIGHT) {
                 return false;
             }
-            if (at(new_pos).getFillColor() != EMPTY_CELL_COLOR) {
+            if (grid_at(new_pos).getFillColor() != EMPTY_CELL_COLOR) {
                 return false;
             }
         }
@@ -155,7 +155,7 @@ public:
             sf::Vector2i cell_absolute_position =
                 crbl_center + cell_relative_position;
             modified_lines_index_mask |= 0b1 << cell_absolute_position.y;
-            at(cell_absolute_position).setFillColor(get_block_color());
+            grid_at(cell_absolute_position).setFillColor(get_block_color());
         }
         return modified_lines_index_mask;
     }
@@ -196,7 +196,7 @@ public:
 
     bool is_line_full(int y_index) {
         for (int x_slider = 0; x_slider < GRID_WIDTH; x_slider++) {
-            if (at(x_slider, y_index).getFillColor() == EMPTY_CELL_COLOR) {
+            if (grid_at(x_slider, y_index).getFillColor() == EMPTY_CELL_COLOR) {
                 return false;
             }
         }
@@ -217,7 +217,7 @@ public:
 
     void move_line(int from, int to) {
         for (int x_index = 0; x_index < GRID_WIDTH; x_index++) {
-            at(x_index, to).setFillColor(at(x_index, from).getFillColor());
+            grid_at(x_index, to).setFillColor(grid_at(x_index, from).getFillColor());
         }
     }
 
@@ -291,7 +291,7 @@ public:
         return phbl_shape;
     }
 
-    sf::RectangleShape& at(int x, int y) {
+    sf::RectangleShape& grid_at(int x, int y) {
         assert(x >= 0);
         assert(x < GRID_WIDTH);
         assert(y >= 0);
@@ -299,7 +299,7 @@ public:
         return val[y * GRID_WIDTH + x];
     }
 
-    sf::RectangleShape& at(Coo coo) {
+    sf::RectangleShape& grid_at(Coo coo) {
         assert(coo.x >= 0);
         assert(coo.x < GRID_WIDTH);
         assert(coo.y >= 0);

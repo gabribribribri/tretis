@@ -14,8 +14,10 @@
 
 class Tretis {
 private:
-    mutable sf::RenderWindow render_window { sf::VideoMode(1280, 720),
-                                             "Tretis" };
+    mutable sf::RenderWindow render_window {
+        sf::VideoMode(1280, 720),
+        "Tretis",
+    };
 
     Chronometre frame_time { TIME_PER_FRAME };
 
@@ -43,20 +45,20 @@ public:
 
     void gameloop() {
         while (render_window.isOpen()) {
-            // DEBUG
+            /// DEBUG ///
             debug_fps_cout();
 
-            // GAME LOGIC
+            /// GAME LOGIC ///
             handle_events();
             Movements::Get().ping();
             Grid::Get().adjust_everything_if_moved();
 
-            // DRAWING
+            /// DRAWING ///
             render_window.clear(sf::Color::Black);
             draw_game();
             render_window.display();
 
-            // WAITING
+            /// WAITING ///
             frame_time.wait_until_time_has_passed();
         }
     }
@@ -66,7 +68,7 @@ public:
         static sf::Clock cl;
         fis++;
         if (cl.getElapsedTime() > sf::seconds(1.0f)) {
-            std::cout << "\nFPS: " << fis;
+            std::cout << "\nFPS: " << fis << "\n";
             cl.restart();
             fis = 0;
         }
@@ -194,6 +196,8 @@ public:
             }
         }
     }
+
+    
 
     void resize_window(float screen_width, float screen_height) {
         // I finallly mother flipping did this
