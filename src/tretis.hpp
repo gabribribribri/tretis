@@ -1,12 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/System/Clock.hpp>
-#include <SFML/System/Time.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Keyboard.hpp>
 #include <algorithm>
 #include <iostream>
 #include <ranges>
@@ -14,17 +9,28 @@
 #include "blocks.hpp"
 #include "grid.hpp"
 #include "movements.hpp"
+#include "selection.hpp"
+#include "tretomino_render_shape.hpp"
 
 class Tretis {
 private:
     sf::RenderWindow render_window { sf::VideoMode(1280, 720), "Tretis" };
+
     Chronometre frame_time { TIME_PER_FRAME };
+
     sf::RectangleShape whole_game_delimiter =
         sf::RectangleShape(GAME_DELIMITER_SIZE);
+
+    sf::RectangleShape hold_piece_delimiter =
+        sf::RectangleShape(HOLD_PIECE_DELIMITER_SIZE);
+
     std::array<sf::RectangleShape, GRID_WIDTH + 1>
         vertical_cell_lines;  // in constructor
+
     std::array<sf::RectangleShape, GRID_HEIGHT + 1>
         horizontal_cell_lines;  // in constructor
+
+    TretominoRenderShape hold_shape {};
 
 public:
     static Tretis& Get() {
@@ -43,7 +49,7 @@ public:
 
             // DRAWING
             render_window.clear(sf::Color::Black);
-            draw_grid();
+            draw_game();
             render_window.display();
 
             // WAITING
@@ -62,13 +68,23 @@ public:
         }
     }
 
-    void draw_grid() {
+    void draw_game() {
         // the place block remove block thing is very ugly.
         // I hope to find a better way in the future
         Grid& grid = Grid::Get();
 
         // Draw the whole game delimiter (Nothing should be drawn outside of it)
         render_window.draw(whole_game_delimiter);
+
+        // Draw the hold piece delimiter
+        render_window.draw(hold_piece_delimiter);
+
+        // Draw the hold piece Tretomino shape
+        if (Selection::Get().hold_tretomino.has_value()) {
+            for (sf::RectangleShape const& cell : hold_shape.shape) {
+                render_window.draw(cell);
+            }
+        }
 
         // Draw the grid cells
         for (sf::RectangleShape& cell : grid.val) {
@@ -97,6 +113,8 @@ public:
     }
 
     void handle_events() {
+        Grid& grid = Grid::Get();
+        Movements& movements = Movements::Get();
         sf::Event event;
         while (render_window.pollEvent(event)) {
             switch (event.type) {
@@ -110,29 +128,35 @@ public:
                     switch (event.key.code) {
                         case sf::Keyboard::Down:
                         case sf::Keyboard::S:
-                            Movements::Get().go_vertical();
+                            movements.go_vertical();
                             break;
                         case sf::Keyboard::Left:
                         case sf::Keyboard::A:
-                            Movements::Get().go_lateral(MOVE_LEFT);
+                            movements.go_lateral(MOVE_LEFT);
                             break;
                         case sf::Keyboard::Right:
                         case sf::Keyboard::D:
-                            Movements::Get().go_lateral(MOVE_RIGHT);
+                            movements.go_lateral(MOVE_RIGHT);
                             break;
                         case sf::Keyboard::Z:
-                            Grid::Get().super_rotate_block(false);
+                            grid.super_rotate_block(false);
                             break;
                         case sf::Keyboard::Up:
                         case sf::Keyboard::W:
                         case sf::Keyboard::X:
-                            Grid::Get().super_rotate_block(true);
+                            grid.super_rotate_block(true);
                             break;
                         case sf::Keyboard::P:
-                            Grid::Get().switch_phantom_block();
+                            grid.switch_phantom_block();
                             break;
                         case sf::Keyboard::Space:
-                            Grid::Get().hard_drop();
+                            grid.hard_drop();
+                            break;
+                        case sf::Keyboard::C:
+                            // This is quite awful
+                            if (!grid.hold_locked) {
+                                hold_shape.set_tretomino(grid.hold_crbl());
+                            }
                             break;
                         default:
                             break;
@@ -142,13 +166,13 @@ public:
                     switch (event.key.code) {
                         case sf::Keyboard::Down:
                         case sf::Keyboard::S:
-                            Movements::Get().stop_vertical();
+                            movements.stop_vertical();
                             break;
                         case sf::Keyboard::Left:
                         case sf::Keyboard::A:
                         case sf::Keyboard::Right:
                         case sf::Keyboard::D:
-                            Movements::Get().stop_lateral();
+                            movements.stop_lateral();
                             break;
                         default:
                             break;
@@ -178,8 +202,8 @@ public:
         view_height = std::max(view_height, screen_height);
 
         // fuck this shit i'm out
-        float rectLeft = - view_width / 2 + GAME_DELIMITER_SIZE.x / 2;
-        float rectTop = - view_height / 2 + GAME_DELIMITER_SIZE.y / 2;
+        float rectLeft = -view_width / 2 + GAME_DELIMITER_SIZE.x / 2;
+        float rectTop = -view_height / 2 + GAME_DELIMITER_SIZE.y / 2;
 
         sf::FloatRect visibleArea(rectLeft, rectTop, view_width, view_height);
         // sf::FloatRect visibleArea(0, 0, view_width, view_height);
@@ -200,6 +224,16 @@ private:
             GAME_DELIMITER_LINE_THICHNESS, GAME_DELIMITER_LINE_THICHNESS));
         whole_game_delimiter.setOutlineColor(BETWEEN_CELL_LINE_COLOR);
         whole_game_delimiter.setOutlineThickness(GAME_DELIMITER_LINE_THICHNESS);
+
+        // Hold Piece delimiter initialization
+        hold_piece_delimiter.setFillColor(sf::Color::Transparent);
+        hold_piece_delimiter.setPosition(HOLD_PIECE_DELIMITER_POS);
+        hold_piece_delimiter.setOutlineColor(BETWEEN_CELL_LINE_COLOR);
+        hold_piece_delimiter.setOutlineThickness(GAME_DELIMITER_LINE_THICHNESS);
+
+        // Hold Tretomino Shape
+        hold_shape.set_origin({ -HOLD_PIECE_DELIMITER_POS.x - 20,
+                                -HOLD_PIECE_DELIMITER_POS.y - 20 });
 
         // Vertical Lines initialization
         for (auto [i, line] :

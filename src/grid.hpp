@@ -2,23 +2,16 @@
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Cursor.hpp>
 #include <array>
 #include <cassert>
 #include <cstdint>
 #include <iostream>
-#include <random>
+#include <optional>
 #include <ranges>
 
 #include "blocks.hpp"
-
-using TretominoShape = std::array<sf::RectangleShape, 4>;
-
-/// WHY IS RNG IN C++ SO AWFUL ///
-inline std::random_device random_device;
-inline std::mt19937 rng(random_device());
-// I can't believe it's an inclusive range this is disgusting
-inline std::uniform_int_distribution<int> allblock_distrib(
-    0, Tretominos::ALL.size() - 1);
+#include "selection.hpp"
 
 /// MODULUS WITH POSITIVE REMAINDER ///
 int pos_rem_mod(int lhs, int rhs) {
@@ -38,6 +31,8 @@ public:
     std::array<sf::RectangleShape, GRID_HEIGHT * GRID_WIDTH>
         val;  // initialized in constructor
 
+    bool hold_locked = false;
+
 private:
     // CRBL means CURRENT_BLOCK, the block that is falling.
     Coo crbl_center;
@@ -46,7 +41,7 @@ private:
 
     // phbl use crbl_rotation because always the same
     int crbl_rotation = 0;
-    int allblocks_index;
+    Tretomino allblocks_index;
 
     TretominoShape crbl_shape;
     Coo crbl_shape_center;
@@ -62,7 +57,7 @@ public:
     }
 
     sf::Color get_block_color() const {
-        return BlockColors::ALL[allblocks_index];
+        return Tretominos::ALL_COLORS[allblocks_index];
     }
 
     void set_cells_positions() {
@@ -131,9 +126,14 @@ public:
     }
 
     void place_and_select_crbl() {
+        // Placing the block
         uint64_t modified_lines_index_mask = place_crbl_on_grid();
         potential_clear_modified_lines(modified_lines_index_mask);
-        select_new_crbl();
+        select_new_crbl(std::nullopt);
+        hold_locked = false; // Releasing the "once per drop" hold lock
+
+        // Readjusting the grid shapes...
+        // (I wish I found a better option than this... is messy)
         crbl_shape_center = crbl_center;
         crbl_shape_rotation = crbl_rotation;
         adjust_crbl_shape_position();
@@ -160,10 +160,24 @@ public:
         return modified_lines_index_mask;
     }
 
-    void select_new_crbl() {
+    void select_new_crbl(std::optional<Tretomino> tretomino) {
         crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
         crbl_rotation = 0;
-        allblocks_index = allblock_distrib(rng);
+        if (tretomino.has_value()) {
+            allblocks_index = *tretomino;
+        } else {
+            allblocks_index = Selection::Get().next_tretomino();
+        }
+    }
+
+    // Returns the new hold Tretomino
+    Tretomino hold_crbl() {
+        hold_locked = true;
+        std::optional<Tretomino> new_current =
+            Selection::Get().replace_hold_tretomino(allblocks_index);
+        Tretomino new_hold = allblocks_index;
+        select_new_crbl(new_current);
+        return new_hold;
     }
 
     void potential_clear_modified_lines(uint64_t modified_lines_index_mask) {
@@ -319,7 +333,7 @@ private:
             cell = create_grid_cell();
             cell.setOrigin(GRID_ORIGIN);
         }
-        select_new_crbl();
+        select_new_crbl(std::nullopt);
         crbl_shape_color = get_block_color();
         adjust_crbl_shape_color();
         crbl_shape_center = crbl_center;

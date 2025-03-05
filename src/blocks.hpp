@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <ranges>
 
@@ -11,21 +12,24 @@ using AllTretominoRotations = std::array<TretominoRotation, 4>;
 using CenterOffSets = std::array<Coo, 5>;
 using OneTretominoRotations = std::array<CenterOffSets, 8>;
 
+using TretominoShape = std::array<sf::RectangleShape, 4>;
+
 /// CONSTANTS ///
 
-
-
 // Grid logic related
-const int GRID_HEIGHT = 22; // MUST NOT EXCEED 64 because of bitshifting dark magic happening in clearing lines process
+const int GRID_HEIGHT = 22;  // MUST NOT EXCEED 64 because of bitshifting dark
+                             // magic happening in clearing lines process
 const int GRID_WIDTH = 10;
 const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 };
 
 // Game Rendering related
-const sf::Vector2f GRID_ORIGIN = sf::Vector2f(-50.0, -50.0);
+const sf::Vector2f GRID_ORIGIN = sf::Vector2f(-330.0, -50.0);
 const int CELL_SIZE = 35;
-const sf::Vector2f GAME_DELIMITER_SIZE = sf::Vector2f(720, 870);
+const sf::Vector2f GAME_DELIMITER_SIZE = sf::Vector2f(980, 870);
 const float BETWEEN_CELL_LINE_THICKNESS = 2.0;
 const float GAME_DELIMITER_LINE_THICHNESS = 4.0;
+const sf::Vector2f HOLD_PIECE_DELIMITER_SIZE = sf::Vector2f(170, 170);
+const sf::Vector2f HOLD_PIECE_DELIMITER_POS  = sf::Vector2f(80, 50 + BETWEEN_CELL_LINE_THICKNESS);
 
 // Colors
 const sf::Color EMPTY_CELL_COLOR = sf::Color::Black;
@@ -38,15 +42,16 @@ const Coo MOVE_LEFT = Coo { -1, 0 };
 const Coo MOVE_RIGHT = Coo { 1, 0 };
 const Coo MOVE_DOWN = Coo { 0, 1 };
 
-/*
-    0: T
-    1: O
-    2: I
-    3: L
-    4: J
-    5: S
-    6: Z
-*/
+
+enum Tretomino : int {
+    T = 0,
+    O = 1,
+    I = 2,
+    L = 3,
+    J = 4,
+    S = 5,
+    Z = 6,
+};
 
 const int TRETOMINO_COUNT = 7;
 
@@ -65,7 +70,9 @@ const Coo NEGX_NEGY { -1, -1 };
 
 namespace SuperRotationSystem {
 
-const CenterOffSets T_north_to_west { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
+const CenterOffSets T_north_to_west {
+    { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } }
+};
 OneTretominoRotations const& T { {
     T_north_to_west * POSX_POSY, T_north_to_west* NEGX_POSY,  //
     T_north_to_west* POSX_NEGY, T_north_to_west* POSX_NEGY,   //
@@ -73,7 +80,9 @@ OneTretominoRotations const& T { {
     T_north_to_west* NEGX_NEGY, T_north_to_west* NEGX_NEGY,   //
 } };
 
-const CenterOffSets O_north_to_west { { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
+const CenterOffSets O_north_to_west {
+    { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }
+};
 OneTretominoRotations const& O { {
     O_north_to_west, O_north_to_west,  //
     O_north_to_west, O_north_to_west,  //
@@ -81,14 +90,30 @@ OneTretominoRotations const& O { {
     O_north_to_west, O_north_to_west,  //
 } };
 
-const CenterOffSets I_north_to_west { { { 0, 0 }, { -1, 0 }, { 2, 0 }, { -1, -2 }, { 1, 2 } } };
-const CenterOffSets I_north_to_east { { { 1, 0 }, { -1, 0 }, { 2, 0 }, { -1, 1 }, { 2, -2 } } };
-const CenterOffSets I_east_to_north { { { -1, 0 }, { 1, 0 }, { -2, 0 }, { 1, -1 }, { -2, 2 } } };
-const CenterOffSets I_east_to_south { { { -1, 1 }, { -2, 1 }, { 1, 1 }, { -2, -1 }, { 1, 2 } } };
-const CenterOffSets I_south_to_east { { { 1, -1 }, { 2, -1 }, { -1, -1 }, { -2, -1 }, { -1, -2 } } };
-const CenterOffSets I_south_to_west { { { 0, -1 }, { 2, -1 }, { -1, -1 }, { 2, -2 }, { -1, 1 } } };
-const CenterOffSets I_west_to_south { { { 0, 1 }, { -2, 1 }, { 1, 1 }, { -2, 2 }, { 1, -1 } } };
-const CenterOffSets I_west_to_north { { { 0, 0 }, { 1, 0 }, { -2, 0 }, { 1, 2 }, { -2, -1 } } };
+const CenterOffSets I_north_to_west {
+    { { 0, 0 }, { -1, 0 }, { 2, 0 }, { -1, -2 }, { 1, 2 } }
+};
+const CenterOffSets I_north_to_east {
+    { { 1, 0 }, { -1, 0 }, { 2, 0 }, { -1, 1 }, { 2, -2 } }
+};
+const CenterOffSets I_east_to_north {
+    { { -1, 0 }, { 1, 0 }, { -2, 0 }, { 1, -1 }, { -2, 2 } }
+};
+const CenterOffSets I_east_to_south {
+    { { -1, 1 }, { -2, 1 }, { 1, 1 }, { -2, -1 }, { 1, 2 } }
+};
+const CenterOffSets I_south_to_east {
+    { { 1, -1 }, { 2, -1 }, { -1, -1 }, { -2, -1 }, { -1, -2 } }
+};
+const CenterOffSets I_south_to_west {
+    { { 0, -1 }, { 2, -1 }, { -1, -1 }, { 2, -2 }, { -1, 1 } }
+};
+const CenterOffSets I_west_to_south {
+    { { 0, 1 }, { -2, 1 }, { 1, 1 }, { -2, 2 }, { 1, -1 } }
+};
+const CenterOffSets I_west_to_north {
+    { { 0, 0 }, { 1, 0 }, { -2, 0 }, { 1, 2 }, { -2, -1 } }
+};
 OneTretominoRotations const& I { {
     I_north_to_west, I_north_to_east,  //
     I_east_to_north, I_east_to_south,  //
@@ -97,7 +122,9 @@ OneTretominoRotations const& I { {
 
 } };
 
-const CenterOffSets L_north_to_west { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
+const CenterOffSets L_north_to_west {
+    { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } }
+};
 OneTretominoRotations const& L { {
     L_north_to_west * POSX_POSY, L_north_to_west* NEGX_POSY,  //
     L_north_to_west* POSX_NEGY, L_north_to_west* POSX_NEGY,   //
@@ -119,7 +146,9 @@ const std::array<OneTretominoRotations, TRETOMINO_COUNT> ALL { {
 
 namespace Tretominos {
 
-const TretominoRotation T_north { { { -1, 0 }, { 0, -1 }, { 1, 0 }, { 0, 0 } } };
+const TretominoRotation T_north {
+    { { -1, 0 }, { 0, -1 }, { 1, 0 }, { 0, 0 } }
+};
 const TretominoRotation T_east { { { 0, -1 }, { 1, 0 }, { 0, 1 }, { 0, 0 } } };
 const TretominoRotation T_south { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } } };
 const TretominoRotation T_west { { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 0, 1 } } };
@@ -132,28 +161,44 @@ const TretominoRotation I_north { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 } } };
 const TretominoRotation I_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 0, 2 } } };
 AllTretominoRotations const& I { { I_north, I_east, I_north, I_east } };
 
-const TretominoRotation L_north { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 1, -1 } } };
+const TretominoRotation L_north {
+    { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 1, -1 } }
+};
 const TretominoRotation L_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, 1 } } };
-const TretominoRotation L_south { { { 1, 0 }, { 0, 0 }, { -1, 0 }, { -1, 1 } } };
-const TretominoRotation L_west { { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, -1 } } };
+const TretominoRotation L_south {
+    { { 1, 0 }, { 0, 0 }, { -1, 0 }, { -1, 1 } }
+};
+const TretominoRotation L_west {
+    { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, -1 } }
+};
 AllTretominoRotations const& L { { L_north, L_east, L_south, L_west } };
 
-const TretominoRotation J_north { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, -1 } } };
+const TretominoRotation J_north {
+    { { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, -1 } }
+};
 const TretominoRotation J_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, -1 } } };
 const TretominoRotation J_south { { { 1, 0 }, { 0, 0 }, { -1, 0 }, { 1, 1 } } };
 const TretominoRotation J_west { { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, 1 } } };
 AllTretominoRotations const& J { { J_north, J_east, J_south, J_west } };
 
-const TretominoRotation S_north { { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, -1 } } };
+const TretominoRotation S_north {
+    { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, -1 } }
+};
 const TretominoRotation S_east { { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, -1 } } };
 const TretominoRotation S_south { { { 0, 0 }, { 1, 0 }, { 0, 1 }, { -1, 1 } } };
-const TretominoRotation S_west { { { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, 1 } } };
+const TretominoRotation S_west {
+    { { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, 1 } }
+};
 AllTretominoRotations const& S { { S_north, S_east, S_south, S_west } };
 
-const TretominoRotation Z_north { { { 0, 0 }, { 0, -1 }, { -1, -1 }, { 1, 0 } } };
+const TretominoRotation Z_north {
+    { { 0, 0 }, { 0, -1 }, { -1, -1 }, { 1, 0 } }
+};
 const TretominoRotation Z_east { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 1 } } };
 const TretominoRotation Z_south { { { 0, 0 }, { -1, 0 }, { 0, 1 }, { 1, 1 } } };
-const TretominoRotation Z_west { { { 0, 0 }, { -1, 0 }, { -1, 1 }, { 0, -1 } } };
+const TretominoRotation Z_west {
+    { { 0, 0 }, { -1, 0 }, { -1, 1 }, { 0, -1 } }
+};
 AllTretominoRotations const& Z { { Z_north, Z_east, Z_south, Z_west } };
 
 const std::array<AllTretominoRotations, TRETOMINO_COUNT> ALL { {
@@ -166,11 +211,10 @@ const std::array<AllTretominoRotations, TRETOMINO_COUNT> ALL { {
     Z,
 } };
 
-}  // namespace Tretominos
+  // namespace Tretominos
 
-namespace BlockColors {
 
-const std::array<sf::Color, TRETOMINO_COUNT> ALL { {
+const std::array<sf::Color, TRETOMINO_COUNT> ALL_COLORS { {
     sf::Color::Magenta,
     sf::Color::Yellow,
     sf::Color::Cyan,

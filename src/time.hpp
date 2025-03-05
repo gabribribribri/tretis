@@ -16,7 +16,6 @@ class Chronometre {
 public:
     sf::Clock clock;
     sf::Time time;
-
 public:
     Chronometre(sf::Time time) : time(time) {}
 
