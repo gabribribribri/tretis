@@ -37,7 +37,7 @@ xmake run
 - [x] Removing lines
 - [ ] Animations
 - [x] Random block selection
-- [ ] Block queue
+- [x] Block queue
 - [ ] Levels (going faster)
 - [x] Hold block
 - [ ] Mouse control
