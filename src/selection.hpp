@@ -118,8 +118,8 @@ private:
         // Next Queue Shapes
         for (size_t i = 0; i < NEXT_QUEUE_SIZE; i++) {
             next_queue_shapes[i].set_origin({
-                NEXT_QUEUE_POS.x,
-                NEXT_QUEUE_POS.y + (NEXT_QUEUE_HEIGHT / NEXT_QUEUE_SIZE) * i,
+                -NEXT_QUEUE_POS.x,
+                -NEXT_QUEUE_POS.y - (NEXT_QUEUE_HEIGHT / NEXT_QUEUE_SIZE) * i,
             });
         }
 

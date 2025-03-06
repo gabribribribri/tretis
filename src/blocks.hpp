@@ -31,7 +31,7 @@ const float GAME_DELIMITER_LINE_THICHNESS = 4.0;
 const sf::Vector2f HOLD_PIECE_DELIMITER_SIZE = sf::Vector2f(170, 170);
 const sf::Vector2f HOLD_PIECE_DELIMITER_POS =
     sf::Vector2f(80, 50 + BETWEEN_CELL_LINE_THICKNESS);
-const sf::Vector2f NEXT_QUEUE_POS = sf::Vector2f(700, 50);
+const sf::Vector2f NEXT_QUEUE_POS = sf::Vector2f(750, 50);
 const float NEXT_QUEUE_HEIGHT = 770;
 
 
