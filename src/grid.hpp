@@ -31,8 +31,6 @@ public:
     std::array<sf::RectangleShape, GRID_HEIGHT * GRID_WIDTH>
         val;  // initialized in constructor
 
-    bool hold_locked = false;
-
 private:
     // CRBL means CURRENT_BLOCK, the block that is falling.
     Coo crbl_center;
@@ -130,7 +128,7 @@ public:
         uint64_t modified_lines_index_mask = place_crbl_on_grid();
         potential_clear_modified_lines(modified_lines_index_mask);
         select_new_crbl(std::nullopt);
-        hold_locked = false; // Releasing the "once per drop" hold lock
+        Selection::Get().hold_locked = false;  // Releasing the "once per drop" hold lock
 
         // Readjusting the grid shapes...
         // (I wish I found a better option than this... is messy)
@@ -170,14 +168,13 @@ public:
         }
     }
 
-    // Returns the new hold Tretomino
-    Tretomino hold_crbl() {
-        hold_locked = true;
-        std::optional<Tretomino> new_current =
-            Selection::Get().replace_hold_tretomino(allblocks_index);
-        Tretomino new_hold = allblocks_index;
-        select_new_crbl(new_current);
-        return new_hold;
+    void hold_crbl_ifnlocked() {
+        Selection& selec = Selection::Get();
+        if (!selec.hold_locked) {
+            auto new_current = selec.replace_hold_tretomino(allblocks_index);
+            select_new_crbl(new_current);
+            selec.hold_locked = true;
+        }
     }
 
     void potential_clear_modified_lines(uint64_t modified_lines_index_mask) {
@@ -217,7 +214,8 @@ public:
 
     void move_line(int from, int to) {
         for (int x_index = 0; x_index < GRID_WIDTH; x_index++) {
-            grid_at(x_index, to).setFillColor(grid_at(x_index, from).getFillColor());
+            grid_at(x_index, to)
+                .setFillColor(grid_at(x_index, from).getFillColor());
         }
     }
 

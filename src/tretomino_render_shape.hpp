@@ -29,8 +29,6 @@ const std::array<sf::Vector2f, TRETOMINO_COUNT> TRETOMINO_RENDER_OFFSET { {
 class TretominoRenderShape {
 public:
     std::array<sf::RectangleShape, 4> shape;
-    sf::Vector2f pos;
-
 public:
     void set_tretomino(Tretomino tretomino) {
         for (int i = 0; i < 4; i++) {

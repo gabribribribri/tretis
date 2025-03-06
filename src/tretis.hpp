@@ -33,10 +33,6 @@ private:
     std::array<sf::RectangleShape, GRID_HEIGHT + 1>
         horizontal_cell_lines;  // in constructor
 
-    TretominoRenderShape hold_shape {};
-
-    std::array<TretominoRenderShape, NEXT_QUEUE_SIZE> next_queue_shapes {};
-
 public:
     static Tretis& Get() {
         static Tretis instance;
@@ -78,6 +74,7 @@ public:
         // the place block remove block thing is very ugly.
         // I hope to find a better way in the future
         Grid& grid = Grid::Get();
+        Selection& selection = Selection::Get();
 
         // Draw the whole game delimiter (Nothing should be drawn outside of it)
         render_window.draw(whole_game_delimiter);
@@ -86,19 +83,13 @@ public:
         render_window.draw(hold_piece_delimiter);
 
         // Draw the hold piece Tretomino shape
-        if (Selection::Get().hold_tretomino.has_value()) {
-            for (sf::RectangleShape const& cell : hold_shape.shape) {
+        if (selection.hold_tretomino.has_value()) {
+            for (auto const& cell : selection.hold_shape.shape) {
                 render_window.draw(cell);
             }
         }
 
-        // Draw the next queue shapes
-        for (size_t i = 0; i < NEXT_QUEUE_SIZE; i++) {
-            for (sf::RectangleShape const& cell : hold_shape.shape) {
-                render_window.draw(cell);
-            }
-        }
-
+        ///  GRID  ///
         // Draw the grid cells
         for (sf::RectangleShape& cell : grid.val) {
             render_window.draw(cell);
@@ -123,12 +114,21 @@ public:
         for (sf::RectangleShape const& line : horizontal_cell_lines) {
             render_window.draw(line);
         }
+
+        // Draw the next queue shapes
+        for (auto const& queue_tretomino : selection.next_queue_shapes) {
+            for (sf::RectangleShape const& cell : queue_tretomino.shape) {
+                render_window.draw(cell);
+            }
+        }
     }
 
     void handle_events() {
         Grid& grid = Grid::Get();
         Movements& movements = Movements::Get();
+
         sf::Event event;
+
         while (render_window.pollEvent(event)) {
             switch (event.type) {
                 case sf::Event::Closed:
@@ -166,10 +166,7 @@ public:
                             grid.hard_drop();
                             break;
                         case sf::Keyboard::C:
-                            // This is quite awful
-                            if (!grid.hold_locked) {
-                                hold_shape.set_tretomino(grid.hold_crbl());
-                            }
+                            grid.hold_crbl_ifnlocked();
                             break;
                         default:
                             break;
@@ -196,8 +193,6 @@ public:
             }
         }
     }
-
-    
 
     void resize_window(float screen_width, float screen_height) {
         // I finallly mother flipping did this
@@ -243,17 +238,6 @@ private:
         hold_piece_delimiter.setPosition(HOLD_PIECE_DELIMITER_POS);
         hold_piece_delimiter.setOutlineColor(BETWEEN_CELL_LINE_COLOR);
         hold_piece_delimiter.setOutlineThickness(GAME_DELIMITER_LINE_THICHNESS);
-
-        // Hold Tretomino Shape
-        hold_shape.set_origin(-HOLD_PIECE_DELIMITER_POS);
-
-        // Next Queue Shapes
-        for (size_t i = 0; i < NEXT_QUEUE_SIZE; i++) {
-            next_queue_shapes[i].set_origin({
-                NEXT_QUEUE_POS.x,
-                NEXT_QUEUE_POS.y + (NEXT_QUEUE_HEIGHT / NEXT_QUEUE_SIZE) * i,
-            });
-        }
 
         // Vertical Lines initialization
         for (auto [i, line] :
