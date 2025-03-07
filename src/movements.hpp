@@ -12,6 +12,7 @@ private:
     bool lateral_pressed = false;
     bool lateral_auto_repeat_enabled = false;
 
+public:
     Chronometre lateral_auto_repeat_delay { LATERAL_AUTO_REPEAT_DELAY };
     Chronometre lateral_auto_repeat_interval { AUTO_REPEAT_INTERVAL };
     Chronometre vertical_auto_repeat_interval { AUTO_REPEAT_INTERVAL };

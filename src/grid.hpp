@@ -31,41 +31,33 @@ public:
     std::array<sf::RectangleShape, GRID_HEIGHT * GRID_WIDTH>
         val;  // initialized in constructor
 
+    bool hard_drop_locked = false;
+
 private:
     // CRBL means CURRENT_BLOCK, the block that is falling.
     Coo crbl_center;
+    TretominoGridShape crbl_shape;
+    Coo crbl_shape_center;
+    int crbl_shape_rotation;
+
     // PHBL means PHANTOM_BLOCK
     Coo phbl_center;
+    sf::Color crbl_shape_color;
+    TretominoGridShape phbl_shape;
 
     // phbl use crbl_rotation because always the same
     int crbl_rotation = 0;
-    Tretomino allblocks_index;
-
-    TretominoShape crbl_shape;
-    Coo crbl_shape_center;
-    int crbl_shape_rotation;
-    sf::Color crbl_shape_color;
-    TretominoShape phbl_shape;
+    Tretomino crbl_tretomino;
 
     bool phantom_enabled = true;
 
 public:
     TretominoRotation const& get_block_relative_cells(int rotation) const {
-        return Tretominos::ALL[allblocks_index][rotation];
+        return Tretominos::ALL[crbl_tretomino][rotation];
     }
 
-    sf::Color get_block_color() const {
-        return Tretominos::ALL_COLORS[allblocks_index];
-    }
-
-    void set_cells_positions() {
-        for (int y = 0; y < GRID_HEIGHT; y++) {
-            for (int x = 0; x < GRID_WIDTH; x++) {
-                grid_at(x, y).setOrigin(GRID_ORIGIN);
-                grid_at(x, y).setPosition(
-                    sf::Vector2f(x * CELL_SIZE, y * CELL_SIZE));
-            }
-        }
+    sf::Color get_crbl_color() const {
+        return Tretominos::ALL_COLORS[crbl_tretomino];
     }
 
     bool is_block_movable_to(Coo center, int rotation) {
@@ -95,7 +87,7 @@ public:
         std::cout << "SUPER ROTATION SYSTEM\n";
         int next_rotation = get_next_rotation(clockwise);
         for (const Coo offset :
-             SuperRotationSystem::ALL[allblocks_index]
+             SuperRotationSystem::ALL[crbl_tretomino]
                                      [crbl_rotation * 2 + clockwise]) {
             if (is_block_movable_to(crbl_center + offset, next_rotation)) {
                 crbl_center += offset;
@@ -118,9 +110,9 @@ public:
         return false;
     }
 
+
     void hard_drop() {
         crbl_center = phbl_center;
-        place_and_select_crbl();
     }
 
     void place_and_select_crbl() {
@@ -129,14 +121,7 @@ public:
         potential_clear_modified_lines(modified_lines_index_mask);
         select_new_crbl(std::nullopt);
         Selection::Get().hold_locked = false;  // Releasing the "once per drop" hold lock
-
-        // Readjusting the grid shapes...
-        // (I wish I found a better option than this... is messy)
-        crbl_shape_center = crbl_center;
-        crbl_shape_rotation = crbl_rotation;
-        adjust_crbl_shape_position();
-        adjust_phbl_center();
-        adjust_phbl_shape_position();
+        hard_drop_locked = false;
     }
 
     // returns a 64 bits (just in case) bitmask of every line index that has
@@ -153,7 +138,7 @@ public:
             sf::Vector2i cell_absolute_position =
                 crbl_center + cell_relative_position;
             modified_lines_index_mask |= 0b1 << cell_absolute_position.y;
-            grid_at(cell_absolute_position).setFillColor(get_block_color());
+            grid_at(cell_absolute_position).setFillColor(get_crbl_color());
         }
         return modified_lines_index_mask;
     }
@@ -162,18 +147,20 @@ public:
         crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
         crbl_rotation = 0;
         if (tretomino.has_value()) {
-            allblocks_index = *tretomino;
+            crbl_tretomino = *tretomino;
         } else {
-            allblocks_index = Selection::Get().next_tretomino();
+            crbl_tretomino = Selection::Get().next_tretomino();
         }
+        adjust_everything_new_crbl();
     }
 
     void hold_crbl_ifnlocked() {
         Selection& selec = Selection::Get();
         if (!selec.hold_locked) {
-            auto new_current = selec.replace_hold_tretomino(allblocks_index);
+            auto new_current = selec.replace_hold_tretomino(crbl_tretomino);
             select_new_crbl(new_current);
             selec.hold_locked = true;
+            hard_drop_locked = false; // Ah Ah ! Did not think of that !
         }
     }
 
@@ -230,9 +217,9 @@ public:
     }
 
     void adjust_crbl_shape_color() {
-        assert(crbl_shape_color == get_block_color());
+        assert(crbl_shape_color == get_crbl_color());
         for (sf::RectangleShape& cell : crbl_shape) {
-            cell.setFillColor(get_block_color());
+            cell.setFillColor(get_crbl_color());
         }
     }
 
@@ -272,19 +259,26 @@ public:
             crbl_shape_center = crbl_center;
             adjust_crbl_shape_position();
         }
-        if (get_block_color() != crbl_shape_color) {
-            crbl_shape_color = get_block_color();
-            adjust_crbl_shape_color();
-        }
+    }
+
+    void adjust_everything_new_crbl() {
+        std::cout << "NEW CURRENT BLOCK !! MOVING EVERYTHING !! \n";
+        // crbl color adjustement
+        crbl_shape_color = get_crbl_color();
+        adjust_crbl_shape_color();
+        // crbl shape adjustement
+        crbl_shape_center = crbl_center;
+        crbl_shape_rotation = crbl_rotation;
+        adjust_crbl_shape_position();
+        // phbl adjustement (need crbl adjustement)
+        adjust_phbl_center();
+        adjust_phbl_shape_position();
     }
 
     std::array<sf::RectangleShape, 4> const& get_crbl_shapes() {
         return crbl_shape;
     }
 
-    // THERE IS A CALL TO adjust_everything_if_moved EEEVERY FRAME ????
-    // THIS IS UNACCEPTABLE AND NEED TO BE PATCHED !!!!
-    // I WILL PUT IT IN  THE TODO LIST
     std::array<sf::RectangleShape, 4> const& get_phbl_shapes() {
         return phbl_shape;
     }
@@ -305,7 +299,7 @@ public:
         return val[coo.y * GRID_WIDTH + coo.x];
     }
 
-    void switch_phantom_block() { phantom_enabled = !phantom_enabled; }
+    void switch_phantom_block() { phantom_enabled = not phantom_enabled; }
     bool is_phantom_enabled() const { return phantom_enabled; }
 
 public:
@@ -325,19 +319,23 @@ private:
             cell = create_grid_cell();
             cell.setFillColor(EMPTY_CELL_COLOR);
         }
-        set_cells_positions();
+
+        // Set Cells positions
+        for (int y = 0; y < GRID_HEIGHT; y++) {
+            for (int x = 0; x < GRID_WIDTH; x++) {
+                grid_at(x, y).setOrigin(GRID_ORIGIN);
+                grid_at(x, y).setPosition(
+                    sf::Vector2f(x * CELL_SIZE, y * CELL_SIZE));
+            }
+        }
 
         // Init the current block
         for (sf::RectangleShape& cell : crbl_shape) {
             cell = create_grid_cell();
             cell.setOrigin(GRID_ORIGIN);
         }
-        select_new_crbl(std::nullopt);
-        crbl_shape_color = get_block_color();
-        adjust_crbl_shape_color();
-        crbl_shape_center = crbl_center;
-        crbl_shape_rotation = crbl_rotation;
-        adjust_crbl_shape_position();
+
+        select_new_crbl(std::nullopt);     
 
         // Init the phantom block
         for (sf::RectangleShape& cell : phbl_shape) {
@@ -345,8 +343,8 @@ private:
             cell.setFillColor(PHANTOM_BLOCK_COLOR);
             cell.setOrigin(GRID_ORIGIN);
         }
-        adjust_phbl_center();
-        adjust_phbl_shape_position();
+
+        adjust_everything_new_crbl();
     }
     ~Grid() = default;
 };

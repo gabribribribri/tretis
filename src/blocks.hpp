@@ -12,7 +12,7 @@ using AllTretominoRotations = std::array<TretominoRotation, 4>;
 using CenterOffSets = std::array<Coo, 5>;
 using OneTretominoRotations = std::array<CenterOffSets, 8>;
 
-using TretominoShape = std::array<sf::RectangleShape, 4>;
+using TretominoGridShape = std::array<sf::RectangleShape, 4>;
 
 /// CONSTANTS ///
 

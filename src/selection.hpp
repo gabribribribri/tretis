@@ -1,8 +1,6 @@
 #pragma once
 
-#include <algorithm>
 #include <cassert>
-#include <cstddef>
 #include <optional>
 #include <random>
 
@@ -32,7 +30,7 @@ struct CircularBuffer {
 
     [[nodiscard]] Elem at(size_t index) {
         assert(index < Size);
-        return value[(start + index + 1) % Size];
+        return value[(start + index) % Size];
     }
 
     [[nodiscard]] size_t size() const { return Size; }

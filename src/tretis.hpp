@@ -59,6 +59,7 @@ public:
         }
     }
 
+private:
     void debug_fps_cout() {
         static int fis = 0;
         static sf::Clock cl;
@@ -163,7 +164,8 @@ public:
                             grid.switch_phantom_block();
                             break;
                         case sf::Keyboard::Space:
-                            grid.hard_drop();
+                            // I really wonder HOW to connect everything up !
+                            hard_drop_ifnlocked();
                             break;
                         case sf::Keyboard::C:
                             grid.hold_crbl_ifnlocked();
@@ -217,6 +219,15 @@ public:
         sf::FloatRect visibleArea(rectLeft, rectTop, view_width, view_height);
         render_window.setView(sf::View(visibleArea));
     }
+
+    void hard_drop_ifnlocked() {
+        if (not Grid::Get().hard_drop_locked) {
+            Grid::Get().hard_drop_locked = true;
+            Movements::Get().crbl_fall_by_one_countdown.restart();
+            Grid::Get().hard_drop();
+        }
+    }
+
 
 public:
     Tretis(const Tretis&) = delete;
