@@ -19,6 +19,9 @@ xmake run
 - Functionning hard drop
 - Complete implementation of the **Super Rotation System** !
 - Proper windows scaling
+- Random Block Selection
+- Block Holding
+- Shadow Block
 
 
 ### Controls
