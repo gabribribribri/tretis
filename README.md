@@ -22,11 +22,13 @@ xmake run
 
 
 ### Controls
-***TODO : Complete this***
-- **A, D** : go left and right
-- **W** : Rotate block
+*Only QWERTY Keyboards are supported right now*
+- **A, Left** : Go left
+- **D, Right** : Go right
+- **W, X** : Rotate block clockwise
+- **Z** : Rotate block counterclockwise
 - **S** : Make block fall slowly
-- **space** : Hard drop
+- **Space** : Hard drop
 - **C** : Hold
 - **P** : On/Off phantom block
 
@@ -34,6 +36,7 @@ xmake run
 ## TODO
 - [x] xmake.lua refactoring
 - [ ] SCORE
+- [ ] Score registration in a file
 - [x] Removing lines
 - [ ] Animations
 - [x] Random block selection
@@ -44,9 +47,10 @@ xmake run
 - [ ] SFML installed from xmake.lua
 - [ ] build on NixOS
 - [ ] A LOT of esthetical and functional refactoring
-  - [ ] remove the call to adjust_everything_if_moved EVERY FRAME
 - [ ] Switching Keyboards
 - [ ] Pause menu
+- [ ] Start menu
+- [x] Logging System
 
 
 (I won't make sound, I don't like sound).

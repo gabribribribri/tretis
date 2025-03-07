@@ -11,6 +11,7 @@
 #include <ranges>
 
 #include "blocks.hpp"
+#include "logging.hpp"
 #include "selection.hpp"
 
 /// MODULUS WITH POSITIVE REMAINDER ///
@@ -84,7 +85,6 @@ public:
     }
 
     void super_rotate_block(bool clockwise) {
-        std::cout << "SUPER ROTATION SYSTEM\n";
         int next_rotation = get_next_rotation(clockwise);
         for (const Coo offset :
              SuperRotationSystem::ALL[crbl_tretomino]
@@ -92,6 +92,7 @@ public:
             if (is_block_movable_to(crbl_center + offset, next_rotation)) {
                 crbl_center += offset;
                 crbl_rotation = next_rotation;
+                Log::Debug("Rotation to ", next_rotation, " with offset ", offset.x, " ", offset.y);
                 return;
             }
         }
@@ -188,7 +189,7 @@ public:
     }
 
     void clear_lines(uint64_t lines_to_clear_index_mask) {
-        std::cout << "Woaw ! We are going to clear some liiiiines\n";
+        Log::Debug("Lines to clear :", lines_to_clear_index_mask);
         int lines_to_clear_under = 0;
         for (int y_index = GRID_HEIGHT - 1; y_index >= 0; y_index--) {
             if ((lines_to_clear_index_mask & (0b1 << y_index)) != 0) {
@@ -236,7 +237,6 @@ public:
     }
 
     void adjust_phbl_center() {
-        std::cout << "ADJUSTING PHBL CENTER\n";
         assert(crbl_rotation == crbl_shape_rotation);
         assert(crbl_center == crbl_shape_center);
         Coo potential_phbl_center = crbl_shape_center;
@@ -245,6 +245,7 @@ public:
             potential_phbl_center.y += 1;
         }
         phbl_center = potential_phbl_center;
+        Log::Debug("Adjusting Phantom Block center at x=", phbl_center.x, " to y=", phbl_center.y);
     }
 
     void adjust_everything_if_moved() {
@@ -262,7 +263,7 @@ public:
     }
 
     void adjust_everything_new_crbl() {
-        std::cout << "NEW CURRENT BLOCK !! MOVING EVERYTHING !! \n";
+        Log::Debug("New crbl selected : Tretomino ", crbl_tretomino);
         // crbl color adjustement
         crbl_shape_color = get_crbl_color();
         adjust_crbl_shape_color();
@@ -335,8 +336,6 @@ private:
             cell.setOrigin(GRID_ORIGIN);
         }
 
-        select_new_crbl(std::nullopt);     
-
         // Init the phantom block
         for (sf::RectangleShape& cell : phbl_shape) {
             cell = create_grid_cell();
@@ -344,7 +343,8 @@ private:
             cell.setOrigin(GRID_ORIGIN);
         }
 
-        adjust_everything_new_crbl();
+        select_new_crbl(std::nullopt);     
+
     }
     ~Grid() = default;
 };

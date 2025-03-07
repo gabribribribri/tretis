@@ -65,7 +65,7 @@ private:
         static sf::Clock cl;
         fis++;
         if (cl.getElapsedTime() > sf::seconds(1.0f)) {
-            std::cout << "\nFPS: " << fis << "\n";
+            Log::Info("FPS : ", fis);
             cl.restart();
             fis = 0;
         }
