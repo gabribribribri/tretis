@@ -86,13 +86,15 @@ public:
 
     void super_rotate_block(bool clockwise) {
         int next_rotation = get_next_rotation(clockwise);
-        for (const Coo offset :
+        for (const auto [i, offset] :
              SuperRotationSystem::ALL[crbl_tretomino]
-                                     [crbl_rotation * 2 + clockwise]) {
+                                     [crbl_rotation * 2 + clockwise] |
+                 std::ranges::views::enumerate) {
             if (is_block_movable_to(crbl_center + offset, next_rotation)) {
                 crbl_center += offset;
                 crbl_rotation = next_rotation;
-                Log::Debug("Rotation to ", next_rotation, " with offset ", offset.x, " ", offset.y);
+                Log::Debug("Rotation to ", next_rotation, " with offset ",
+                           offset.x, " ", offset.y);
                 return;
             }
         }
@@ -111,17 +113,15 @@ public:
         return false;
     }
 
-
-    void hard_drop() {
-        crbl_center = phbl_center;
-    }
+    void hard_drop() { crbl_center = phbl_center; }
 
     void place_and_select_crbl() {
         // Placing the block
         uint64_t modified_lines_index_mask = place_crbl_on_grid();
         potential_clear_modified_lines(modified_lines_index_mask);
         select_new_crbl(std::nullopt);
-        Selection::Get().hold_locked = false;  // Releasing the "once per drop" hold lock
+        Selection::Get().hold_locked =
+            false;  // Releasing the "once per drop" hold lock
         hard_drop_locked = false;
     }
 
@@ -161,7 +161,7 @@ public:
             auto new_current = selec.replace_hold_tretomino(crbl_tretomino);
             select_new_crbl(new_current);
             selec.hold_locked = true;
-            hard_drop_locked = false; // Ah Ah ! Did not think of that !
+            hard_drop_locked = false;  // Ah Ah ! Did not think of that !
         }
     }
 
@@ -245,7 +245,8 @@ public:
             potential_phbl_center.y += 1;
         }
         phbl_center = potential_phbl_center;
-        Log::Debug("Adjusting Phantom Block center at x=", phbl_center.x, " to y=", phbl_center.y);
+        Log::Debug("Adjusting Phantom Block center at x=", phbl_center.x,
+                   " to y=", phbl_center.y);
     }
 
     void adjust_everything_if_moved() {
@@ -343,8 +344,7 @@ private:
             cell.setOrigin(GRID_ORIGIN);
         }
 
-        select_new_crbl(std::nullopt);     
-
+        select_new_crbl(std::nullopt);
     }
     ~Grid() = default;
 };
