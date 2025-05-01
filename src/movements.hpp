@@ -2,8 +2,9 @@
 
 #include <SFML/System/Time.hpp>
 
-#include "time.hpp"
 #include "grid.hpp"
+#include "time.hpp"
+#include "tretis.hpp"
 
 class Movements {
 private:
@@ -16,7 +17,8 @@ public:
     Chronometre lateral_auto_repeat_delay { LATERAL_AUTO_REPEAT_DELAY };
     Chronometre lateral_auto_repeat_interval { AUTO_REPEAT_INTERVAL };
     Chronometre vertical_auto_repeat_interval { AUTO_REPEAT_INTERVAL };
-    Chronometre crbl_fall_by_one_countdown { BASE_BLOCK_FALL_BY_ONE };
+    Chronometre crbl_fall_by_one_countdown =
+        Score::Get().get_drop_speed_from_level();
 
 private:
     void ping_lateral() {
@@ -24,7 +26,8 @@ private:
             return;
         }
 
-        if (lateral_auto_repeat_enabled and lateral_auto_repeat_interval.has_time_passed()) {
+        if (lateral_auto_repeat_enabled and
+            lateral_auto_repeat_interval.has_time_passed()) {
             Grid::Get().move_crbl(lateral_direction);
         } else if (lateral_auto_repeat_delay.has_time_passed()) {
             Grid::Get().move_crbl(lateral_direction);
@@ -82,7 +85,8 @@ public:
         ping_lateral();
         ping_vertical();
 
-        if (!vertical_pressed and crbl_fall_by_one_countdown.has_time_passed()) {
+        if (!vertical_pressed and
+            crbl_fall_by_one_countdown.has_time_passed()) {
             stop_moving_if_crbl_placed();
         }
     }

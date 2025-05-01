@@ -54,6 +54,8 @@ xmake run
 - [ ] Pause menu
 - [ ] Start menu
 - [x] Logging System
+- [ ] Game Over
+- [ ] Make the font work when you're not inside project dir !!!
 
 
 (I won't make sound, I don't like sound).

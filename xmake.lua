@@ -1,6 +1,8 @@
 add_rules("mode.debug", "mode.release")
 set_languages("c++23")
 
+local font_name = "./apercumovistarbold.ttf"
+
 target("tretis")
   set_kind("binary")
   add_files("src/*.cpp")
@@ -14,3 +16,7 @@ target("tretis")
     set_symbols("debug")
     set_optimize("none")
   end
+  after_build(function(target) -- Copying assets
+    os.cp(font_name, target:targetdir())
+  end)
+  -- add_installfiles(font_name, {prefixdir = "bin"})

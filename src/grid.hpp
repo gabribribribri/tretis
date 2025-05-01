@@ -6,13 +6,13 @@
 #include <array>
 #include <cassert>
 #include <cstdint>
-#include <iostream>
 #include <optional>
 #include <ranges>
 
 #include "blocks.hpp"
 #include "logging.hpp"
 #include "selection.hpp"
+#include "tretis.hpp"
 
 /// MODULUS WITH POSITIVE REMAINDER ///
 int pos_rem_mod(int lhs, int rhs) {
@@ -118,7 +118,11 @@ public:
     void place_and_select_crbl() {
         // Placing the block
         uint64_t modified_lines_index_mask = place_crbl_on_grid();
-        potential_clear_modified_lines(modified_lines_index_mask);
+        uint8_t num_cleared_lines =
+            potential_clear_modified_lines(modified_lines_index_mask);
+        if (num_cleared_lines != 0) {
+            Score::Get().add_to_score(num_cleared_lines);
+        }
         select_new_crbl(std::nullopt);
         Selection::Get().hold_locked =
             false;  // Releasing the "once per drop" hold lock
@@ -165,11 +169,14 @@ public:
         }
     }
 
-    void potential_clear_modified_lines(uint64_t modified_lines_index_mask) {
+    // returns number of lines that have been cleared
+    int potential_clear_modified_lines(uint64_t modified_lines_index_mask) {
+        int number_of_cleared_lines = 0;
         uint64_t lines_to_clear_index_mask = 0b0;
         for (uint8_t y_index = 0; y_index < GRID_HEIGHT; y_index++) {
             if ((modified_lines_index_mask & (0b1 << y_index)) != 0) {
                 if (is_line_full(y_index)) {
+                    number_of_cleared_lines += 1;
                     lines_to_clear_index_mask |= 0b1 << y_index;
                 }
             }
@@ -177,6 +184,7 @@ public:
         if (lines_to_clear_index_mask != 0) {
             clear_lines(lines_to_clear_index_mask);
         }
+        return number_of_cleared_lines;
     }
 
     bool is_line_full(int y_index) {

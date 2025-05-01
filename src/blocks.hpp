@@ -23,6 +23,7 @@ const int GRID_WIDTH = 10;
 const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 };
 
 // Game Rendering related
+const int LEFT_OFFSET = 80;
 const sf::Vector2f GRID_ORIGIN = sf::Vector2f(-330.0, -50.0);
 const int CELL_SIZE = 35;
 const sf::Vector2f GAME_DELIMITER_SIZE = sf::Vector2f(980, 870);
@@ -30,10 +31,14 @@ const float BETWEEN_CELL_LINE_THICKNESS = 2.0;
 const float GAME_DELIMITER_LINE_THICHNESS = 4.0;
 const sf::Vector2f HOLD_PIECE_DELIMITER_SIZE = sf::Vector2f(170, 170);
 const sf::Vector2f HOLD_PIECE_DELIMITER_POS =
-    sf::Vector2f(80, 50 + BETWEEN_CELL_LINE_THICKNESS);
+    sf::Vector2f(LEFT_OFFSET, 50 + BETWEEN_CELL_LINE_THICKNESS);
 const sf::Vector2f NEXT_QUEUE_POS = sf::Vector2f(750, 50);
 const float NEXT_QUEUE_HEIGHT = 770;
 
+// Text related
+const int TITLE_SIZE = 20;
+const int VALUE_SIZE = 33;
+const sf::Vector2f TEXT_POS = sf::Vector2f(LEFT_OFFSET, HOLD_PIECE_DELIMITER_SIZE.y + HOLD_PIECE_DELIMITER_POS.y + 20);
 
 // Colors
 const sf::Color EMPTY_CELL_COLOR = sf::Color::Black;
