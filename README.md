@@ -2,17 +2,19 @@
 
 I am making this Tetris clone with C++ and the SFML graphic library.
 This is still in crazy development.
-There is almost nothing working correctly.
+There is not a lot of things working.
 
 ## How to build
 
-1. Install the SFML library __(I am trying to do it automatically with xmake but I think I'm stupid...)__
+### Windows
+No.
+
+### Linux (except NixOS but it's coming... I hope)
+1. Install the SFML library version 2.6 __(I am trying to do it automatically with xmake but It's not going very well...)__
 2. Install the **xmake** build system
 3. `git clone` the repo where you want, `cd` into it
-4.
-```sh
-xmake run
-```
+4. `xmake f -m debug` for debug mode and `xmake f -m release` for release mode
+5. `xmake run` if you just want to run it and `xmake install --admin` if you want to install it.
 
 ## Functionalities (for now...)
 - There is every Tetromino (called Tretominos here)
@@ -22,15 +24,16 @@ xmake run
 - Random Block Selection
 - Block Holding
 - Shadow Block
+- Working official score system (except Back-2-Back)
 
 
-### Controls
+## Controls
 *Only QWERTY Keyboards are supported right now*
 - **A, Left** : Go left
 - **D, Right** : Go right
 - **W, X** : Rotate block clockwise
 - **Z** : Rotate block counterclockwise
-- **S** : Make block fall slowly
+- **S** : Soft Drop
 - **Space** : Hard drop
 - **C** : Hold
 - **P** : On/Off phantom block
@@ -38,25 +41,26 @@ xmake run
 
 ## TODO
 - [x] xmake.lua refactoring
-- [ ] SCORE
-- [ ] Score registration in a file
-- [ ] Saves & Load
+- [x] SCORE
 - [x] Removing lines
-- [ ] Animations
 - [x] Random block selection
 - [x] Block queue
-- [ ] Levels (going faster)
 - [x] Hold block
+- [x] Logging System
+- [ ] Levels (going faster)
+- [ ] Combo Bonus
+- [ ] Score registration in a file
+- [ ] Saves & Load
+- [ ] Make the font work when you're not inside project dir !!!
+- [ ] Game Over
+- [ ] Start menu
+- [ ] Pause menu
 - [ ] Mouse control
 - [ ] SFML installed from xmake.lua
 - [ ] build on NixOS
-- [ ] A LOT of esthetical and functional refactoring
 - [ ] Switching Keyboards
-- [ ] Pause menu
-- [ ] Start menu
-- [x] Logging System
-- [ ] Game Over
-- [ ] Make the font work when you're not inside project dir !!!
+- [ ] Animations
+- [ ] A LOT of esthetical and functional refactoring
 
 
 (I won't make sound, I don't like sound).
