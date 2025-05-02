@@ -43,15 +43,6 @@ private:
         level_str = std::to_string(level);
     }
 
-    // [[nodiscard]] uint32_t get_score() const {
-    //     return score;
-    // }
-    // [[nodiscard]] uint32_t get_level() const {
-    //     return level;
-    // }
-    // [[nodiscard]] uint32_t get_lines() const {
-    //     return lines;
-    // }
 
 public:
     void did_just_rotate() { just_rotated = true; }
