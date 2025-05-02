@@ -236,6 +236,9 @@ private:
             score_added_indicator_activation = true;
             score_added_indicator.setString(
                 std::format("+{}", score.score_event.score_added));
+
+            // Don't forget to clean the events after !
+            score.reset_score_event();
         }
 
         score_added_indicator.setFillColor(
