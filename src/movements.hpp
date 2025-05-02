@@ -42,12 +42,12 @@ private:
         }
 
         if (vertical_auto_repeat_interval.has_time_passed()) {
-            Grid::Get().move_crbl_down_or_place();
+            move_and_stop_if_crbl_placed();
             Score::Get().add_soft_drop();
         }
     }
 
-    void stop_moving_if_crbl_placed() {
+    void move_and_stop_if_crbl_placed() {
         if (Grid::Get().move_crbl_down_or_place()) {
             stop_lateral();
             stop_vertical();
@@ -72,7 +72,7 @@ public:
         }
         vertical_pressed = true;
         vertical_auto_repeat_interval.restart();
-        stop_moving_if_crbl_placed();
+        move_and_stop_if_crbl_placed();
     }
 
     void stop_lateral() {
@@ -88,7 +88,7 @@ public:
 
         if (!vertical_pressed and
             crbl_fall_by_one_countdown.has_time_passed()) {
-            stop_moving_if_crbl_placed();
+            move_and_stop_if_crbl_placed();
         }
     }
 

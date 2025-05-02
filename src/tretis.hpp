@@ -1,8 +1,11 @@
 #pragma once
 
+#include <SFML/Config.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <algorithm>
 #include <ranges>
 
@@ -48,6 +51,18 @@ private:
     sf::Text lines_title;
     sf::Text lines_value;
 
+    sf::Clock indicators_clock;
+    sf::Text t_spin_indicator;
+    bool t_spin_indicator_activation = false;
+    sf::Text mini_indicator;
+    bool mini_indicator_activation = false;
+    sf::Text b2b_indicator;
+    bool b2b_indicator_activation = false;
+    sf::Text line_clear_indicator;
+    bool line_clear_indicator_activation = false;
+    sf::Text score_added_indicator;
+    bool score_added_indicator_activation = false;
+
 public:
     static Tretis& Get() {
         static Tretis instance;
@@ -82,6 +97,11 @@ private:
         fis++;
         if (cl.getElapsedTime() > sf::seconds(1.0f)) {
             Log::Info("FPS : ", fis);
+            Log::Debug("tspin=", t_spin_indicator_activation,
+                      " mini=", mini_indicator_activation,
+                      " b2b=", b2b_indicator_activation,
+                      " line_clear=", line_clear_indicator_activation,
+                      " score_added=", score_added_indicator_activation);
             cl.restart();
             fis = 0;
         }
@@ -114,6 +134,26 @@ private:
         render_window.draw(score_value);
         render_window.draw(lines_title);
         render_window.draw(lines_value);
+
+        if (t_spin_indicator_activation) {
+            render_window.draw(t_spin_indicator);
+        }
+
+        if (mini_indicator_activation) {
+            render_window.draw(mini_indicator);
+        }
+
+        if (b2b_indicator_activation) {
+            render_window.draw(b2b_indicator);
+        }
+
+        if (line_clear_indicator_activation) {
+            render_window.draw(line_clear_indicator);
+        }
+
+        if (score_added_indicator_activation) {
+            render_window.draw(score_added_indicator);
+        }
 
         ///  GRID  ///
 
@@ -153,10 +193,77 @@ private:
     }
 
     void update_texts() {
-        Score const& score = Score::Get();
+        Score& score = Score::Get();
         level_value.setString(score.level_str);
         score_value.setString(score.score_str);
         lines_value.setString(score.lines_str);
+
+        if (score.do_we_have_events_to_report()) {
+            indicators_clock.restart();
+
+            t_spin_indicator_activation =
+                score.score_event.t_spin or score.score_event.mini_t_spin;
+            mini_indicator_activation = score.score_event.mini_t_spin;
+            b2b_indicator_activation = score.score_event.b2b_bonus;
+            line_clear_indicator_activation =
+                score.score_event.lines_clear != LinesClear::None;
+
+            switch (score.score_event.lines_clear) {
+                case LinesClear::None:
+                    // lol
+                    break;
+                case LinesClear::Single:
+                    line_clear_indicator.setFillColor(sf::Color::White);
+                    line_clear_indicator.setString("SINGLE");
+                    break;
+
+                case LinesClear::Double:
+                    line_clear_indicator.setFillColor(sf::Color::Blue);
+                    line_clear_indicator.setString("DOUBLE");
+                    break;
+
+                case LinesClear::Triple:
+                    line_clear_indicator.setFillColor(sf::Color::Red);
+                    line_clear_indicator.setString("TRIPLE");
+                    break;
+
+                case LinesClear::Tretis:
+                    line_clear_indicator.setFillColor(sf::Color::Cyan);
+                    line_clear_indicator.setString("TRETIS");
+                    break;
+            }
+
+            score_added_indicator_activation = true;
+            score_added_indicator.setString(
+                std::format("+{}", score.score_event.score_added));
+        }
+
+        score_added_indicator.setFillColor(
+            sf::Color(255, 255, 255, gradient_progression()));
+
+        sf::Color line_clear_color = line_clear_indicator.getFillColor();
+        line_clear_color.a = gradient_progression();
+        line_clear_indicator.setFillColor(line_clear_color);
+
+        b2b_indicator.setFillColor(sf::Color(255, 255, gradient_progression()));
+        mini_indicator.setFillColor(
+            sf::Color(255, 0, 255, gradient_progression()));
+        t_spin_indicator.setFillColor(
+            sf::Color(255, 0, 255, gradient_progression()));
+
+        if (gradient_progression() == 0) {
+            b2b_indicator_activation = false;
+            mini_indicator_activation = false;
+            line_clear_indicator_activation = false;
+            score_added_indicator_activation = false;
+            t_spin_indicator_activation = false;
+        }
+    }
+
+    sf::Uint8 gradient_progression() {
+        return std::max(1 - indicators_clock.getElapsedTime().asSeconds(),
+                        0.0f) *
+               255;
     }
 
     void handle_events() {
@@ -350,5 +457,36 @@ private:
         lines_value.setString(Score::Get().lines_str);
         lines_value.setCharacterSize(VALUE_SIZE);
         lines_value.setPosition(TEXT_POS.x, TEXT_POS.y + 110);
+
+        score_added_indicator.setFont(text_font);
+        score_added_indicator.setFillColor(sf::Color::Magenta);
+        score_added_indicator.setString("");
+        score_added_indicator.setCharacterSize(30);
+        score_added_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 150);
+
+        line_clear_indicator.setFont(text_font);
+        line_clear_indicator.setFillColor(sf::Color::Magenta);
+        line_clear_indicator.setString("Mini");
+        line_clear_indicator.setCharacterSize(40);
+        line_clear_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 180);
+        line_clear_indicator.setStyle(sf::Text::Bold);
+
+        mini_indicator.setFont(text_font);
+        mini_indicator.setFillColor(sf::Color::Magenta);
+        mini_indicator.setString("Mini");
+        mini_indicator.setCharacterSize(15);
+        mini_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 250);
+
+        t_spin_indicator.setFont(text_font);
+        t_spin_indicator.setFillColor(sf::Color::Magenta);
+        t_spin_indicator.setString("T-Spin");
+        t_spin_indicator.setCharacterSize(50);
+        t_spin_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 270);
+
+        b2b_indicator.setFont(text_font);
+        b2b_indicator.setFillColor(sf::Color::Yellow);
+        b2b_indicator.setString("B2B Bonus");
+        b2b_indicator.setCharacterSize(15);
+        b2b_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 320);
     };
 };

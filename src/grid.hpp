@@ -30,8 +30,8 @@ sf::RectangleShape create_grid_cell() {
 const std::array<sf::Vector2i, 4> T_SPIN_RECOGNITION_PATTERN = {
     sf::Vector2i(-1, -1),  //
     sf::Vector2i(+1, -1),  //
-    sf::Vector2i(-1, +1),  //
-    sf::Vector2i(+1, +1)   //
+    sf::Vector2i(+1, +1),  //
+    sf::Vector2i(-1, +1)   //
 };
 
 /// GRID ///
@@ -87,6 +87,7 @@ public:
     bool move_crbl(Coo direction) {
         if (is_block_movable_to(crbl_center + direction, crbl_rotation)) {
             crbl_center += direction;
+            Score::Get().did_just_move();
             return true;
         }
         return false;
@@ -97,7 +98,7 @@ public:
         // for anyone else or me in 2 years to figure out what the fuck is going
         // on, tips : it's pretty smart.
         int next_rotation = get_next_rotation(clockwise);
-        for (const auto [i, offset] :
+        for (const auto [rotation_point, offset] :
              SuperRotationSystem::ALL[crbl_tretomino]
                                      [crbl_rotation * 2 + clockwise] |
                  std::ranges::views::enumerate) {
@@ -107,7 +108,10 @@ public:
                 Log::Debug("Rotation to ", next_rotation, " with offset ",
                            offset.x, " ", offset.y);
                 if (crbl_tretomino == Tretomino::T) {
-                    Score::Get().using_rotation_point_5();
+                    Score::Get().did_just_rotate();
+                    if (rotation_point == 4) {
+                        Score::Get().using_rotation_point_5();
+                    }
                 }
                 return;
             }
@@ -141,7 +145,7 @@ public:
             clear_full_modified_lines(modified_lines_index_mask);
 
         // Checking for T-Spins and adding score
-        t_spin_check_score_report(num_cleared_lines);
+        create_score_report(num_cleared_lines);
 
         // Selecting new current block
         select_new_crbl(std::nullopt);
@@ -238,7 +242,7 @@ public:
         }
     }
 
-    void t_spin_check_score_report(uint8_t num_cleared_lines) {
+    void create_score_report(uint8_t num_cleared_lines) {
         if (crbl_tretomino == Tretomino::T) {
             //!\\ C and D are inverted because C is bottom left and D is bottom
             //! right
@@ -250,30 +254,41 @@ public:
                 grid_at(crbl_center +
                         T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 1) % 4])
                     .getFillColor() != EMPTY_CELL_COLOR;
+            Coo d_side_coo =
+                crbl_center +
+                T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 2) % 4];
             bool d_side =
-                grid_at(crbl_center +
-                        T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 2) % 4])
-                    .getFillColor() != EMPTY_CELL_COLOR;
+                (d_side_coo.x >= 0 and d_side_coo.x < GRID_WIDTH and
+                 d_side_coo.y >= 0 and d_side_coo.y < GRID_HEIGHT)
+                    ? grid_at(d_side_coo).getFillColor() != EMPTY_CELL_COLOR
+                    : true;
+            Coo c_side_coo =
+                crbl_center +
+                T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 3) % 4];
             bool c_side =
-                grid_at(crbl_center +
-                        T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 3) % 4])
-                    .getFillColor() != EMPTY_CELL_COLOR;
+                (c_side_coo.x >= 0 and c_side_coo.x < GRID_WIDTH and
+                 c_side_coo.y >= 0 and c_side_coo.y < GRID_HEIGHT)
+                    ? grid_at(c_side_coo).getFillColor() != EMPTY_CELL_COLOR
+                    : true;
+
+            Log::Warn(" a_side=", a_side, " b_side=", b_side,
+                      " c_side=", c_side, " d_side=", d_side);
 
             if (a_side and b_side and (c_side or d_side)) {
-                Score::Get().create_score_report(num_cleared_lines, true,
-                                                 false);
+                Log::Warn("T-Spin side acted !");
+                Score::Get().report_score(num_cleared_lines, true, false);
                 return;
             }
 
             if (c_side and d_side and (a_side or b_side)) {
-                Score::Get().create_score_report(num_cleared_lines, false,
-                                                 true);
+                Log::Warn("Mini T-Spin side acted !");
+                Score::Get().report_score(num_cleared_lines, false, true);
                 return;
             }
         }
 
         if (num_cleared_lines != 0) {
-            Score::Get().create_score_report(num_cleared_lines, false, false);
+            Score::Get().report_score(num_cleared_lines, false, false);
         }
     }
 
