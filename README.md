@@ -40,6 +40,7 @@ xmake run
 - [x] xmake.lua refactoring
 - [ ] SCORE
 - [ ] Score registration in a file
+- [ ] Saves & Load
 - [x] Removing lines
 - [ ] Animations
 - [x] Random block selection

@@ -43,6 +43,7 @@ private:
 
         if (vertical_auto_repeat_interval.has_time_passed()) {
             Grid::Get().move_crbl_down_or_place();
+            Score::Get().add_soft_drop();
         }
     }
 

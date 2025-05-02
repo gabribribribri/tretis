@@ -4,7 +4,6 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <algorithm>
-#include <format>
 #include <ranges>
 
 #include "blocks.hpp"
@@ -63,6 +62,7 @@ public:
             /// GAME LOGIC ///
             handle_events();
             Movements::Get().ping();
+            update_texts();  // I hope I'll find a better way...
             Grid::Get().adjust_everything_if_moved();
 
             /// DRAWING ///
@@ -150,6 +150,13 @@ private:
                 render_window.draw(cell);
             }
         }
+    }
+
+    void update_texts() {
+        Score const& score = Score::Get();
+        level_value.setString(score.level_str);
+        score_value.setString(score.score_str);
+        lines_value.setString(score.lines_str);
     }
 
     void handle_events() {

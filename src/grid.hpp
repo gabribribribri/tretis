@@ -6,6 +6,7 @@
 #include <array>
 #include <cassert>
 #include <cstdint>
+#include <cstdlib>
 #include <optional>
 #include <ranges>
 
@@ -25,6 +26,13 @@ sf::RectangleShape create_grid_cell() {
     sf::RectangleShape cell { sf::Vector2f(CELL_SIZE, CELL_SIZE) };
     return cell;
 }
+
+const std::array<sf::Vector2i, 4> T_SPIN_RECOGNITION_PATTERN = {
+    sf::Vector2i(-1, -1),  //
+    sf::Vector2i(+1, -1),  //
+    sf::Vector2i(-1, +1),  //
+    sf::Vector2i(+1, +1)   //
+};
 
 /// GRID ///
 class Grid {
@@ -85,6 +93,9 @@ public:
     }
 
     void super_rotate_block(bool clockwise) {
+        // I just read this and even though right now I understand it, good luck
+        // for anyone else or me in 2 years to figure out what the fuck is going
+        // on, tips : it's pretty smart.
         int next_rotation = get_next_rotation(clockwise);
         for (const auto [i, offset] :
              SuperRotationSystem::ALL[crbl_tretomino]
@@ -95,6 +106,9 @@ public:
                 crbl_rotation = next_rotation;
                 Log::Debug("Rotation to ", next_rotation, " with offset ",
                            offset.x, " ", offset.y);
+                if (crbl_tretomino == Tretomino::T) {
+                    Score::Get().using_rotation_point_5();
+                }
                 return;
             }
         }
@@ -113,19 +127,28 @@ public:
         return false;
     }
 
-    void hard_drop() { crbl_center = phbl_center; }
+    void hard_drop() {
+        Score::Get().add_hard_drop(phbl_center.y - crbl_center.y);
+        crbl_center = phbl_center;
+    }
 
     void place_and_select_crbl() {
-        // Placing the block
+        // Placing the block, getting back modified lines
         uint64_t modified_lines_index_mask = place_crbl_on_grid();
+
+        // Clear full modified lines, getting back how many
         uint8_t num_cleared_lines =
-            potential_clear_modified_lines(modified_lines_index_mask);
-        if (num_cleared_lines != 0) {
-            Score::Get().add_to_score(num_cleared_lines);
-        }
+            clear_full_modified_lines(modified_lines_index_mask);
+
+        // Checking for T-Spins and adding score
+        t_spin_check_score_report(num_cleared_lines);
+
+        // Selecting new current block
         select_new_crbl(std::nullopt);
-        Selection::Get().hold_locked =
-            false;  // Releasing the "once per drop" hold lock
+
+        // Releasing "once per block" hold lock
+        // and hard drop locks
+        Selection::Get().hold_locked = false;
         hard_drop_locked = false;
     }
 
@@ -170,7 +193,7 @@ public:
     }
 
     // returns number of lines that have been cleared
-    int potential_clear_modified_lines(uint64_t modified_lines_index_mask) {
+    int clear_full_modified_lines(uint64_t modified_lines_index_mask) {
         int number_of_cleared_lines = 0;
         uint64_t lines_to_clear_index_mask = 0b0;
         for (uint8_t y_index = 0; y_index < GRID_HEIGHT; y_index++) {
@@ -212,6 +235,45 @@ public:
         for (int x_index = 0; x_index < GRID_WIDTH; x_index++) {
             grid_at(x_index, to)
                 .setFillColor(grid_at(x_index, from).getFillColor());
+        }
+    }
+
+    void t_spin_check_score_report(uint8_t num_cleared_lines) {
+        if (crbl_tretomino == Tretomino::T) {
+            //!\\ C and D are inverted because C is bottom left and D is bottom
+            //! right
+            bool a_side =
+                grid_at(crbl_center +
+                        T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 0) % 4])
+                    .getFillColor() != EMPTY_CELL_COLOR;
+            bool b_side =
+                grid_at(crbl_center +
+                        T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 1) % 4])
+                    .getFillColor() != EMPTY_CELL_COLOR;
+            bool d_side =
+                grid_at(crbl_center +
+                        T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 2) % 4])
+                    .getFillColor() != EMPTY_CELL_COLOR;
+            bool c_side =
+                grid_at(crbl_center +
+                        T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 3) % 4])
+                    .getFillColor() != EMPTY_CELL_COLOR;
+
+            if (a_side and b_side and (c_side or d_side)) {
+                Score::Get().create_score_report(num_cleared_lines, true,
+                                                 false);
+                return;
+            }
+
+            if (c_side and d_side and (a_side or b_side)) {
+                Score::Get().create_score_report(num_cleared_lines, false,
+                                                 true);
+                return;
+            }
+        }
+
+        if (num_cleared_lines != 0) {
+            Score::Get().create_score_report(num_cleared_lines, false, false);
         }
     }
 
