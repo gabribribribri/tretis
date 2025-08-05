@@ -1,0 +1,2 @@
+Checks: 'bugprone-*,clang-analyzer-*,cert-*,cppcoreguidelines-*,modernize-*,performance-*,-readability-else-after-return'
+HeaderFilterRegex: '.*'
