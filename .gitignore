@@ -2,6 +2,9 @@
 .xmake/
 build/
 
+# clang-tidy shit
+compile_commands.json
+
 # MacOS Cache
 .DS_Store
 

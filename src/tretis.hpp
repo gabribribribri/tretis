@@ -19,29 +19,21 @@
 
 class Tretis {
 private:
-    // Render Engine
-    mutable sf::RenderWindow render_window {
-        sf::VideoMode(1280, 720),
-        "Tretis",
-    };
+    // Messy but optimal fields order
+    // Time related stuff
+    sf::Clock indicators_clock;
     Chronometre frame_time { TIME_PER_FRAME };
 
-    // Renderee
+    // Font
+    sf::Font text_font;
+
+    // Delimiter boxes
     sf::RectangleShape whole_game_delimiter =
         sf::RectangleShape(GAME_DELIMITER_SIZE);
-
     sf::RectangleShape hold_piece_delimiter =
         sf::RectangleShape(HOLD_PIECE_DELIMITER_SIZE);
 
-    std::array<sf::RectangleShape, GRID_WIDTH + 1>
-        vertical_cell_lines;  // in constructor
-
-    std::array<sf::RectangleShape, GRID_HEIGHT + 1>
-        horizontal_cell_lines;  // in constructor
-
-    // Various text related thangs
-    sf::Font text_font;
-
+    // Various texts
     sf::Text level_title;
     sf::Text level_value;
 
@@ -51,16 +43,32 @@ private:
     sf::Text lines_title;
     sf::Text lines_value;
 
-    sf::Clock indicators_clock;
     sf::Text t_spin_indicator;
-    bool t_spin_indicator_activation = false;
     sf::Text mini_indicator;
-    bool mini_indicator_activation = false;
+
     sf::Text b2b_indicator;
-    bool b2b_indicator_activation = false;
     sf::Text line_clear_indicator;
-    bool line_clear_indicator_activation = false;
+
     sf::Text score_added_indicator;
+
+    // Render Engine
+    mutable sf::RenderWindow render_window {
+        sf::VideoMode(1280, 720),
+        "Tretis",
+    };
+
+    // Pretty lines
+    std::array<sf::RectangleShape, GRID_WIDTH + 1>
+        vertical_cell_lines;  // in constructor
+
+    std::array<sf::RectangleShape, GRID_HEIGHT + 1>
+        horizontal_cell_lines;  // in constructor
+
+    // Indicators
+    bool t_spin_indicator_activation = false;
+    bool mini_indicator_activation = false;
+    bool b2b_indicator_activation = false;
+    bool line_clear_indicator_activation = false;
     bool score_added_indicator_activation = false;
 
 public:

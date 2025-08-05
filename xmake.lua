@@ -8,6 +8,7 @@ target("tretis")
   add_files("src/*.cpp")
   set_warnings("all", "extra")
   add_links("sfml-graphics", "sfml-window", "sfml-system")
+  set_toolchains("clang")
   set_policy("run.autobuild", true)
   if is_mode("release") then
     set_optimize("fastest")

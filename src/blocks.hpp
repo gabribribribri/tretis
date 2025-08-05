@@ -64,7 +64,7 @@ enum Tretomino : int {
 
 const int TRETOMINO_COUNT = 7;
 
-CenterOffSets operator*(CenterOffSets lhs, Coo rhs) {
+CenterOffSets operator*(CenterOffSets lhs, Coo rhs) noexcept {
     CenterOffSets ret;
     for (auto [i, coo] : lhs | std::views::enumerate) {
         ret[i] = Coo { coo.x * rhs.x, coo.y * rhs.y };
