@@ -64,7 +64,7 @@ enum Tretomino : int {
 
 const int TRETOMINO_COUNT = 7;
 
-CenterOffSets operator*(CenterOffSets lhs, Coo rhs) noexcept {
+constexpr CenterOffSets operator*(CenterOffSets lhs, Coo rhs) noexcept {
     CenterOffSets ret;
     for (auto [i, coo] : lhs | std::views::enumerate) {
         ret[i] = Coo { coo.x * rhs.x, coo.y * rhs.y };
@@ -82,7 +82,8 @@ namespace SuperRotationSystem {
 const CenterOffSets T_north_to_west {
     { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } }
 };
-OneTretominoRotations const& T { {
+
+inline OneTretominoRotations const& T { {
     T_north_to_west * POSX_POSY, T_north_to_west* NEGX_POSY,  //
     T_north_to_west* POSX_NEGY, T_north_to_west* POSX_NEGY,   //
     T_north_to_west* NEGX_POSY, T_north_to_west* POSX_POSY,   //
@@ -92,12 +93,13 @@ OneTretominoRotations const& T { {
 const CenterOffSets O_north_to_west {
     { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }
 };
-OneTretominoRotations const& O { {
+
+inline OneTretominoRotations const& O  { {
     O_north_to_west, O_north_to_west,  //
     O_north_to_west, O_north_to_west,  //
     O_north_to_west, O_north_to_west,  //
     O_north_to_west, O_north_to_west,  //
-} };
+}};
 
 const CenterOffSets I_north_to_west {
     { { 0, 0 }, { -1, 0 }, { 2, 0 }, { -1, -2 }, { 1, 2 } }
@@ -123,7 +125,8 @@ const CenterOffSets I_west_to_south {
 const CenterOffSets I_west_to_north {
     { { 0, 0 }, { 1, 0 }, { -2, 0 }, { 1, 2 }, { -2, -1 } }
 };
-OneTretominoRotations const& I { {
+
+inline OneTretominoRotations const& I { {
     I_north_to_west, I_north_to_east,  //
     I_east_to_north, I_east_to_south,  //
     I_south_to_east, I_south_to_west,  //
@@ -134,7 +137,8 @@ OneTretominoRotations const& I { {
 const CenterOffSets L_north_to_west {
     { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } }
 };
-OneTretominoRotations const& L { {
+
+inline OneTretominoRotations const& L { {
     L_north_to_west * POSX_POSY, L_north_to_west* NEGX_POSY,  //
     L_north_to_west* POSX_NEGY, L_north_to_west* POSX_NEGY,   //
     L_north_to_west* NEGX_POSY, L_north_to_west* POSX_POSY,   //
@@ -161,14 +165,14 @@ const TretominoRotation T_north {
 const TretominoRotation T_east { { { 0, -1 }, { 1, 0 }, { 0, 1 }, { 0, 0 } } };
 const TretominoRotation T_south { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } } };
 const TretominoRotation T_west { { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 0, 1 } } };
-AllTretominoRotations const& T { T_north, T_east, T_south, T_west };
+inline AllTretominoRotations const& T {{ T_north, T_east, T_south, T_west }};
 
 const TretominoRotation O_north { { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } } };
-AllTretominoRotations const& O { { O_north, O_north, O_north, O_north } };
+inline AllTretominoRotations const& O { { O_north, O_north, O_north, O_north } };
 
 const TretominoRotation I_north { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 } } };
 const TretominoRotation I_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 0, 2 } } };
-AllTretominoRotations const& I { { I_north, I_east, I_north, I_east } };
+inline AllTretominoRotations const& I { { I_north, I_east, I_north, I_east } };
 
 const TretominoRotation L_north {
     { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 1, -1 } }
@@ -180,7 +184,7 @@ const TretominoRotation L_south {
 const TretominoRotation L_west {
     { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, -1 } }
 };
-AllTretominoRotations const& L { { L_north, L_east, L_south, L_west } };
+inline AllTretominoRotations const& L { { L_north, L_east, L_south, L_west } };
 
 const TretominoRotation J_north {
     { { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, -1 } }
@@ -188,7 +192,7 @@ const TretominoRotation J_north {
 const TretominoRotation J_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, -1 } } };
 const TretominoRotation J_south { { { 1, 0 }, { 0, 0 }, { -1, 0 }, { 1, 1 } } };
 const TretominoRotation J_west { { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, 1 } } };
-AllTretominoRotations const& J { { J_north, J_east, J_south, J_west } };
+inline AllTretominoRotations const& J { { J_north, J_east, J_south, J_west } };
 
 const TretominoRotation S_north {
     { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, -1 } }
@@ -198,7 +202,7 @@ const TretominoRotation S_south { { { 0, 0 }, { 1, 0 }, { 0, 1 }, { -1, 1 } } };
 const TretominoRotation S_west {
     { { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, 1 } }
 };
-AllTretominoRotations const& S { { S_north, S_east, S_south, S_west } };
+inline AllTretominoRotations const& S { { S_north, S_east, S_south, S_west } };
 
 const TretominoRotation Z_north {
     { { 0, 0 }, { 0, -1 }, { -1, -1 }, { 1, 0 } }
@@ -208,7 +212,7 @@ const TretominoRotation Z_south { { { 0, 0 }, { -1, 0 }, { 0, 1 }, { 1, 1 } } };
 const TretominoRotation Z_west {
     { { 0, 0 }, { -1, 0 }, { -1, 1 }, { 0, -1 } }
 };
-AllTretominoRotations const& Z { { Z_north, Z_east, Z_south, Z_west } };
+inline AllTretominoRotations const& Z { { Z_north, Z_east, Z_south, Z_west } };
 
 const std::array<AllTretominoRotations, TRETOMINO_COUNT> ALL { {
     T,
@@ -218,7 +222,7 @@ const std::array<AllTretominoRotations, TRETOMINO_COUNT> ALL { {
     J,
     S,
     Z,
-} };
+}};
 
 const std::array<sf::Color, TRETOMINO_COUNT> ALL_COLORS { {
     sf::Color::Magenta,
