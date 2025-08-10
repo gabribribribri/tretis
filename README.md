@@ -57,10 +57,6 @@ No.
 - [ ] Pause menu
 - [ ] Mouse control
 - [ ] SFML installed from xmake.lua
-- [ ] build on NixOS
-- [ ] Switching Keyboards
-- [ ] Animations
-- [ ] A LOT of esthetical and functional refactoring
 
 
 (I won't make sound, I don't like sound).
