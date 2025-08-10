@@ -225,7 +225,7 @@ void Grid::create_score_report(uint8_t num_cleared_lines) {
                 ? grid_at(c_side_coo).getFillColor() != EMPTY_CELL_COLOR
                 : true;
 
-        Log::Warn(" a_side=", a_side, " b_side=", b_side,
+        Log::Warn("a_side=", a_side, " b_side=", b_side,
                   " c_side=", c_side, " d_side=", d_side);
 
         if (a_side and b_side and (c_side or d_side)) {
