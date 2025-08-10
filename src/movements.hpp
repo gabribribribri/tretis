@@ -2,9 +2,9 @@
 
 #include <SFML/System/Time.hpp>
 
-#include "grid.hpp"
 #include "time.hpp"
-#include "tretis.hpp"
+#include "blocks.hpp"
+#include "score.hpp"
 
 class Movements {
 private:

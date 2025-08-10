@@ -1,4 +1,5 @@
 #include "movements.hpp"
+#include "grid.hpp"
 
 void Movements::ping_lateral() {
     if (!lateral_pressed) {
