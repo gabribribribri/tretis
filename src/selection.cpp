@@ -19,7 +19,7 @@ Tretomino Selection::next_tretomino() {
     Tretomino next_tretomino = next_queue.add(shufflebag.take_one());
     refresh_next_queue_shapes();
     return next_tretomino;
-}    
+}
 
 void Selection::refresh_next_queue_shapes() {
     for (size_t i = 0; i < next_queue.size(); i++) {

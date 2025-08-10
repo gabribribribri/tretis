@@ -91,5 +91,6 @@ public:
 
 private:
     ~Tretis() = default;
-    Tretis();;
+    Tretis();
+    ;
 };

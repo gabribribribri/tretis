@@ -2,7 +2,6 @@
 
 constexpr float REC_SIZE = 40;
 
-
 const std::array<sf::Vector2f, TRETOMINO_COUNT> TRETOMINO_RENDER_OFFSET { {
     { REC_SIZE * 1.7, REC_SIZE * 1.9 },
     { REC_SIZE * 1.2, REC_SIZE * 1.1 },
@@ -12,7 +11,6 @@ const std::array<sf::Vector2f, TRETOMINO_COUNT> TRETOMINO_RENDER_OFFSET { {
     { REC_SIZE * 1.8, REC_SIZE * 2.1 },
     { REC_SIZE * 1.7, REC_SIZE * 2.2 },
 } };
-
 
 void TretominoRenderShape::set_tretomino(Tretomino tretomino) {
     for (int i = 0; i < 4; i++) {

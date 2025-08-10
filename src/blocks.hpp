@@ -38,13 +38,13 @@ const float NEXT_QUEUE_HEIGHT = 770;
 // Text related
 const int TITLE_SIZE = 20;
 const int VALUE_SIZE = 33;
-const sf::Vector2f TEXT_POS = sf::Vector2f(LEFT_OFFSET, HOLD_PIECE_DELIMITER_SIZE.y + HOLD_PIECE_DELIMITER_POS.y + 20);
+const sf::Vector2f TEXT_POS = sf::Vector2f(
+    LEFT_OFFSET, HOLD_PIECE_DELIMITER_SIZE.y + HOLD_PIECE_DELIMITER_POS.y + 20);
 
 // Colors
 const sf::Color EMPTY_CELL_COLOR = sf::Color::Black;
 const sf::Color PHANTOM_BLOCK_COLOR = sf::Color(64, 64, 64);
 const sf::Color BETWEEN_CELL_LINE_COLOR = sf::Color(32, 32, 32);
-
 
 // Movements
 const Coo MOVE_UP = Coo { 0, -1 };
@@ -94,12 +94,12 @@ const CenterOffSets O_north_to_west {
     { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }
 };
 
-const OneTretominoRotations O  { {
+const OneTretominoRotations O { {
     O_north_to_west, O_north_to_west,  //
     O_north_to_west, O_north_to_west,  //
     O_north_to_west, O_north_to_west,  //
     O_north_to_west, O_north_to_west,  //
-}};
+} };
 
 const CenterOffSets I_north_to_west {
     { { 0, 0 }, { -1, 0 }, { 2, 0 }, { -1, -2 }, { 1, 2 } }
@@ -165,7 +165,7 @@ const TretominoRotation T_north {
 const TretominoRotation T_east { { { 0, -1 }, { 1, 0 }, { 0, 1 }, { 0, 0 } } };
 const TretominoRotation T_south { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } } };
 const TretominoRotation T_west { { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 0, 1 } } };
-const AllTretominoRotations T {{ T_north, T_east, T_south, T_west }};
+const AllTretominoRotations T { { T_north, T_east, T_south, T_west } };
 
 const TretominoRotation O_north { { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } } };
 const AllTretominoRotations O { { O_north, O_north, O_north, O_north } };
@@ -222,7 +222,7 @@ const std::array<AllTretominoRotations, TRETOMINO_COUNT> ALL { {
     J,
     S,
     Z,
-}};
+} };
 
 const std::array<sf::Color, TRETOMINO_COUNT> ALL_COLORS { {
     sf::Color::Magenta,

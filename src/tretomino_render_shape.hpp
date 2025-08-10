@@ -15,7 +15,6 @@
 // Z  6  Red
 
 class TretominoRenderShape {
-
 public:
     std::array<sf::RectangleShape, 4> shape;
 

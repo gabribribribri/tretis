@@ -62,13 +62,13 @@ public:
     bool hold_locked = false;
     TretominoRenderShape hold_shape {};
 
-
 public:
-    Tretomino next_tretomino();    
+    Tretomino next_tretomino();
 
     void refresh_next_queue_shapes();
 
     std::optional<Tretomino> replace_hold_tretomino(Tretomino new_one);
+
 public:
     Selection(Selection const&) = delete;
     Selection(Selection&&) = delete;

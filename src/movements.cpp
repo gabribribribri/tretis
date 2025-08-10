@@ -45,7 +45,6 @@ void Movements::go_lateral(Coo direction) {
     Grid::Get().move_crbl(lateral_direction);
 }
 
-
 void Movements::go_vertical() {
     if (vertical_pressed) {
         return;
@@ -66,8 +65,7 @@ void Movements::ping() {
     ping_lateral();
     ping_vertical();
 
-    if (!vertical_pressed and
-        crbl_fall_by_one_countdown.has_time_passed()) {
+    if (!vertical_pressed and crbl_fall_by_one_countdown.has_time_passed()) {
         move_and_stop_if_crbl_placed();
     }
 }

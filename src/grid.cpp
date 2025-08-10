@@ -44,7 +44,6 @@ bool Grid::is_block_movable_to(Coo center, int rotation) {
     return true;
 }
 
-
 bool Grid::move_crbl(Coo direction) {
     if (is_block_movable_to(crbl_center + direction, crbl_rotation)) {
         crbl_center += direction;
@@ -66,8 +65,8 @@ void Grid::super_rotate_block(bool clockwise) {
         if (is_block_movable_to(crbl_center + offset, next_rotation)) {
             crbl_center += offset;
             crbl_rotation = next_rotation;
-            Log::Debug("Rotation to ", next_rotation, " with offset ",
-                       offset.x, " ", offset.y);
+            Log::Debug("Rotation to ", next_rotation, " with offset ", offset.x,
+                       " ", offset.y);
             if (crbl_tretomino == Tretomino::T) {
                 Score::Get().did_just_rotate();
                 if (rotation_point == 4) {
@@ -96,7 +95,6 @@ void Grid::hard_drop() {
     crbl_center = phbl_center;
 }
 
-
 void Grid::place_and_select_crbl() {
     // Placing the block, getting back modified lines
     uint64_t modified_lines_index_mask = place_crbl_on_grid();
@@ -119,8 +117,7 @@ void Grid::place_and_select_crbl() {
 
 uint64_t Grid::place_crbl_on_grid() {
     uint64_t modified_lines_index_mask = 0b0;
-    for (Coo cell_relative_position :
-         get_block_relative_cells(crbl_rotation)) {
+    for (Coo cell_relative_position : get_block_relative_cells(crbl_rotation)) {
         sf::Vector2i cell_absolute_position =
             crbl_center + cell_relative_position;
         modified_lines_index_mask |= 0b1 << cell_absolute_position.y;
@@ -128,7 +125,6 @@ uint64_t Grid::place_crbl_on_grid() {
     }
     return modified_lines_index_mask;
 }
-
 
 void Grid::select_new_crbl(std::optional<Tretomino> tretomino) {
     crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
@@ -209,24 +205,22 @@ void Grid::create_score_report(uint8_t num_cleared_lines) {
                     T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 1) % 4])
                 .getFillColor() != EMPTY_CELL_COLOR;
         Coo d_side_coo =
-            crbl_center +
-            T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 2) % 4];
+            crbl_center + T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 2) % 4];
         bool d_side =
             (d_side_coo.x >= 0 and d_side_coo.x < GRID_WIDTH and
              d_side_coo.y >= 0 and d_side_coo.y < GRID_HEIGHT)
                 ? grid_at(d_side_coo).getFillColor() != EMPTY_CELL_COLOR
                 : true;
         Coo c_side_coo =
-            crbl_center +
-            T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 3) % 4];
+            crbl_center + T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 3) % 4];
         bool c_side =
             (c_side_coo.x >= 0 and c_side_coo.x < GRID_WIDTH and
              c_side_coo.y >= 0 and c_side_coo.y < GRID_HEIGHT)
                 ? grid_at(c_side_coo).getFillColor() != EMPTY_CELL_COLOR
                 : true;
 
-        Log::Warn("a_side=", a_side, " b_side=", b_side,
-                  " c_side=", c_side, " d_side=", d_side);
+        Log::Warn("a_side=", a_side, " b_side=", b_side, " c_side=", c_side,
+                  " d_side=", d_side);
 
         if (a_side and b_side and (c_side or d_side)) {
             Log::Warn("T-Spin side acted !");
@@ -285,7 +279,6 @@ void Grid::adjust_phbl_center() {
     Log::Debug("Adjusting Phantom Block center at x=", phbl_center.x,
                " to y=", phbl_center.y);
 }
-
 
 void Grid::adjust_everything_if_moved() {
     if (crbl_shape_rotation != crbl_rotation or
@@ -346,7 +339,7 @@ Grid& Grid::Get() {
     static Grid instance;
     return instance;
 }
-    
+
 Grid::Grid() {
     // Init every cell of the grid
     for (sf::RectangleShape& cell : val) {

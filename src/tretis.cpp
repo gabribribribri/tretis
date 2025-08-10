@@ -32,10 +32,10 @@ void Tretis::debug_fps_cout() {
     if (cl.getElapsedTime() > sf::seconds(1.0f)) {
         Log::Info("FPS : ", fis);
         Log::Debug("tspin=", t_spin_indicator_activation,
-                  " mini=", mini_indicator_activation,
-                  " b2b=", b2b_indicator_activation,
-                  " line_clear=", line_clear_indicator_activation,
-                  " score_added=", score_added_indicator_activation);
+                   " mini=", mini_indicator_activation,
+                   " b2b=", b2b_indicator_activation,
+                   " line_clear=", line_clear_indicator_activation,
+                   " score_added=", score_added_indicator_activation);
         cl.restart();
         fis = 0;
     }
@@ -131,7 +131,6 @@ void Tretis::draw_game() const {
     }
 }
 
-
 void Tretis::update_texts() {
     Score& score = Score::Get();
     level_value.setString(score.level_str);
@@ -189,8 +188,7 @@ void Tretis::update_texts() {
     line_clear_indicator.setFillColor(line_clear_color);
 
     b2b_indicator.setFillColor(sf::Color(255, 255, gradient_progression()));
-    mini_indicator.setFillColor(
-        sf::Color(255, 0, 255, gradient_progression()));
+    mini_indicator.setFillColor(sf::Color(255, 0, 255, gradient_progression()));
     t_spin_indicator.setFillColor(
         sf::Color(255, 0, 255, gradient_progression()));
 
@@ -204,8 +202,7 @@ void Tretis::update_texts() {
 }
 
 sf::Uint8 Tretis::gradient_progression() {
-    return std::max(1 - indicators_clock.getElapsedTime().asSeconds(),
-                    0.0f) *
+    return std::max(1 - indicators_clock.getElapsedTime().asSeconds(), 0.0f) *
            255;
 }
 
@@ -330,10 +327,8 @@ Tretis::Tretis() {
     hold_piece_delimiter.setOutlineThickness(GAME_DELIMITER_LINE_THICHNESS);
 
     // Vertical Lines initialization
-    for (auto [i, line] :
-         vertical_cell_lines | std::ranges::views::enumerate) {
-        line = sf::RectangleShape(
-            sf::Vector2f(2, GRID_HEIGHT * CELL_SIZE + 1));
+    for (auto [i, line] : vertical_cell_lines | std::ranges::views::enumerate) {
+        line = sf::RectangleShape(sf::Vector2f(2, GRID_HEIGHT * CELL_SIZE + 1));
         line.setOrigin(GRID_ORIGIN);
         line.setPosition(
             sf::Vector2f(i * CELL_SIZE - BETWEEN_CELL_LINE_THICKNESS / 2,
@@ -344,8 +339,7 @@ Tretis::Tretis() {
     // Horizontal Lines initialization
     for (auto [i, line] :
          horizontal_cell_lines | std::ranges::views::enumerate) {
-        line =
-            sf::RectangleShape(sf::Vector2f(GRID_WIDTH * CELL_SIZE + 1, 2));
+        line = sf::RectangleShape(sf::Vector2f(GRID_WIDTH * CELL_SIZE + 1, 2));
         line.setOrigin(GRID_ORIGIN);
         line.setPosition(sf::Vector2f(-1, i * CELL_SIZE - 1));
         line.setFillColor(BETWEEN_CELL_LINE_COLOR);
@@ -425,4 +419,3 @@ Tretis::Tretis() {
     b2b_indicator.setCharacterSize(15);
     b2b_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 320);
 }
-

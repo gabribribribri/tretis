@@ -1,4 +1,7 @@
 #include "score.hpp"
+#include <cmath>
+#include <format>
+#include "logging.hpp"
 
 void Score::add_score(uint32_t n) {
     score += n;
