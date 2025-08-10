@@ -6,10 +6,8 @@
 #include <array>
 #include <cassert>
 #include <cstdint>
-#include <optional>
 
 #include "blocks.hpp"
-
 
 /// GRID ///
 class Grid {

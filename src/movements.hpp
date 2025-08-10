@@ -3,8 +3,8 @@
 #include <SFML/System/Time.hpp>
 
 #include "time.hpp"
-#include "blocks.hpp"
 #include "score.hpp"
+#include "blocks.hpp"
 
 class Movements {
 private:

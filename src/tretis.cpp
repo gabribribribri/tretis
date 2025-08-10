@@ -2,6 +2,7 @@
 #include "movements.hpp"
 #include "grid.hpp"
 #include "selection.hpp"
+#include "logging.hpp"
 
 void Tretis::gameloop() {
     while (render_window.isOpen()) {

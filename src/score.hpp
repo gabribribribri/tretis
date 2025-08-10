@@ -3,12 +3,7 @@
 #include <SFML/System/String.hpp>
 #include <SFML/System/Time.hpp>
 #include <cassert>
-#include <cmath>
 #include <cstdint>
-#include <format>
-#include <string>
-
-#include "logging.hpp"
 
 enum class LinesClear { None, Single, Double, Triple, Tretis };
 
