@@ -16,22 +16,13 @@ public:
     sf::Time time;
 
 public:
-    Chronometre(sf::Time time) : time(time) {}
+    Chronometre(sf::Time time);
 
     /// if time has passed and
     /// and if it has passed restart clock
-    bool has_time_passed() {
-        if (clock.getElapsedTime() > time) {
-            clock.restart();
-            return true;
-        }
-        return false;
-    }
+    bool has_time_passed();
 
-    void wait_until_time_has_passed() {
-        sf::sleep(time - clock.getElapsedTime());
-        clock.restart();
-    }
+    void wait_until_time_has_passed();
 
-    void restart() { clock.restart(); }
+    void restart();
 };
