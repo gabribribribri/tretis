@@ -1,6 +1,6 @@
 #include "tretomino_render_shape.hpp"
 
-constexpr float REC_SIZE = 40;
+constexpr float REC_SIZE = 160;
 
 const std::array<sf::Vector2f, TRETOMINO_COUNT> TRETOMINO_RENDER_OFFSET { {
     { REC_SIZE * 1.7, REC_SIZE * 1.9 },

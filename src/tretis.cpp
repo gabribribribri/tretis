@@ -328,7 +328,7 @@ Tretis::Tretis() {
 
     // Vertical Lines initialization
     for (auto [i, line] : vertical_cell_lines | std::ranges::views::enumerate) {
-        line = sf::RectangleShape(sf::Vector2f(2, GRID_HEIGHT * CELL_SIZE + 1));
+        line = sf::RectangleShape(sf::Vector2f(8, GRID_HEIGHT * CELL_SIZE + 4));
         line.setOrigin(GRID_ORIGIN);
         line.setPosition(
             sf::Vector2f(i * CELL_SIZE - BETWEEN_CELL_LINE_THICKNESS / 2,
@@ -339,9 +339,9 @@ Tretis::Tretis() {
     // Horizontal Lines initialization
     for (auto [i, line] :
          horizontal_cell_lines | std::ranges::views::enumerate) {
-        line = sf::RectangleShape(sf::Vector2f(GRID_WIDTH * CELL_SIZE + 1, 2));
+        line = sf::RectangleShape(sf::Vector2f(GRID_WIDTH * CELL_SIZE + 4, 8));
         line.setOrigin(GRID_ORIGIN);
-        line.setPosition(sf::Vector2f(-1, i * CELL_SIZE - 1));
+        line.setPosition(sf::Vector2f(-1, i * CELL_SIZE - 4));
         line.setFillColor(BETWEEN_CELL_LINE_COLOR);
     }
 
@@ -362,60 +362,60 @@ Tretis::Tretis() {
     level_value.setFillColor(sf::Color::White);
     level_value.setString(Score::Get().level_str);
     level_value.setCharacterSize(TITLE_SIZE);
-    level_value.setPosition(TEXT_POS.x + 160, TEXT_POS.y);
+    level_value.setPosition(TEXT_POS.x + 640, TEXT_POS.y);
 
     score_title.setFont(text_font);
     score_title.setFillColor(sf::Color::White);
     score_title.setString("SCORE");
     score_title.setCharacterSize(TITLE_SIZE);
-    score_title.setPosition(TEXT_POS.x, TEXT_POS.y + 30);
+    score_title.setPosition(TEXT_POS.x, TEXT_POS.y + 120);
 
     score_value.setFont(text_font);
     score_value.setFillColor(sf::Color::White);
     score_value.setString(Score::Get().score_str);
     score_value.setCharacterSize(VALUE_SIZE);
-    score_value.setPosition(TEXT_POS.x, TEXT_POS.y + 50);
+    score_value.setPosition(TEXT_POS.x, TEXT_POS.y + 200);
 
     lines_title.setFont(text_font);
     lines_title.setFillColor(sf::Color::White);
     lines_title.setString("LINES");
     lines_title.setCharacterSize(TITLE_SIZE);
-    lines_title.setPosition(TEXT_POS.x, TEXT_POS.y + 90);
+    lines_title.setPosition(TEXT_POS.x, TEXT_POS.y + 360);
 
     lines_value.setFont(text_font);
     lines_value.setFillColor(sf::Color::White);
     lines_value.setString(Score::Get().lines_str);
     lines_value.setCharacterSize(VALUE_SIZE);
-    lines_value.setPosition(TEXT_POS.x, TEXT_POS.y + 110);
+    lines_value.setPosition(TEXT_POS.x, TEXT_POS.y + 440);
 
     score_added_indicator.setFont(text_font);
     score_added_indicator.setFillColor(sf::Color::Magenta);
     score_added_indicator.setString("");
-    score_added_indicator.setCharacterSize(30);
-    score_added_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 150);
+    score_added_indicator.setCharacterSize(120);
+    score_added_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 600);
 
     line_clear_indicator.setFont(text_font);
     line_clear_indicator.setFillColor(sf::Color::Magenta);
     line_clear_indicator.setString("Mini");
-    line_clear_indicator.setCharacterSize(40);
-    line_clear_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 180);
+    line_clear_indicator.setCharacterSize(120);
+    line_clear_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 720);
     line_clear_indicator.setStyle(sf::Text::Bold);
 
     mini_indicator.setFont(text_font);
     mini_indicator.setFillColor(sf::Color::Magenta);
     mini_indicator.setString("Mini");
-    mini_indicator.setCharacterSize(15);
-    mini_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 250);
+    mini_indicator.setCharacterSize(60);
+    mini_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 1000);
 
     t_spin_indicator.setFont(text_font);
     t_spin_indicator.setFillColor(sf::Color::Magenta);
     t_spin_indicator.setString("T-Spin");
-    t_spin_indicator.setCharacterSize(50);
-    t_spin_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 270);
+    t_spin_indicator.setCharacterSize(200);
+    t_spin_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 1080);
 
     b2b_indicator.setFont(text_font);
     b2b_indicator.setFillColor(sf::Color::Yellow);
     b2b_indicator.setString("B2B Bonus");
-    b2b_indicator.setCharacterSize(15);
-    b2b_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 320);
+    b2b_indicator.setCharacterSize(60);
+    b2b_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 1280);
 }
