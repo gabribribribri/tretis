@@ -1,0 +1,9 @@
+# LLVM, GNU, Google, Chromium, Microsoft, Mozilla, WebKit
+BasedOnStyle: google
+IndentWidth: 4
+AccessModifierOffset: -4
+EmptyLineBeforeAccessModifier: Always
+SpaceBeforeCpp11BracedList: true
+Cpp11BracedListStyle: false
+IncludeBlocks: Preserve
+SortIncludes: Never
