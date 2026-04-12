@@ -10,9 +10,4 @@ bool Chronometre::has_time_passed() {
     return false;
 }
 
-void Chronometre::wait_until_time_has_passed() {
-    sf::sleep(time - clock.getElapsedTime());
-    clock.restart();
-}
-
 void Chronometre::restart() { clock.restart(); }

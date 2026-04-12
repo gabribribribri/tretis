@@ -3,6 +3,7 @@
 #include "grid.hpp"
 #include "selection.hpp"
 #include "logging.hpp"
+#include "time.hpp"
 
 void Tretis::gameloop() {
     while (render_window.isOpen()) {
@@ -19,9 +20,6 @@ void Tretis::gameloop() {
         render_window.clear(sf::Color::Black);
         draw_game();
         render_window.display();
-
-        /// WAITING ///
-        frame_time.wait_until_time_has_passed();
     }
 }
 
@@ -303,14 +301,19 @@ void Tretis::resize_window(float screen_width, float screen_height) {
 }
 
 void Tretis::hard_drop_ifnlocked() {
-    if (not Grid::Get().hard_drop_locked) {
-        Grid::Get().hard_drop_locked = true;
-        Movements::Get().crbl_fall_by_one_countdown.restart();
-        Grid::Get().hard_drop();
+    if (Grid::Get().hard_drop_locked) {
+        return;
     }
+    Grid::Get().hard_drop_locked = true;
+    Movements::Get().crbl_fall_by_one_countdown.restart();
+    Grid::Get().hard_drop();
+    
 }
 
 Tretis::Tretis() {
+    /// SETTING FRAMERATE ///
+    render_window.setFramerateLimit(FRAME_PER_SECOND);
+    
     /// SHAPED RELATED INITIALIZATIONS ///
 
     // Whole game delimiter initialization

@@ -4,8 +4,8 @@
 #include <SFML/System/Time.hpp>
 
 /// TIME CONSTANTS ///
-const int FRAME_PER_SECONDS = 240;
-const sf::Time TIME_PER_FRAME = sf::milliseconds(1000 / FRAME_PER_SECONDS);
+const int FRAME_PER_SECOND = 240;
+const sf::Time TIME_PER_FRAME = sf::milliseconds(1000 / FRAME_PER_SECOND);
 const sf::Time LATERAL_AUTO_REPEAT_DELAY = sf::milliseconds(200);
 const sf::Time AUTO_REPEAT_INTERVAL = sf::milliseconds(50);
 
@@ -21,8 +21,6 @@ public:
     /// if time has passed and
     /// and if it has passed restart clock
     bool has_time_passed();
-
-    void wait_until_time_has_passed();
 
     void restart();
 };

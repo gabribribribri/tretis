@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <cstdint>
 #include <ranges>
 
 using Coo = sf::Vector2i;
@@ -52,7 +53,7 @@ const Coo MOVE_LEFT = Coo { -1, 0 };
 const Coo MOVE_RIGHT = Coo { 1, 0 };
 const Coo MOVE_DOWN = Coo { 0, 1 };
 
-enum Tretomino : int {
+enum Tretomino : std::uint8_t {
     T = 0,  // Magenta
     O = 1,  // Yellow
     I = 2,  // Cyan
