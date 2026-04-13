@@ -23,11 +23,11 @@ std::array<sf::Vector2i, 4> const T_SPIN_RECOGNITION_PATTERN = {
 };
 
 TretominoRotation const& Grid::get_block_relative_cells(int rotation) const {
-    return Tretominos::ALL[crbl_tretomino][rotation];
+    return Tretominos::ALL.at(crbl_tretomino).at(rotation);
 }
 
 sf::Color Grid::get_crbl_color() const {
-    return Tretominos::ALL_COLORS[crbl_tretomino];
+    return Tretominos::ALL_COLORS.at(crbl_tretomino);
 }
 
 bool Grid::is_block_movable_to(Coo center, int rotation) {

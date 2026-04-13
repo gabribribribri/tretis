@@ -68,7 +68,7 @@ const int TRETOMINO_COUNT = 7;
 constexpr CenterOffSets operator*(CenterOffSets lhs, Coo rhs) noexcept {
     CenterOffSets ret;
     for (auto [i, coo] : lhs | std::views::enumerate) {
-        ret[i] = Coo { coo.x * rhs.x, coo.y * rhs.y };
+        ret.at(i) = Coo { coo.x * rhs.x, coo.y * rhs.y };
     }
     return ret;
 }
@@ -226,13 +226,13 @@ const std::array<AllTretominoRotations, TRETOMINO_COUNT> ALL { {
 } };
 
 const std::array<sf::Color, TRETOMINO_COUNT> ALL_COLORS { {
-    sf::Color::Magenta,
-    sf::Color::Yellow,
-    sf::Color::Cyan,
-    sf::Color(0xff, 0x7f, 0x00),
-    sf::Color::Blue,
-    sf::Color::Green,
-    sf::Color::Red,
+    sf::Color(255, 0, 255), // Magenta
+    sf::Color(255, 255, 0), // Yellow
+    sf::Color(0, 255, 255), // Cyan
+    sf::Color(0xff, 0x7f, 0), // Orange
+    sf::Color(0, 0, 255), // Blue
+    sf::Color(0, 255, 0), // Green
+    sf::Color(255, 0, 0), // Red
 } };
 
 }  // namespace Tretominos
