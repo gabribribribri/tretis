@@ -28,11 +28,11 @@ void Tretis::gameloop() {
     }
 }
 
-void Tretis::debug_fps_cout() {
+void Tretis::debug_fps_cout() const {
     static int fis = 0;
     static sf::Clock cl;
     fis++;
-    if (cl.getElapsedTime() > sf::seconds(1.0f)) {
+    if (cl.getElapsedTime() > sf::seconds(1.0F)) {
         Log::Info("FPS : ", fis);
         Log::Debug("tspin=", t_spin_indicator_activation,
                    " mini=", mini_indicator_activation,
@@ -209,7 +209,7 @@ void Tretis::update_texts() {
 sf::Uint8 Tretis::gradient_progression() {
     // ugly line
     return static_cast<sf::Uint8>(
-        max(1 - indicators_clock.getElapsedTime().asSeconds(), 0.0f) * 255.);
+        max(1 - indicators_clock.getElapsedTime().asSeconds(), 0.0F) * 255.);
 }
 
 void Tretis::handle_events() {
@@ -291,7 +291,8 @@ void Tretis::resize_window(float screen_width, float screen_height) {
     // I finallly mother flipping did this
     // I am having a stroke at the moment
     float screen_ratio = screen_width / screen_height;
-    float view_height = NAN, view_width = NAN;
+    float view_height = NAN;
+    float view_width = NAN;
 
     if (screen_ratio >= GAME_DELIMITER_SIZE.x / GAME_DELIMITER_SIZE.y) {
         view_height = GAME_DELIMITER_SIZE.y;
@@ -304,8 +305,8 @@ void Tretis::resize_window(float screen_width, float screen_height) {
     view_width = std::max(view_width, screen_width);
     view_height = std::max(view_height, screen_height);
 
-    float rectLeft = -view_width / 2 + GAME_DELIMITER_SIZE.x / 2;
-    float rectTop = -view_height / 2 + GAME_DELIMITER_SIZE.y / 2;
+    float rectLeft = (-view_width / 2) + (GAME_DELIMITER_SIZE.x / 2);
+    float rectTop = (-view_height / 2) + (GAME_DELIMITER_SIZE.y / 2);
 
     sf::FloatRect visibleArea(rectLeft, rectTop, view_width, view_height);
     render_window.setView(sf::View(visibleArea));
@@ -342,10 +343,10 @@ Tretis::Tretis() {
     // Vertical Lines initialization
     for (auto [i, line] : vertical_cell_lines | std::ranges::views::enumerate) {
         auto i_f = static_cast<float>(i);
-        line = sf::RectangleShape(sf::Vector2f(8, GRID_HEIGHT * CELL_SIZE + 4));
+        line = sf::RectangleShape(sf::Vector2f(8, (GRID_HEIGHT * CELL_SIZE) + 4));
         line.setOrigin(GRID_ORIGIN);
         line.setPosition(
-            sf::Vector2f(i_f * CELL_SIZE - BETWEEN_CELL_LINE_THICKNESS / 2,
+            sf::Vector2f((i_f * CELL_SIZE) - (BETWEEN_CELL_LINE_THICKNESS / 2),
                          -BETWEEN_CELL_LINE_THICKNESS / 2));
         line.setFillColor(BETWEEN_CELL_LINE_COLOR);
     }
@@ -354,9 +355,9 @@ Tretis::Tretis() {
     for (auto [i, line] :
          horizontal_cell_lines | std::ranges::views::enumerate) {
         auto i_f = static_cast<float>(i);
-        line = sf::RectangleShape(sf::Vector2f(GRID_WIDTH * CELL_SIZE + 4, 8));
+        line = sf::RectangleShape(sf::Vector2f((GRID_WIDTH * CELL_SIZE) + 4, 8));
         line.setOrigin(GRID_ORIGIN);
-        line.setPosition(sf::Vector2f(-1, i_f * CELL_SIZE - 4));
+        line.setPosition(sf::Vector2f(-1, (i_f * CELL_SIZE) - 4));
         line.setFillColor(BETWEEN_CELL_LINE_COLOR);
     }
 

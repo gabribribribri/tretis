@@ -44,7 +44,7 @@ struct CircularBuffer {
 };
 
 struct ShuffleBag {
-    std::random_device device {};
+    std::random_device device;
     std::mt19937 rng;  // Really I... I don't know what to do with this thing.
     std::array<Tretomino, TRETOMINO_COUNT> bag {};
     size_t items_left {};
@@ -58,23 +58,21 @@ struct ShuffleBag {
 
 class Selection {
 public:
-    ShuffleBag shufflebag {};
+    ShuffleBag shufflebag;
 
-    CircularBuffer<Tretomino, NEXT_QUEUE_SIZE> next_queue {};
+    CircularBuffer<Tretomino, NEXT_QUEUE_SIZE> next_queue;
     std::array<TretominoRenderShape, NEXT_QUEUE_SIZE> next_queue_shapes {};
 
-    std::optional<Tretomino> hold_tretomino {};
+    std::optional<Tretomino> hold_tretomino;
     bool hold_locked = false;
-    TretominoRenderShape hold_shape {};
+    TretominoRenderShape hold_shape;
 
-public:
     Tretomino next_tretomino();
 
     void refresh_next_queue_shapes();
 
     std::optional<Tretomino> replace_hold_tretomino(Tretomino new_one);
 
-public:
     Selection(Selection const&) = delete;
     Selection(Selection&&) = delete;
     Selection operator=(Selection) = delete;

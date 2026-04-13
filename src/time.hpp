@@ -4,10 +4,12 @@
 #include <SFML/System/Time.hpp>
 
 /// TIME CONSTANTS ///
+// NOLINTBEGIN(cert-err58-cpp)
 const int FRAME_PER_SECOND = 240;
 const sf::Time TIME_PER_FRAME = sf::milliseconds(1000 / FRAME_PER_SECOND);
 const sf::Time LATERAL_AUTO_REPEAT_DELAY = sf::milliseconds(200);
 const sf::Time AUTO_REPEAT_INTERVAL = sf::milliseconds(50);
+// NOLINTEND(cert-err58-cpp)
 
 /// CHRONOMETRE ///
 class Chronometre {
@@ -15,7 +17,6 @@ public:
     sf::Clock clock;
     sf::Time time;
 
-public:
     Chronometre(sf::Time time);
 
     /// if time has passed and

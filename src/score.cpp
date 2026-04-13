@@ -162,7 +162,7 @@ void Score::add_hard_drop(int length) {
     score_str = std::to_string(score);
 }
 
-sf::Time Score::get_drop_speed_from_level() {
+sf::Time Score::get_drop_speed_from_level() const {
     auto base = static_cast<float>(0.8 - ((level - 1) * 0.007));
     auto exp = static_cast<float>(level - 1);
     return sf::seconds(std::powf(base, exp));

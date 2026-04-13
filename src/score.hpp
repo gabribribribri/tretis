@@ -23,33 +23,9 @@ struct ScoreEvent {
 };
 
 class Score {
-private:
-    uint32_t score = 0;
-    uint32_t level = 1;
-    uint32_t lines = 0;
-    uint32_t lines_to_clear = 5 * level;
-
-    bool just_rotated = false;
-    bool rotation_point_5_used = false;  // Only for T of course
-
-    bool has_events_to_report = false;
-
-private:
-    sf::String score_str;
-    sf::String level_str;
-    sf::String lines_str;
-
-    ScoreEvent score_event;
-
-    void add_score(uint32_t n);
-
-    void add_lines(uint32_t n);
-
-    void set_lines_to_clear(uint32_t n);
-
-    void add_level(uint32_t n);
-
 public:
+    static Score& Get();
+
     void did_just_rotate();
 
     void did_just_move();
@@ -70,7 +46,7 @@ public:
 
     void add_hard_drop(int length);
 
-    sf::Time get_drop_speed_from_level();
+    [[nodiscard]] sf::Time get_drop_speed_from_level() const;
 
     [[nodiscard]] ScoreEvent copy_score_event() const;
 
@@ -80,16 +56,36 @@ public:
 
     [[nodiscard]] sf::String const& get_lines_str() const;
 
-private:
-    Score();
-    ;
-    ~Score() = default;
-
-public:
-    static Score& Get();
-
     Score(Score const&) = delete;
     Score(Score&&) = delete;
     Score operator=(Score) = delete;
     Score operator=(Score&&) = delete;
+
+private:
+    Score();
+    ~Score() = default;
+
+    uint32_t score = 0;
+    uint32_t level = 1;
+    uint32_t lines = 0;
+    uint32_t lines_to_clear = 5 * level;
+
+    bool just_rotated = false;
+    bool rotation_point_5_used = false;  // Only for T of course
+
+    bool has_events_to_report = false;
+
+    sf::String score_str;
+    sf::String level_str;
+    sf::String lines_str;
+
+    ScoreEvent score_event;
+
+    void add_score(uint32_t n);
+
+    void add_lines(uint32_t n);
+
+    void set_lines_to_clear(uint32_t n);
+
+    void add_level(uint32_t n);
 };

@@ -18,11 +18,9 @@ class TretominoRenderShape {
 public:
     std::array<sf::RectangleShape, 4> shape;
 
-public:
     void set_tretomino(Tretomino tretomino);
 
     void set_origin(sf::Vector2f origin);
 
-public:
     TretominoRenderShape();
 };

@@ -55,7 +55,7 @@ Selection::Selection() {
         auto i_f = static_cast<float>(i);
         next_queue_shapes.at(i).set_origin({
             -NEXT_QUEUE_POS.x,
-            -NEXT_QUEUE_POS.y - (NEXT_QUEUE_HEIGHT / NEXT_QUEUE_SIZE) * i_f,
+            -NEXT_QUEUE_POS.y - ((NEXT_QUEUE_HEIGHT / NEXT_QUEUE_SIZE) * i_f),
         });
     }
 

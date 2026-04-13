@@ -70,7 +70,7 @@ public:
     void gameloop();
 
 private:
-    void debug_fps_cout();
+    void debug_fps_cout() const;
 
     void draw_game() const;
 
@@ -82,7 +82,7 @@ private:
 
     void resize_window(float screen_width, float screen_height);
 
-    void hard_drop_ifnlocked();
+    static void hard_drop_ifnlocked();
 
 public:
     Tretis(Tretis const&) = delete;

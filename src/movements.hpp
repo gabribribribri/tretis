@@ -7,26 +7,6 @@
 #include "time.hpp"
 
 class Movements {
-private:
-    Coo lateral_direction;  // uninitialized ?
-    bool vertical_pressed = false;
-    bool lateral_pressed = false;
-    bool lateral_auto_repeat_enabled = false;
-    bool hard_drop_locked = false;
-
-private:
-    Chronometre lateral_auto_repeat_delay { LATERAL_AUTO_REPEAT_DELAY };
-    Chronometre lateral_auto_repeat_interval { AUTO_REPEAT_INTERVAL };
-    Chronometre vertical_auto_repeat_interval { AUTO_REPEAT_INTERVAL };
-    Chronometre crbl_fall_by_one_countdown =
-        Score::Get().get_drop_speed_from_level();
-
-    void ping_lateral();
-
-    void ping_vertical();
-
-    void move_and_stop_if_crbl_placed();
-
 public:
     void restart_crbl_fall_by_one_countdown();
 
@@ -44,15 +24,31 @@ public:
 
     [[nodiscard]] bool is_hard_drop_locked() const;
 
-private:
-    Movements() = default;
-    ~Movements() = default;
-
-public:
     static Movements& Get();
 
     Movements(Movements const&) = delete;
     Movements(Movements&&) = delete;
     Movements operator=(Movements) = delete;
     Movements operator=(Movements&&) = delete;
+
+private:
+    Coo lateral_direction;  // uninitialized ?
+    bool vertical_pressed = false;
+    bool lateral_pressed = false;
+    bool lateral_auto_repeat_enabled = false;
+    bool hard_drop_locked = false;
+
+    Chronometre lateral_auto_repeat_delay { LATERAL_AUTO_REPEAT_DELAY };
+    Chronometre lateral_auto_repeat_interval { AUTO_REPEAT_INTERVAL };
+    Chronometre vertical_auto_repeat_interval { AUTO_REPEAT_INTERVAL };
+    Chronometre crbl_fall_by_one_countdown = Score::Get().get_drop_speed_from_level();
+
+    void ping_lateral();
+
+    void ping_vertical();
+
+    void move_and_stop_if_crbl_placed();
+
+    Movements() = default;
+    ~Movements() = default;
 };

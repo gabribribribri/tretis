@@ -14,27 +14,6 @@ using GridData = std::array<sf::RectangleShape, static_cast<std::size_t>(GRID_HE
 
 /// GRID ///
 class Grid {
-private:
-    GridData data;  // initialized in constructor
-
-    // CRBL means CURRENT_BLOCK, the block that is falling.
-    Coo crbl_center;
-    TretominoGridShape crbl_shape;
-    Coo crbl_shape_center;
-    int crbl_shape_rotation {};  // Silence clang wanting initialization constructor
-
-    // PHBL means PHANTOM_BLOCK
-    Coo phbl_center;
-    sf::Color crbl_shape_color;
-    TretominoGridShape phbl_shape;
-
-    // phbl use crbl_rotation because always the same
-    int crbl_rotation = 0;
-    Tretomino crbl_tretomino {};  // Silence clang wanting initialization in constructor
-
-    bool phantom_enabled = true;
-    bool hard_drop_locked = false;
-
 public:
     TretominoRotation const& get_block_relative_cells(int rotation) const;
 
@@ -47,7 +26,7 @@ public:
 
     void super_rotate_block(bool clockwise);
 
-    int get_next_rotation(bool clockwise);
+    int get_next_rotation(bool clockwise) const;
 
     /// returns true if block has been placed, false if not
     bool move_crbl_down_or_place();
@@ -110,7 +89,6 @@ public:
     void switch_phantom_block();
     bool is_phantom_enabled() const;
 
-public:
     Grid(Grid const&) = delete;
     Grid(Grid&&) = delete;
     Grid operator=(Grid) = delete;
@@ -119,6 +97,26 @@ public:
     static Grid& Get();
 
 private:
+    GridData data;  // initialized in constructor
+
+    // CRBL means CURRENT_BLOCK, the block that is falling.
+    Coo crbl_center;
+    TretominoGridShape crbl_shape;
+    Coo crbl_shape_center;
+    int crbl_shape_rotation {};  // Silence clang wanting initialization constructor
+
+    // PHBL means PHANTOM_BLOCK
+    Coo phbl_center;
+    sf::Color crbl_shape_color;
+    TretominoGridShape phbl_shape;
+
+    // phbl use crbl_rotation because always the same
+    int crbl_rotation = 0;
+    Tretomino crbl_tretomino {};  // Silence clang wanting initialization in constructor
+
+    bool phantom_enabled = true;
+    bool hard_drop_locked = false;
+
     Grid();
     ~Grid() = default;
 };

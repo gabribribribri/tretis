@@ -21,12 +21,12 @@ sf::RectangleShape create_grid_cell() {
 }
 }  // namespace
 
+// NOLINTNEXTLINE(cert-err58-cpp)
 std::array<sf::Vector2i, 4> const T_SPIN_RECOGNITION_PATTERN = {
-    // NOLINT(cert-err58-cpp)
-    sf::Vector2i(-1, -1),  //
-    sf::Vector2i(+1, -1),  //
-    sf::Vector2i(+1, +1),  //
-    sf::Vector2i(-1, +1)   //
+    sf::Vector2i(-1, -1),
+    sf::Vector2i(+1, -1),
+    sf::Vector2i(+1, +1),
+    sf::Vector2i(-1, +1)
 };
 
 TretominoRotation const& Grid::get_block_relative_cells(int rotation) const {
@@ -65,10 +65,8 @@ void Grid::super_rotate_block(bool clockwise) {
     // on, tips : it's pretty smart.
     using namespace std::ranges;
     int next_rotation = get_next_rotation(clockwise);
-    for (const auto [rotation_point, offset] :
-         SuperRotationSystem::ALL.at(crbl_tretomino)
-                 .at((crbl_rotation * 2) + clockwise) |
-             views::enumerate) {
+    CenterOffsets center_offsets = SuperRotationSystem::ALL.at(crbl_tretomino).at((crbl_rotation * 2) + static_cast<int>(clockwise));
+    for (const auto [rotation_point, offset] : center_offsets | views::enumerate) {
         if (is_block_movable_to(crbl_center + offset, next_rotation)) {
             crbl_center += offset;
             crbl_rotation = next_rotation;
@@ -85,7 +83,7 @@ void Grid::super_rotate_block(bool clockwise) {
     }
 }
 
-int Grid::get_next_rotation(bool clockwise) {
+int Grid::get_next_rotation(bool clockwise) const {
     return pos_rem_mod(crbl_rotation + (clockwise ? 1 : -1), 4);
 }
 
@@ -334,7 +332,7 @@ sf::RectangleShape& Grid::grid_at(int x, int y) {
     assert(x < GRID_WIDTH);
     assert(y >= 0);
     assert(y < GRID_HEIGHT);
-    return data.at(y * GRID_WIDTH + x);
+    return data.at((y * GRID_WIDTH) + x);
 }
 
 sf::RectangleShape& Grid::grid_at(Coo coo) {
@@ -342,7 +340,7 @@ sf::RectangleShape& Grid::grid_at(Coo coo) {
     assert(coo.x < GRID_WIDTH);
     assert(coo.y >= 0);
     assert(coo.y < GRID_HEIGHT);
-    return data.at(coo.y * GRID_WIDTH + coo.x);
+    return data.at((coo.y * GRID_WIDTH) + coo.x);
 }
 
 void Grid::switch_phantom_block() { phantom_enabled = not phantom_enabled; }

@@ -2,6 +2,7 @@
 
 constexpr float REC_SIZE = 160;
 
+// NOLINTNEXTLINE(cert-err58-cpp)
 std::array<sf::Vector2f, TRETOMINO_COUNT> const TRETOMINO_RENDER_OFFSET { {
     { REC_SIZE * 1.7, REC_SIZE * 1.9 },
     { REC_SIZE * 1.2, REC_SIZE * 1.1 },
@@ -17,9 +18,9 @@ void TretominoRenderShape::set_tretomino(Tretomino tretomino) {
         int x_block = Tretominos::ALL.at(tretomino)[0].at(i).x;
         int y_block = Tretominos::ALL.at(tretomino)[0].at(i).y;
 
-        float x_pos = static_cast<float>(x_block) * REC_SIZE +
+        float x_pos = (static_cast<float>(x_block) * REC_SIZE) +
                       TRETOMINO_RENDER_OFFSET.at(tretomino).x;
-        float y_pos = static_cast<float>(y_block) * REC_SIZE +
+        float y_pos = (static_cast<float>(y_block) * REC_SIZE) +
                       TRETOMINO_RENDER_OFFSET.at(tretomino).y;
 
         shape.at(i).setPosition({ x_pos, y_pos });

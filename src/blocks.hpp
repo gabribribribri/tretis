@@ -10,8 +10,8 @@ using Coo = sf::Vector2i;
 using TretominoRotation = std::array<Coo, 4>;
 using AllTretominoRotations = std::array<TretominoRotation, 4>;
 
-using CenterOffSets = std::array<Coo, 5>;
-using OneTretominoRotations = std::array<CenterOffSets, 8>;
+using CenterOffsets = std::array<Coo, 5>;
+using OneTretominoRotations = std::array<CenterOffsets, 8>;
 
 using TretominoGridShape = std::array<sf::RectangleShape, 4>;
 
@@ -70,8 +70,8 @@ enum Tretomino : std::uint8_t {
 
 const int TRETOMINO_COUNT = 7;
 
-constexpr CenterOffSets operator*(CenterOffSets lhs, Coo rhs) noexcept {
-    CenterOffSets ret;
+constexpr CenterOffsets operator*(CenterOffsets lhs, Coo rhs) noexcept {
+    CenterOffsets ret;
     for (auto [i, coo] : lhs | std::views::enumerate) {
         ret.at(i) = Coo { coo.x * rhs.x, coo.y * rhs.y };
     }
@@ -85,7 +85,7 @@ const Coo NEGX_NEGY { -1, -1 };
 
 namespace SuperRotationSystem {
 
-const CenterOffSets T_NORTH_TO_WEST { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
+const CenterOffsets T_NORTH_TO_WEST { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
 
 const OneTretominoRotations T { {
     T_NORTH_TO_WEST * POSX_POSY,
@@ -98,7 +98,7 @@ const OneTretominoRotations T { {
     T_NORTH_TO_WEST* NEGX_NEGY,  //
 } };
 
-const CenterOffSets O_NORTH_TO_WEST { { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
+const CenterOffsets O_NORTH_TO_WEST { { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
 
 const OneTretominoRotations O { {
     O_NORTH_TO_WEST,
@@ -111,28 +111,28 @@ const OneTretominoRotations O { {
     O_NORTH_TO_WEST,  //
 } };
 
-const CenterOffSets I_NORTH_TO_WEST {
+const CenterOffsets I_NORTH_TO_WEST {
     { { 0, 0 }, { -1, 0 }, { 2, 0 }, { -1, -2 }, { 1, 2 } }
 };
-const CenterOffSets I_NORTH_TO_EAST {
+const CenterOffsets I_NORTH_TO_EAST {
     { { 1, 0 }, { -1, 0 }, { 2, 0 }, { -1, 1 }, { 2, -2 } }
 };
-const CenterOffSets I_EAST_TO_NORTH {
+const CenterOffsets I_EAST_TO_NORTH {
     { { -1, 0 }, { 1, 0 }, { -2, 0 }, { 1, -1 }, { -2, 2 } }
 };
-const CenterOffSets I_EAST_TO_SOUTH {
+const CenterOffsets I_EAST_TO_SOUTH {
     { { -1, 1 }, { -2, 1 }, { 1, 1 }, { -2, -1 }, { 1, 2 } }
 };
-const CenterOffSets I_SOUTH_TO_EAST {
+const CenterOffsets I_SOUTH_TO_EAST {
     { { 1, -1 }, { 2, -1 }, { -1, -1 }, { -2, -1 }, { -1, -2 } }
 };
-const CenterOffSets I_SOUTH_TO_WEST {
+const CenterOffsets I_SOUTH_TO_WEST {
     { { 0, -1 }, { 2, -1 }, { -1, -1 }, { 2, -2 }, { -1, 1 } }
 };
-const CenterOffSets I_WEST_TO_SOUTH {
+const CenterOffsets I_WEST_TO_SOUTH {
     { { 0, 1 }, { -2, 1 }, { 1, 1 }, { -2, 2 }, { 1, -1 } }
 };
-const CenterOffSets I_WEST_TO_NORTH {
+const CenterOffsets I_WEST_TO_NORTH {
     { { 0, 0 }, { 1, 0 }, { -2, 0 }, { 1, 2 }, { -2, -1 } }
 };
 
@@ -148,7 +148,7 @@ const OneTretominoRotations I { {
 
 } };
 
-const CenterOffSets L_NORTH_TO_WEST { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
+const CenterOffsets L_NORTH_TO_WEST { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
 
 const OneTretominoRotations L { {
     L_NORTH_TO_WEST * POSX_POSY,
