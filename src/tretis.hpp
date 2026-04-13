@@ -88,6 +88,7 @@ public:
     Tretis(const Tretis&) = delete;
     Tretis(Tretis&&) = delete;
     Tretis& operator=(const Tretis&) = delete;
+    Tretis& operator=(const Tretis&&) = delete;
 
 private:
     ~Tretis() = default;

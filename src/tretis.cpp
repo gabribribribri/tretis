@@ -1,9 +1,14 @@
 #include "tretis.hpp"
+
+#include <cmath>
 #include "movements.hpp"
 #include "grid.hpp"
+#include "score.hpp"
 #include "selection.hpp"
 #include "logging.hpp"
 #include "time.hpp"
+
+using std::max;
 
 void Tretis::gameloop() {
     while (render_window.isOpen()) {
@@ -95,7 +100,7 @@ void Tretis::draw_game() const {
     ///  GRID  ///
 
     // Draw the grid cells
-    for (sf::RectangleShape& cell : grid.val) {
+    for (sf::RectangleShape const& cell : grid.get_data()) {
         render_window.draw(cell);
     }
 
@@ -131,21 +136,23 @@ void Tretis::draw_game() const {
 
 void Tretis::update_texts() {
     Score& score = Score::Get();
-    level_value.setString(score.level_str);
-    score_value.setString(score.score_str);
-    lines_value.setString(score.lines_str);
+    ScoreEvent score_event = score.copy_score_event();
+
+    level_value.setString(score.get_level_str());
+    score_value.setString(score.get_score_str());
+    lines_value.setString(score.get_lines_str());
 
     if (score.do_we_have_events_to_report()) {
         indicators_clock.restart();
 
         t_spin_indicator_activation =
-            score.score_event.t_spin or score.score_event.mini_t_spin;
-        mini_indicator_activation = score.score_event.mini_t_spin;
-        b2b_indicator_activation = score.score_event.b2b_bonus;
+            score_event.t_spin or score_event.mini_t_spin;
+        mini_indicator_activation = score_event.mini_t_spin;
+        b2b_indicator_activation = score_event.b2b_bonus;
         line_clear_indicator_activation =
-            score.score_event.lines_clear != LinesClear::None;
+            score_event.lines_clear != LinesClear::None;
 
-        switch (score.score_event.lines_clear) {
+        switch (score_event.lines_clear) {
             case LinesClear::None:
                 // lol
                 break;
@@ -172,7 +179,7 @@ void Tretis::update_texts() {
 
         score_added_indicator_activation = true;
         score_added_indicator.setString(
-            std::format("+{}", score.score_event.score_added));
+            std::format("+{}", score_event.score_added));
 
         // Don't forget to clean the events after !
         score.reset_score_event();
@@ -200,23 +207,26 @@ void Tretis::update_texts() {
 }
 
 sf::Uint8 Tretis::gradient_progression() {
-    return std::max(1 - indicators_clock.getElapsedTime().asSeconds(), 0.0f) *
-           255;
+    // ugly line
+    return static_cast<sf::Uint8>(
+        max(1 - indicators_clock.getElapsedTime().asSeconds(), 0.0f) * 255.);
 }
 
 void Tretis::handle_events() {
     Grid& grid = Grid::Get();
     Movements& movements = Movements::Get();
 
-    sf::Event event;
+    sf::Event event {};
 
     while (render_window.pollEvent(event)) {
+        // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
         switch (event.type) {
             case sf::Event::Closed:
                 render_window.close();
                 break;
             case sf::Event::Resized:
-                resize_window(event.size.width, event.size.height);
+                resize_window(static_cast<float>(event.size.width),
+                              static_cast<float>(event.size.height));
                 break;
             case sf::Event::KeyPressed:
                 switch (event.key.code) {
@@ -274,13 +284,14 @@ void Tretis::handle_events() {
                 break;
         }
     }
+    // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 }
 
 void Tretis::resize_window(float screen_width, float screen_height) {
     // I finallly mother flipping did this
     // I am having a stroke at the moment
     float screen_ratio = screen_width / screen_height;
-    float view_height, view_width;
+    float view_height = NAN, view_width = NAN;
 
     if (screen_ratio >= GAME_DELIMITER_SIZE.x / GAME_DELIMITER_SIZE.y) {
         view_height = GAME_DELIMITER_SIZE.y;
@@ -301,19 +312,18 @@ void Tretis::resize_window(float screen_width, float screen_height) {
 }
 
 void Tretis::hard_drop_ifnlocked() {
-    if (Grid::Get().hard_drop_locked) {
+    if (Movements::Get().is_hard_drop_locked()) {
         return;
     }
-    Grid::Get().hard_drop_locked = true;
-    Movements::Get().crbl_fall_by_one_countdown.restart();
+    Movements::Get().set_hard_drop_lock(true);
+    Movements::Get().restart_crbl_fall_by_one_countdown();
     Grid::Get().hard_drop();
-    
 }
 
 Tretis::Tretis() {
     /// SETTING FRAMERATE ///
     render_window.setFramerateLimit(FRAME_PER_SECOND);
-    
+
     /// SHAPED RELATED INITIALIZATIONS ///
 
     // Whole game delimiter initialization
@@ -331,10 +341,11 @@ Tretis::Tretis() {
 
     // Vertical Lines initialization
     for (auto [i, line] : vertical_cell_lines | std::ranges::views::enumerate) {
+        auto i_f = static_cast<float>(i);
         line = sf::RectangleShape(sf::Vector2f(8, GRID_HEIGHT * CELL_SIZE + 4));
         line.setOrigin(GRID_ORIGIN);
         line.setPosition(
-            sf::Vector2f(i * CELL_SIZE - BETWEEN_CELL_LINE_THICKNESS / 2,
+            sf::Vector2f(i_f * CELL_SIZE - BETWEEN_CELL_LINE_THICKNESS / 2,
                          -BETWEEN_CELL_LINE_THICKNESS / 2));
         line.setFillColor(BETWEEN_CELL_LINE_COLOR);
     }
@@ -342,9 +353,10 @@ Tretis::Tretis() {
     // Horizontal Lines initialization
     for (auto [i, line] :
          horizontal_cell_lines | std::ranges::views::enumerate) {
+        auto i_f = static_cast<float>(i);
         line = sf::RectangleShape(sf::Vector2f(GRID_WIDTH * CELL_SIZE + 4, 8));
         line.setOrigin(GRID_ORIGIN);
-        line.setPosition(sf::Vector2f(-1, i * CELL_SIZE - 4));
+        line.setPosition(sf::Vector2f(-1, i_f * CELL_SIZE - 4));
         line.setFillColor(BETWEEN_CELL_LINE_COLOR);
     }
 
@@ -352,7 +364,7 @@ Tretis::Tretis() {
 
     if (!text_font.loadFromFile("apercumovistarbold.ttf")) {
         Log::Error("Could not load font ! Aborting !");
-        exit(1);
+        std::quick_exit(1);
     }
 
     level_title.setFont(text_font);
@@ -363,7 +375,7 @@ Tretis::Tretis() {
 
     level_value.setFont(text_font);
     level_value.setFillColor(sf::Color::White);
-    level_value.setString(Score::Get().level_str);
+    level_value.setString(Score::Get().get_level_str());
     level_value.setCharacterSize(TITLE_SIZE);
     level_value.setPosition(TEXT_POS.x + 640, TEXT_POS.y);
 
@@ -375,7 +387,7 @@ Tretis::Tretis() {
 
     score_value.setFont(text_font);
     score_value.setFillColor(sf::Color::White);
-    score_value.setString(Score::Get().score_str);
+    score_value.setString(Score::Get().get_score_str());
     score_value.setCharacterSize(VALUE_SIZE);
     score_value.setPosition(TEXT_POS.x, TEXT_POS.y + 200);
 
@@ -387,7 +399,7 @@ Tretis::Tretis() {
 
     lines_value.setFont(text_font);
     lines_value.setFillColor(sf::Color::White);
-    lines_value.setString(Score::Get().lines_str);
+    lines_value.setString(Score::Get().get_lines_str());
     lines_value.setCharacterSize(VALUE_SIZE);
     lines_value.setPosition(TEXT_POS.x, TEXT_POS.y + 440);
 

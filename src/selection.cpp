@@ -6,7 +6,7 @@ Tretomino ShuffleBag::take_one() {
     if (items_left == 0) {
         repopulate();
     }
-    return bag[items_left--];
+    return bag.at(items_left--);
 }
 
 void ShuffleBag::repopulate() {
@@ -23,7 +23,7 @@ Tretomino Selection::next_tretomino() {
 
 void Selection::refresh_next_queue_shapes() {
     for (size_t i = 0; i < next_queue.size(); i++) {
-        next_queue_shapes[i].set_tretomino(next_queue.at(i));
+        next_queue_shapes.at(i).set_tretomino(next_queue.at(i));
     }
 }
 
@@ -52,9 +52,10 @@ Selection::Selection() {
 
     // Next Queue Shapes
     for (size_t i = 0; i < NEXT_QUEUE_SIZE; i++) {
-        next_queue_shapes[i].set_origin({
+        auto i_f = static_cast<float>(i);
+        next_queue_shapes.at(i).set_origin({
             -NEXT_QUEUE_POS.x,
-            -NEXT_QUEUE_POS.y - (NEXT_QUEUE_HEIGHT / NEXT_QUEUE_SIZE) * i,
+            -NEXT_QUEUE_POS.y - (NEXT_QUEUE_HEIGHT / NEXT_QUEUE_SIZE) * i_f,
         });
     }
 

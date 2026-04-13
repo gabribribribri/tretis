@@ -5,24 +5,25 @@
 #include <SFML/Window/Cursor.hpp>
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
 #include "blocks.hpp"
 
+using GridData = std::array<sf::RectangleShape,
+                            static_cast<std::size_t>(GRID_HEIGHT* GRID_WIDTH)>;
+
 /// GRID ///
 class Grid {
-public:
-    std::array<sf::RectangleShape, GRID_HEIGHT * GRID_WIDTH>
-        val;  // initialized in constructor
-
-    bool hard_drop_locked = false;
-
 private:
+    GridData data;  // initialized in constructor
+
     // CRBL means CURRENT_BLOCK, the block that is falling.
     Coo crbl_center;
     TretominoGridShape crbl_shape;
     Coo crbl_shape_center;
-    int crbl_shape_rotation;
+    int crbl_shape_rotation {};  // Silence clang wanting initialization in
+                                 // constructor
 
     // PHBL means PHANTOM_BLOCK
     Coo phbl_center;
@@ -31,9 +32,11 @@ private:
 
     // phbl use crbl_rotation because always the same
     int crbl_rotation = 0;
-    Tretomino crbl_tretomino;
+    Tretomino crbl_tretomino {};  // Silence clang wanting initialization in
+                                  // constructor
 
     bool phantom_enabled = true;
+    bool hard_drop_locked = false;
 
 public:
     TretominoRotation const& get_block_relative_cells(int rotation) const;
@@ -94,6 +97,11 @@ public:
 
     void adjust_everything_new_crbl();
 
+    /// GETTERS ///
+    GridData const& get_data() const;
+
+    GridData& get_data();
+
     std::array<sf::RectangleShape, 4> const& get_crbl_shapes() const;
 
     std::array<sf::RectangleShape, 4> const& get_phbl_shapes() const;
@@ -109,6 +117,7 @@ public:
     Grid(Grid const&) = delete;
     Grid(Grid&&) = delete;
     Grid operator=(Grid) = delete;
+    Grid operator=(Grid&&) = delete;
 
     static Grid& Get();
 

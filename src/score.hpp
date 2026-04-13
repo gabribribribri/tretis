@@ -5,7 +5,7 @@
 #include <cassert>
 #include <cstdint>
 
-enum class LinesClear { None, Single, Double, Triple, Tretis };
+enum class LinesClear : std::uint8_t { None, Single, Double, Triple, Tretis };
 
 struct ScoreEvent {
     bool t_spin {};
@@ -28,14 +28,13 @@ private:
 
     bool has_events_to_report = false;
 
-public:
+private:
     sf::String score_str;
     sf::String level_str;
     sf::String lines_str;
 
     ScoreEvent score_event;
 
-private:
     void add_score(uint32_t n);
 
     void add_lines(uint32_t n);
@@ -67,6 +66,14 @@ public:
 
     sf::Time get_drop_speed_from_level();
 
+    [[nodiscard]] ScoreEvent copy_score_event() const;
+
+    [[nodiscard]] sf::String const& get_score_str() const;
+
+    [[nodiscard]] sf::String const& get_level_str() const;
+
+    [[nodiscard]] sf::String const& get_lines_str() const;
+
 private:
     Score();
     ;
@@ -78,4 +85,5 @@ public:
     Score(Score const&) = delete;
     Score(Score&&) = delete;
     Score operator=(Score) = delete;
+    Score operator=(Score&&) = delete;
 };

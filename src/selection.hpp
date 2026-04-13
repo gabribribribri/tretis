@@ -73,6 +73,7 @@ public:
     Selection(Selection const&) = delete;
     Selection(Selection&&) = delete;
     Selection operator=(Selection) = delete;
+    Selection operator=(Selection&&) = delete;
 
     static Selection& Get();
 

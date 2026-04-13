@@ -1,5 +1,7 @@
 #include "grid.hpp"
+#include "blocks.hpp"
 #include "logging.hpp"
+#include "movements.hpp"
 #include "score.hpp"
 #include "selection.hpp"
 
@@ -57,11 +59,12 @@ void Grid::super_rotate_block(bool clockwise) {
     // I just read this and even though right now I understand it, good luck
     // for anyone else or me in 2 years to figure out what the fuck is going
     // on, tips : it's pretty smart.
+    using namespace std::ranges;
     int next_rotation = get_next_rotation(clockwise);
     for (const auto [rotation_point, offset] :
-         SuperRotationSystem::ALL[crbl_tretomino]
-                                 [crbl_rotation * 2 + clockwise] |
-             std::ranges::views::enumerate) {
+         SuperRotationSystem::ALL.at(crbl_tretomino)
+                 .at(crbl_rotation * 2 + clockwise) |
+             views::enumerate) {
         if (is_block_movable_to(crbl_center + offset, next_rotation)) {
             crbl_center += offset;
             crbl_rotation = next_rotation;
@@ -112,7 +115,7 @@ void Grid::place_and_select_crbl() {
     // Releasing "once per block" hold lock
     // and hard drop locks
     Selection::Get().hold_locked = false;
-    hard_drop_locked = false;
+    Movements::Get().set_hard_drop_lock(false);
 }
 
 uint64_t Grid::place_crbl_on_grid() {
@@ -196,23 +199,21 @@ void Grid::create_score_report(uint8_t num_cleared_lines) {
     if (crbl_tretomino == Tretomino::T) {
         //!\\ C and D are inverted because C is bottom left and D is bottom
         //! right
-        bool a_side =
-            grid_at(crbl_center +
-                    T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 0) % 4])
-                .getFillColor() != EMPTY_CELL_COLOR;
-        bool b_side =
-            grid_at(crbl_center +
-                    T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 1) % 4])
-                .getFillColor() != EMPTY_CELL_COLOR;
-        Coo d_side_coo =
-            crbl_center + T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 2) % 4];
+        bool a_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at(
+                                                (crbl_rotation + 0) % 4))
+                          .getFillColor() != EMPTY_CELL_COLOR;
+        bool b_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at(
+                                                (crbl_rotation + 1) % 4))
+                          .getFillColor() != EMPTY_CELL_COLOR;
+        Coo d_side_coo = crbl_center +
+                         T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 2) % 4);
         bool d_side =
             (d_side_coo.x >= 0 and d_side_coo.x < GRID_WIDTH and
              d_side_coo.y >= 0 and d_side_coo.y < GRID_HEIGHT)
                 ? grid_at(d_side_coo).getFillColor() != EMPTY_CELL_COLOR
                 : true;
-        Coo c_side_coo =
-            crbl_center + T_SPIN_RECOGNITION_PATTERN[(crbl_rotation + 3) % 4];
+        Coo c_side_coo = crbl_center +
+                         T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 3) % 4);
         bool c_side =
             (c_side_coo.x >= 0 and c_side_coo.x < GRID_WIDTH and
              c_side_coo.y >= 0 and c_side_coo.y < GRID_HEIGHT)
@@ -243,10 +244,11 @@ void Grid::create_score_report(uint8_t num_cleared_lines) {
 void Grid::adjust_crbl_shape_position() {
     for (auto [i, cell] : get_block_relative_cells(crbl_shape_rotation) |
                               std::ranges::views::enumerate) {
-        // ugly but useful implicit int to float conversion
-        crbl_shape[i].setPosition(
-            sf::Vector2f(CELL_SIZE * (crbl_shape_center.x + cell.x),
-                         CELL_SIZE * (crbl_shape_center.y + cell.y)));
+        auto pos_x =
+            static_cast<float>(CELL_SIZE * (crbl_shape_center.x + cell.x));
+        auto pos_y =
+            static_cast<float>(CELL_SIZE * (crbl_shape_center.y + cell.y));
+        crbl_shape.at(i).setPosition(sf::Vector2f(pos_x, pos_y));
     }
 }
 
@@ -260,10 +262,9 @@ void Grid::adjust_crbl_shape_color() {
 void Grid::adjust_phbl_shape_position() {
     for (auto [i, cell] : get_block_relative_cells(crbl_shape_rotation) |
                               std::ranges::views::enumerate) {
-        // ugly but useful implicit int to float conversion
-        phbl_shape[i].setPosition(
-            sf::Vector2f(CELL_SIZE * (phbl_center.x + cell.x),
-                         CELL_SIZE * (phbl_center.y + cell.y)));
+        auto pos_x = static_cast<float>(CELL_SIZE * (phbl_center.x + cell.x));
+        auto pos_y = static_cast<float>(CELL_SIZE * (phbl_center.y + cell.y));
+        phbl_shape.at(i).setPosition(sf::Vector2f(pos_x, pos_y));
     }
 }
 
@@ -295,7 +296,7 @@ void Grid::adjust_everything_if_moved() {
 }
 
 void Grid::adjust_everything_new_crbl() {
-    Log::Debug("New crbl selected : Tretomino ", crbl_tretomino);
+    Log::Debug("New crbl selected");
     // crbl color adjustement
     crbl_shape_color = get_crbl_color();
     adjust_crbl_shape_color();
@@ -306,6 +307,14 @@ void Grid::adjust_everything_new_crbl() {
     // phbl adjustement (need crbl adjustement)
     adjust_phbl_center();
     adjust_phbl_shape_position();
+}
+
+GridData const& Grid::get_data() const {
+    return data;
+}
+
+GridData& Grid::get_data() {
+    return data;
 }
 
 std::array<sf::RectangleShape, 4> const& Grid::get_crbl_shapes() const {
@@ -321,7 +330,7 @@ sf::RectangleShape& Grid::grid_at(int x, int y) {
     assert(x < GRID_WIDTH);
     assert(y >= 0);
     assert(y < GRID_HEIGHT);
-    return val[y * GRID_WIDTH + x];
+    return data.at(y * GRID_WIDTH + x);
 }
 
 sf::RectangleShape& Grid::grid_at(Coo coo) {
@@ -329,7 +338,7 @@ sf::RectangleShape& Grid::grid_at(Coo coo) {
     assert(coo.x < GRID_WIDTH);
     assert(coo.y >= 0);
     assert(coo.y < GRID_HEIGHT);
-    return val[coo.y * GRID_WIDTH + coo.x];
+    return data.at(coo.y * GRID_WIDTH + coo.x);
 }
 
 void Grid::switch_phantom_block() { phantom_enabled = not phantom_enabled; }
@@ -342,7 +351,7 @@ Grid& Grid::Get() {
 
 Grid::Grid() {
     // Init every cell of the grid
-    for (sf::RectangleShape& cell : val) {
+    for (sf::RectangleShape& cell : data) {
         cell = create_grid_cell();
         cell.setFillColor(EMPTY_CELL_COLOR);
     }
@@ -351,8 +360,9 @@ Grid::Grid() {
     for (int y = 0; y < GRID_HEIGHT; y++) {
         for (int x = 0; x < GRID_WIDTH; x++) {
             grid_at(x, y).setOrigin(GRID_ORIGIN);
-            grid_at(x, y).setPosition(
-                sf::Vector2f(x * CELL_SIZE, y * CELL_SIZE));
+            auto x_pos = static_cast<float>(x * CELL_SIZE);
+            auto y_pos = static_cast<float>(y * CELL_SIZE);
+            grid_at(x, y).setPosition(sf::Vector2f(x_pos, y_pos));
         }
     }
 

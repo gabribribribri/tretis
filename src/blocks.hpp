@@ -18,8 +18,10 @@ using TretominoGridShape = std::array<sf::RectangleShape, 4>;
 /// CONSTANTS ///
 
 // Grid logic related
-const int GRID_HEIGHT = 22;  // MUST NOT EXCEED 64 because of bitshifting dark
-                             // magic happening in clearing lines process
+
+// MUST NOT EXCEED 64 because of bitshifting dark
+// magic happening in clearing lines process
+const int GRID_HEIGHT = 22;
 const int GRID_WIDTH = 10;
 const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 };
 
@@ -43,7 +45,7 @@ const sf::Vector2f TEXT_POS = sf::Vector2f(
     LEFT_OFFSET, HOLD_PIECE_DELIMITER_SIZE.y + HOLD_PIECE_DELIMITER_POS.y + 80);
 
 // Colors
-const sf::Color EMPTY_CELL_COLOR = sf::Color::Black;
+const sf::Color EMPTY_CELL_COLOR = sf::Color(0, 0, 0);
 const sf::Color PHANTOM_BLOCK_COLOR = sf::Color(64, 64, 64);
 const sf::Color BETWEEN_CELL_LINE_COLOR = sf::Color(32, 32, 32);
 
@@ -85,10 +87,14 @@ const CenterOffSets T_north_to_west {
 };
 
 const OneTretominoRotations T { {
-    T_north_to_west * POSX_POSY, T_north_to_west* NEGX_POSY,  //
-    T_north_to_west* POSX_NEGY, T_north_to_west* POSX_NEGY,   //
-    T_north_to_west* NEGX_POSY, T_north_to_west* POSX_POSY,   //
-    T_north_to_west* NEGX_NEGY, T_north_to_west* NEGX_NEGY,   //
+    T_north_to_west * POSX_POSY,
+    T_north_to_west* NEGX_POSY,  //
+    T_north_to_west* POSX_NEGY,
+    T_north_to_west* POSX_NEGY,  //
+    T_north_to_west* NEGX_POSY,
+    T_north_to_west* POSX_POSY,  //
+    T_north_to_west* NEGX_NEGY,
+    T_north_to_west* NEGX_NEGY,  //
 } };
 
 const CenterOffSets O_north_to_west {
@@ -96,10 +102,14 @@ const CenterOffSets O_north_to_west {
 };
 
 const OneTretominoRotations O { {
-    O_north_to_west, O_north_to_west,  //
-    O_north_to_west, O_north_to_west,  //
-    O_north_to_west, O_north_to_west,  //
-    O_north_to_west, O_north_to_west,  //
+    O_north_to_west,
+    O_north_to_west,  //
+    O_north_to_west,
+    O_north_to_west,  //
+    O_north_to_west,
+    O_north_to_west,  //
+    O_north_to_west,
+    O_north_to_west,  //
 } };
 
 const CenterOffSets I_north_to_west {
@@ -128,10 +138,14 @@ const CenterOffSets I_west_to_north {
 };
 
 const OneTretominoRotations I { {
-    I_north_to_west, I_north_to_east,  //
-    I_east_to_north, I_east_to_south,  //
-    I_south_to_east, I_south_to_west,  //
-    I_west_to_south, I_west_to_north,  //
+    I_north_to_west,
+    I_north_to_east,  //
+    I_east_to_north,
+    I_east_to_south,  //
+    I_south_to_east,
+    I_south_to_west,  //
+    I_west_to_south,
+    I_west_to_north,  //
 
 } };
 
@@ -140,10 +154,14 @@ const CenterOffSets L_north_to_west {
 };
 
 const OneTretominoRotations L { {
-    L_north_to_west * POSX_POSY, L_north_to_west* NEGX_POSY,  //
-    L_north_to_west* POSX_NEGY, L_north_to_west* POSX_NEGY,   //
-    L_north_to_west* NEGX_POSY, L_north_to_west* POSX_POSY,   //
-    L_north_to_west* NEGX_NEGY, L_north_to_west* NEGX_NEGY,   //
+    L_north_to_west * POSX_POSY,
+    L_north_to_west* NEGX_POSY,  //
+    L_north_to_west* POSX_NEGY,
+    L_north_to_west* POSX_NEGY,  //
+    L_north_to_west* NEGX_POSY,
+    L_north_to_west* POSX_POSY,  //
+    L_north_to_west* NEGX_NEGY,
+    L_north_to_west* NEGX_NEGY,  //
 } };
 
 const std::array<OneTretominoRotations, TRETOMINO_COUNT> ALL { {
@@ -226,13 +244,13 @@ const std::array<AllTretominoRotations, TRETOMINO_COUNT> ALL { {
 } };
 
 const std::array<sf::Color, TRETOMINO_COUNT> ALL_COLORS { {
-    sf::Color(255, 0, 255), // Magenta
-    sf::Color(255, 255, 0), // Yellow
-    sf::Color(0, 255, 255), // Cyan
-    sf::Color(0xff, 0x7f, 0), // Orange
-    sf::Color(0, 0, 255), // Blue
-    sf::Color(0, 255, 0), // Green
-    sf::Color(255, 0, 0), // Red
+    sf::Color(255, 0, 255),    // Magenta
+    sf::Color(255, 255, 0),    // Yellow
+    sf::Color(0, 255, 255),    // Cyan
+    sf::Color(0xff, 0x7f, 0),  // Orange
+    sf::Color(0, 0, 255),      // Blue
+    sf::Color(0, 255, 0),      // Green
+    sf::Color(255, 0, 0),      // Red
 } };
 
 }  // namespace Tretominos

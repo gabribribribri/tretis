@@ -163,8 +163,21 @@ void Score::add_hard_drop(int length) {
 }
 
 sf::Time Score::get_drop_speed_from_level() {
-    return sf::seconds(std::powf(0.8 - ((level - 1) * 0.007), level - 1));
+    auto base = static_cast<float>(0.8 - ((level - 1) * 0.007));
+    auto exp = static_cast<float>(level - 1);
+    return sf::seconds(std::powf(base, exp));
 }
+
+
+ScoreEvent Score::copy_score_event() const {
+    return score_event;
+}
+
+sf::String const& Score::get_score_str() const { return score_str; };
+
+sf::String const& Score::get_level_str() const { return level_str; };
+
+sf::String const& Score::get_lines_str() const { return lines_str; };
 
 Score::Score() {
     set_default_values();

@@ -34,6 +34,10 @@ void Movements::move_and_stop_if_crbl_placed() {
     }
 }
 
+void Movements::restart_crbl_fall_by_one_countdown() {
+    crbl_fall_by_one_countdown.restart();
+}
+
 void Movements::go_lateral(Coo direction) {
     if (lateral_pressed and lateral_direction == direction) {
         return;
@@ -57,6 +61,14 @@ void Movements::go_vertical() {
 void Movements::stop_lateral() {
     lateral_pressed = false;
     lateral_auto_repeat_enabled = false;
+}
+
+void Movements::set_hard_drop_lock(bool locked)  {
+    hard_drop_locked = locked;
+}
+
+bool Movements::is_hard_drop_locked() const {
+    return hard_drop_locked;
 }
 
 void Movements::stop_vertical() { vertical_pressed = false; }

@@ -12,15 +12,15 @@ private:
     bool vertical_pressed = false;
     bool lateral_pressed = false;
     bool lateral_auto_repeat_enabled = false;
+    bool hard_drop_locked = false;
 
-public:
+private:
     Chronometre lateral_auto_repeat_delay { LATERAL_AUTO_REPEAT_DELAY };
     Chronometre lateral_auto_repeat_interval { AUTO_REPEAT_INTERVAL };
     Chronometre vertical_auto_repeat_interval { AUTO_REPEAT_INTERVAL };
     Chronometre crbl_fall_by_one_countdown =
         Score::Get().get_drop_speed_from_level();
 
-private:
     void ping_lateral();
 
     void ping_vertical();
@@ -28,6 +28,8 @@ private:
     void move_and_stop_if_crbl_placed();
 
 public:
+    void restart_crbl_fall_by_one_countdown();
+    
     void go_lateral(Coo direction);
 
     void go_vertical();
@@ -37,6 +39,10 @@ public:
     void stop_vertical();
 
     void ping();
+
+    void set_hard_drop_lock(bool locked);
+
+    [[nodiscard]] bool is_hard_drop_locked() const;
 
 private:
     Movements() = default;
@@ -48,4 +54,5 @@ public:
     Movements(Movements const&) = delete;
     Movements(Movements&&) = delete;
     Movements operator=(Movements) = delete;
+    Movements operator=(Movements&&) = delete;
 };
