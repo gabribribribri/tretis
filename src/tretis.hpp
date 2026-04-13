@@ -11,6 +11,16 @@
 #include "time.hpp"
 
 class Tretis {
+public:
+    static Tretis& Get();
+
+    void gameloop();
+
+    Tretis(Tretis const&) = delete;
+    Tretis(Tretis&&) = delete;
+    Tretis& operator=(Tretis const&) = delete;
+    Tretis& operator=(Tretis const&&) = delete;
+
 private:
     // Messy but optimal fields order
     // Time related stuff
@@ -64,19 +74,15 @@ private:
     bool line_clear_indicator_activation = false;
     bool score_added_indicator_activation = false;
 
-public:
-    static Tretis& Get();
 
-    void gameloop();
-
-private:
+    /// METHODS ///
     void debug_fps_cout() const;
 
     void draw_game() const;
 
     void update_texts();
 
-    sf::Uint8 gradient_progression();
+    sf::Uint8 fade_texts_progression();
 
     void handle_events();
 
@@ -84,14 +90,6 @@ private:
 
     static void hard_drop_ifnlocked();
 
-public:
-    Tretis(Tretis const&) = delete;
-    Tretis(Tretis&&) = delete;
-    Tretis& operator=(Tretis const&) = delete;
-    Tretis& operator=(Tretis const&&) = delete;
-
-private:
     ~Tretis() = default;
     Tretis();
-    ;
 };

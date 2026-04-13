@@ -1,6 +1,7 @@
 #include "tretis.hpp"
 
 #include <cmath>
+#include "blocks.hpp"
 #include "grid.hpp"
 #include "logging.hpp"
 #include "movements.hpp"
@@ -185,19 +186,22 @@ void Tretis::update_texts() {
         score.reset_score_event();
     }
 
+
+    sf::Uint8 text_fading = fade_texts_progression();
+
     score_added_indicator.setFillColor(
-        sf::Color(255, 255, 255, gradient_progression()));
+        sf::Color(255, 255, 255, text_fading));
 
     sf::Color line_clear_color = line_clear_indicator.getFillColor();
-    line_clear_color.a = gradient_progression();
+    line_clear_color.a = text_fading;
     line_clear_indicator.setFillColor(line_clear_color);
 
-    b2b_indicator.setFillColor(sf::Color(255, 255, gradient_progression()));
-    mini_indicator.setFillColor(sf::Color(255, 0, 255, gradient_progression()));
+    b2b_indicator.setFillColor(sf::Color(255, 255, text_fading));
+    mini_indicator.setFillColor(sf::Color(255, 0, 255, text_fading));
     t_spin_indicator.setFillColor(
-        sf::Color(255, 0, 255, gradient_progression()));
+        sf::Color(255, 0, 255, text_fading));
 
-    if (gradient_progression() == 0) {
+    if (text_fading == 0) {
         b2b_indicator_activation = false;
         mini_indicator_activation = false;
         line_clear_indicator_activation = false;
@@ -206,7 +210,7 @@ void Tretis::update_texts() {
     }
 }
 
-sf::Uint8 Tretis::gradient_progression() {
+sf::Uint8 Tretis::fade_texts_progression() {
     // ugly line
     return static_cast<sf::Uint8>(
         max(1 - indicators_clock.getElapsedTime().asSeconds(), 0.0F) * 255.);
@@ -290,20 +294,26 @@ void Tretis::handle_events() {
 void Tretis::resize_window(float screen_width, float screen_height) {
     // I finallly mother flipping did this
     // I am having a stroke at the moment
-    float screen_ratio = screen_width / screen_height;
+    const float screen_ratio = (screen_width / screen_height);
+    const float game_delimiter_ratio = GAME_DELIMITER_SIZE.x / GAME_DELIMITER_SIZE.y;
+    const float zoom = 0.9;
     float view_height = NAN;
     float view_width = NAN;
 
-    if (screen_ratio >= GAME_DELIMITER_SIZE.x / GAME_DELIMITER_SIZE.y) {
+    if (screen_ratio >= game_delimiter_ratio) {
+        // Screen is thinner than Game Delimiter
         view_height = GAME_DELIMITER_SIZE.y;
         view_width = GAME_DELIMITER_SIZE.y * screen_ratio;
     } else {
+        // Screen is thicker than Game Delimiter
         view_width = GAME_DELIMITER_SIZE.x;
         view_height = GAME_DELIMITER_SIZE.x / screen_ratio;
     }
 
     view_width = std::max(view_width, screen_width);
     view_height = std::max(view_height, screen_height);
+    view_width /= zoom;
+    view_height /= zoom;
 
     float rectLeft = (-view_width / 2) + (GAME_DELIMITER_SIZE.x / 2);
     float rectTop = (-view_height / 2) + (GAME_DELIMITER_SIZE.y / 2);

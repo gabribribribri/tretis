@@ -31,6 +31,7 @@ void Score::did_just_move() { just_rotated = false; }
 void Score::using_rotation_point_5() { rotation_point_5_used = true; }
 
 bool Score::do_we_have_events_to_report() {
+    // return std::exchange(has_events_to_report, false);
     bool event = has_events_to_report;
     has_events_to_report = false;
     return event;
