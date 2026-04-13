@@ -17,17 +17,20 @@ using TretominoGridShape = std::array<sf::RectangleShape, 4>;
 
 /// CONSTANTS ///
 
+// I can't fix the SFML constructors, so
+// NOLINTBEGIN(cert-err58-cpp)
+
 // Grid logic related
 
 // MUST NOT EXCEED 64 because of bitshifting dark
 // magic happening in clearing lines process
 const int GRID_HEIGHT = 22;
 const int GRID_WIDTH = 10;
-const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 };
+const Coo NEW_CRBL_INITIAL_CENTER_POSITION = Coo { 4, 1 }; 
 
 // Game Rendering related
 const int LEFT_OFFSET = 320;
-const sf::Vector2f GRID_ORIGIN = sf::Vector2f(-1320.0, -200.0);
+const sf::Vector2f GRID_ORIGIN = sf::Vector2f(-1320.0, -200.0); 
 const int CELL_SIZE = 140;
 const sf::Vector2f GAME_DELIMITER_SIZE = sf::Vector2f(3920, 3480);
 const float BETWEEN_CELL_LINE_THICKNESS = 8.0;
@@ -82,80 +85,80 @@ const Coo NEGX_NEGY { -1, -1 };
 
 namespace SuperRotationSystem {
 
-const CenterOffSets T_north_to_west { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
+const CenterOffSets T_NORTH_TO_WEST { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
 
 const OneTretominoRotations T { {
-    T_north_to_west * POSX_POSY,
-    T_north_to_west* NEGX_POSY,  //
-    T_north_to_west* POSX_NEGY,
-    T_north_to_west* POSX_NEGY,  //
-    T_north_to_west* NEGX_POSY,
-    T_north_to_west* POSX_POSY,  //
-    T_north_to_west* NEGX_NEGY,
-    T_north_to_west* NEGX_NEGY,  //
+    T_NORTH_TO_WEST * POSX_POSY,
+    T_NORTH_TO_WEST* NEGX_POSY,  //
+    T_NORTH_TO_WEST* POSX_NEGY,
+    T_NORTH_TO_WEST* POSX_NEGY,  //
+    T_NORTH_TO_WEST* NEGX_POSY,
+    T_NORTH_TO_WEST* POSX_POSY,  //
+    T_NORTH_TO_WEST* NEGX_NEGY,
+    T_NORTH_TO_WEST* NEGX_NEGY,  //
 } };
 
-const CenterOffSets O_north_to_west { { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
+const CenterOffSets O_NORTH_TO_WEST { { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
 
 const OneTretominoRotations O { {
-    O_north_to_west,
-    O_north_to_west,  //
-    O_north_to_west,
-    O_north_to_west,  //
-    O_north_to_west,
-    O_north_to_west,  //
-    O_north_to_west,
-    O_north_to_west,  //
+    O_NORTH_TO_WEST,
+    O_NORTH_TO_WEST,  //
+    O_NORTH_TO_WEST,
+    O_NORTH_TO_WEST,  //
+    O_NORTH_TO_WEST,
+    O_NORTH_TO_WEST,  //
+    O_NORTH_TO_WEST,
+    O_NORTH_TO_WEST,  //
 } };
 
-const CenterOffSets I_north_to_west {
+const CenterOffSets I_NORTH_TO_WEST {
     { { 0, 0 }, { -1, 0 }, { 2, 0 }, { -1, -2 }, { 1, 2 } }
 };
-const CenterOffSets I_north_to_east {
+const CenterOffSets I_NORTH_TO_EAST {
     { { 1, 0 }, { -1, 0 }, { 2, 0 }, { -1, 1 }, { 2, -2 } }
 };
-const CenterOffSets I_east_to_north {
+const CenterOffSets I_EAST_TO_NORTH {
     { { -1, 0 }, { 1, 0 }, { -2, 0 }, { 1, -1 }, { -2, 2 } }
 };
-const CenterOffSets I_east_to_south {
+const CenterOffSets I_EAST_TO_SOUTH {
     { { -1, 1 }, { -2, 1 }, { 1, 1 }, { -2, -1 }, { 1, 2 } }
 };
-const CenterOffSets I_south_to_east {
+const CenterOffSets I_SOUTH_TO_EAST {
     { { 1, -1 }, { 2, -1 }, { -1, -1 }, { -2, -1 }, { -1, -2 } }
 };
-const CenterOffSets I_south_to_west {
+const CenterOffSets I_SOUTH_TO_WEST {
     { { 0, -1 }, { 2, -1 }, { -1, -1 }, { 2, -2 }, { -1, 1 } }
 };
-const CenterOffSets I_west_to_south {
+const CenterOffSets I_WEST_TO_SOUTH {
     { { 0, 1 }, { -2, 1 }, { 1, 1 }, { -2, 2 }, { 1, -1 } }
 };
-const CenterOffSets I_west_to_north {
+const CenterOffSets I_WEST_TO_NORTH {
     { { 0, 0 }, { 1, 0 }, { -2, 0 }, { 1, 2 }, { -2, -1 } }
 };
 
 const OneTretominoRotations I { {
-    I_north_to_west,
-    I_north_to_east,  //
-    I_east_to_north,
-    I_east_to_south,  //
-    I_south_to_east,
-    I_south_to_west,  //
-    I_west_to_south,
-    I_west_to_north,  //
+    I_NORTH_TO_WEST,
+    I_NORTH_TO_EAST,  //
+    I_EAST_TO_NORTH,
+    I_EAST_TO_SOUTH,  //
+    I_SOUTH_TO_EAST,
+    I_SOUTH_TO_WEST,  //
+    I_WEST_TO_SOUTH,
+    I_WEST_TO_NORTH,  //
 
 } };
 
-const CenterOffSets L_north_to_west { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
+const CenterOffSets L_NORTH_TO_WEST { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
 
 const OneTretominoRotations L { {
-    L_north_to_west * POSX_POSY,
-    L_north_to_west* NEGX_POSY,  //
-    L_north_to_west* POSX_NEGY,
-    L_north_to_west* POSX_NEGY,  //
-    L_north_to_west* NEGX_POSY,
-    L_north_to_west* POSX_POSY,  //
-    L_north_to_west* NEGX_NEGY,
-    L_north_to_west* NEGX_NEGY,  //
+    L_NORTH_TO_WEST * POSX_POSY,
+    L_NORTH_TO_WEST* NEGX_POSY,  //
+    L_NORTH_TO_WEST* POSX_NEGY,
+    L_NORTH_TO_WEST* POSX_NEGY,  //
+    L_NORTH_TO_WEST* NEGX_POSY,
+    L_NORTH_TO_WEST* POSX_POSY,  //
+    L_NORTH_TO_WEST* NEGX_NEGY,
+    L_NORTH_TO_WEST* NEGX_NEGY,  //
 } };
 
 const std::array<OneTretominoRotations, TRETOMINO_COUNT> ALL { {
@@ -172,42 +175,42 @@ const std::array<OneTretominoRotations, TRETOMINO_COUNT> ALL { {
 
 namespace Tretominos {
 
-const TretominoRotation T_north { { { -1, 0 }, { 0, -1 }, { 1, 0 }, { 0, 0 } } };
-const TretominoRotation T_east { { { 0, -1 }, { 1, 0 }, { 0, 1 }, { 0, 0 } } };
-const TretominoRotation T_south { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } } };
-const TretominoRotation T_west { { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 0, 1 } } };
-const AllTretominoRotations T { { T_north, T_east, T_south, T_west } };
+const TretominoRotation T_NORTH { { { -1, 0 }, { 0, -1 }, { 1, 0 }, { 0, 0 } } };
+const TretominoRotation T_EAST { { { 0, -1 }, { 1, 0 }, { 0, 1 }, { 0, 0 } } };
+const TretominoRotation T_SOUTH { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } } };
+const TretominoRotation T_WEST { { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 0, 1 } } };
+const AllTretominoRotations T { { T_NORTH, T_EAST, T_SOUTH, T_WEST } };
 
-const TretominoRotation O_north { { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } } };
-const AllTretominoRotations O { { O_north, O_north, O_north, O_north } };
+const TretominoRotation O_NORTH { { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } } };
+const AllTretominoRotations O { { O_NORTH, O_NORTH, O_NORTH, O_NORTH } };
 
-const TretominoRotation I_north { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 } } };
-const TretominoRotation I_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 0, 2 } } };
-const AllTretominoRotations I { { I_north, I_east, I_north, I_east } };
+const TretominoRotation I_NORTH { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 } } };
+const TretominoRotation I_EAST { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 0, 2 } } };
+const AllTretominoRotations I { { I_NORTH, I_EAST, I_NORTH, I_EAST } };
 
-const TretominoRotation L_north { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 1, -1 } } };
-const TretominoRotation L_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, 1 } } };
-const TretominoRotation L_south { { { 1, 0 }, { 0, 0 }, { -1, 0 }, { -1, 1 } } };
-const TretominoRotation L_west { { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, -1 } } };
-const AllTretominoRotations L { { L_north, L_east, L_south, L_west } };
+const TretominoRotation L_NORTH { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 1, -1 } } };
+const TretominoRotation L_EAST { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, 1 } } };
+const TretominoRotation L_SOUTH { { { 1, 0 }, { 0, 0 }, { -1, 0 }, { -1, 1 } } };
+const TretominoRotation L_WEST { { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, -1 } } };
+const AllTretominoRotations L { { L_NORTH, L_EAST, L_SOUTH, L_WEST } };
 
-const TretominoRotation J_north { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, -1 } } };
-const TretominoRotation J_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, -1 } } };
-const TretominoRotation J_south { { { 1, 0 }, { 0, 0 }, { -1, 0 }, { 1, 1 } } };
-const TretominoRotation J_west { { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, 1 } } };
-const AllTretominoRotations J { { J_north, J_east, J_south, J_west } };
+const TretominoRotation J_NORTH { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, -1 } } };
+const TretominoRotation J_EAST { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, -1 } } };
+const TretominoRotation J_SOUTH { { { 1, 0 }, { 0, 0 }, { -1, 0 }, { 1, 1 } } };
+const TretominoRotation J_WEST { { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, 1 } } };
+const AllTretominoRotations J { { J_NORTH, J_EAST, J_SOUTH, J_WEST } };
 
-const TretominoRotation S_north { { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, -1 } } };
-const TretominoRotation S_east { { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, -1 } } };
-const TretominoRotation S_south { { { 0, 0 }, { 1, 0 }, { 0, 1 }, { -1, 1 } } };
-const TretominoRotation S_west { { { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, 1 } } };
-const AllTretominoRotations S { { S_north, S_east, S_south, S_west } };
+const TretominoRotation S_NORTH { { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, -1 } } };
+const TretominoRotation S_EAST { { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, -1 } } };
+const TretominoRotation S_SOUTH { { { 0, 0 }, { 1, 0 }, { 0, 1 }, { -1, 1 } } };
+const TretominoRotation S_WEST { { { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, 1 } } };
+const AllTretominoRotations S { { S_NORTH, S_EAST, S_SOUTH, S_WEST } };
 
-const TretominoRotation Z_north { { { 0, 0 }, { 0, -1 }, { -1, -1 }, { 1, 0 } } };
-const TretominoRotation Z_east { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 1 } } };
-const TretominoRotation Z_south { { { 0, 0 }, { -1, 0 }, { 0, 1 }, { 1, 1 } } };
-const TretominoRotation Z_west { { { 0, 0 }, { -1, 0 }, { -1, 1 }, { 0, -1 } } };
-const AllTretominoRotations Z { { Z_north, Z_east, Z_south, Z_west } };
+const TretominoRotation Z_NORTH { { { 0, 0 }, { 0, -1 }, { -1, -1 }, { 1, 0 } } };
+const TretominoRotation Z_EAST { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 1 } } };
+const TretominoRotation Z_SOUTH { { { 0, 0 }, { -1, 0 }, { 0, 1 }, { 1, 1 } } };
+const TretominoRotation Z_WEST { { { 0, 0 }, { -1, 0 }, { -1, 1 }, { 0, -1 } } };
+const AllTretominoRotations Z { { Z_NORTH, Z_EAST, Z_SOUTH, Z_WEST } };
 
 const std::array<AllTretominoRotations, TRETOMINO_COUNT> ALL { {
     T,
@@ -230,3 +233,5 @@ const std::array<sf::Color, TRETOMINO_COUNT> ALL_COLORS { {
 } };
 
 }  // namespace Tretominos
+
+// NOLINTEND(cert-err58-cpp)
