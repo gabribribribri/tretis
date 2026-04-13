@@ -1,9 +1,12 @@
 #include "grid.hpp"
+#include <algorithm>
 #include "blocks.hpp"
 #include "logging.hpp"
 #include "movements.hpp"
 #include "score.hpp"
 #include "selection.hpp"
+
+namespace {
 
 /// MODULUS WITH POSITIVE REMAINDER ///
 int pos_rem_mod(int lhs, int rhs) {
@@ -16,8 +19,10 @@ sf::RectangleShape create_grid_cell() {
     sf::RectangleShape cell { sf::Vector2f(CELL_SIZE, CELL_SIZE) };
     return cell;
 }
+}  // namespace
 
 std::array<sf::Vector2i, 4> const T_SPIN_RECOGNITION_PATTERN = {
+    // NOLINT(cert-err58-cpp)
     sf::Vector2i(-1, -1),  //
     sf::Vector2i(+1, -1),  //
     sf::Vector2i(+1, +1),  //
@@ -33,17 +38,16 @@ sf::Color Grid::get_crbl_color() const {
 }
 
 bool Grid::is_block_movable_to(Coo center, int rotation) {
-    for (Coo block_cell : get_block_relative_cells(rotation)) {
+    auto const& cells = get_block_relative_cells(rotation);
+    // if ONE OF THEM is true, then we return false
+    return not std::ranges::any_of(cells.begin(), cells.end(), [center, this](Coo block_cell) {
         Coo new_pos = center + block_cell;
-        if (new_pos.x < 0 or new_pos.x >= GRID_WIDTH or new_pos.y < 0 or
-            new_pos.y >= GRID_HEIGHT) {
-            return false;
-        }
-        if (grid_at(new_pos).getFillColor() != EMPTY_CELL_COLOR) {
-            return false;
-        }
-    }
-    return true;
+        return new_pos.x < 0 or
+               new_pos.x >= GRID_WIDTH or
+               new_pos.y < 0 or
+               new_pos.y >= GRID_HEIGHT or
+               grid_at(new_pos).getFillColor() != EMPTY_CELL_COLOR;
+    });
 }
 
 bool Grid::move_crbl(Coo direction) {
