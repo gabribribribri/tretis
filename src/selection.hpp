@@ -7,11 +7,16 @@
 #include "blocks.hpp"
 #include "tretomino_render_shape.hpp"
 
-const size_t NEXT_QUEUE_SIZE = 5;
+size_t const NEXT_QUEUE_SIZE = 5;
 
-const std::array<Tretomino, TRETOMINO_COUNT> ALL_ENUM_TRETOMINOS {
-    Tretomino::T, Tretomino::O, Tretomino::I, Tretomino::L,
-    Tretomino::J, Tretomino::S, Tretomino::Z,
+std::array<Tretomino, TRETOMINO_COUNT> const ALL_ENUM_TRETOMINOS {
+    Tretomino::T,
+    Tretomino::O,
+    Tretomino::I,
+    Tretomino::L,
+    Tretomino::J,
+    Tretomino::S,
+    Tretomino::Z,
 };
 
 template <typename Elem, size_t Size>

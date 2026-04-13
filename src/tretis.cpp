@@ -1,11 +1,11 @@
 #include "tretis.hpp"
 
 #include <cmath>
-#include "movements.hpp"
 #include "grid.hpp"
+#include "logging.hpp"
+#include "movements.hpp"
 #include "score.hpp"
 #include "selection.hpp"
-#include "logging.hpp"
 #include "time.hpp"
 
 using std::max;

@@ -85,10 +85,10 @@ private:
     void hard_drop_ifnlocked();
 
 public:
-    Tretis(const Tretis&) = delete;
+    Tretis(Tretis const&) = delete;
     Tretis(Tretis&&) = delete;
-    Tretis& operator=(const Tretis&) = delete;
-    Tretis& operator=(const Tretis&&) = delete;
+    Tretis& operator=(Tretis const&) = delete;
+    Tretis& operator=(Tretis const&&) = delete;
 
 private:
     ~Tretis() = default;

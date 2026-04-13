@@ -5,7 +5,13 @@
 #include <cassert>
 #include <cstdint>
 
-enum class LinesClear : std::uint8_t { None, Single, Double, Triple, Tretis };
+enum class LinesClear : std::uint8_t {
+    None,
+    Single,
+    Double,
+    Triple,
+    Tretis
+};
 
 struct ScoreEvent {
     bool t_spin {};

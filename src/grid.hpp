@@ -10,8 +10,7 @@
 
 #include "blocks.hpp"
 
-using GridData = std::array<sf::RectangleShape,
-                            static_cast<std::size_t>(GRID_HEIGHT* GRID_WIDTH)>;
+using GridData = std::array<sf::RectangleShape, static_cast<std::size_t>(GRID_HEIGHT* GRID_WIDTH)>;
 
 /// GRID ///
 class Grid {
@@ -22,8 +21,7 @@ private:
     Coo crbl_center;
     TretominoGridShape crbl_shape;
     Coo crbl_shape_center;
-    int crbl_shape_rotation {};  // Silence clang wanting initialization in
-                                 // constructor
+    int crbl_shape_rotation {};  // Silence clang wanting initialization constructor
 
     // PHBL means PHANTOM_BLOCK
     Coo phbl_center;
@@ -32,8 +30,7 @@ private:
 
     // phbl use crbl_rotation because always the same
     int crbl_rotation = 0;
-    Tretomino crbl_tretomino {};  // Silence clang wanting initialization in
-                                  // constructor
+    Tretomino crbl_tretomino {};  // Silence clang wanting initialization in constructor
 
     bool phantom_enabled = true;
     bool hard_drop_locked = false;

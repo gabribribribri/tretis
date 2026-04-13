@@ -16,6 +16,7 @@ target("tretis")
   --- POLICIES ---
   set_policy("run.autobuild", true)
   set_policy("generator.compile_commands", true)
+  add_rules("plugin.compile_commands.autoupdate", {outputdir = "."})
   
   --- SANITIZER ---
   -- set_policy("build.sanitizer.undefined", true)

@@ -2,9 +2,9 @@
 
 #include <SFML/System/Time.hpp>
 
-#include "time.hpp"
-#include "score.hpp"
 #include "blocks.hpp"
+#include "score.hpp"
+#include "time.hpp"
 
 class Movements {
 private:
@@ -29,7 +29,7 @@ private:
 
 public:
     void restart_crbl_fall_by_one_countdown();
-    
+
     void go_lateral(Coo direction);
 
     void go_vertical();

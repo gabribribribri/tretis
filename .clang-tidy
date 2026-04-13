@@ -1,3 +1,46 @@
-Checks: "bugprone-*,clang-analyzer-*,cert-*,cppcoreguidelines-*,modernize-*,performance-*,-readability-else-after-return,
-         -cppcoreguidelines-avoid-magic-numbers, -cert-err58-cpp, -modernize-use-trailing-return-type"
-HeaderFilterRegex: '.*'
+# Checks: "bugprone-*,clang-analyzer-*,cert-*,cppcoreguidelines-*,modernize-*,performance-*,-readability-else-after-return,
+#          -cppcoreguidelines-avoid-magic-numbers, -cert-err58-cpp, -modernize-use-trailing-return-type"
+# HeaderFilterRegex: '.*'
+
+---
+# We start by disabling everything (-*), then selectively enable entire suites,
+# and finally use minus signs (-) to surgically remove the noisy/unhelpful ones.
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  cert-*,
+  clang-analyzer-*,
+  concurrency-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-owning-memory,
+  misc-*,
+  -misc-non-private-member-variables-in-classes,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  -modernize-use-nodiscard,
+  performance-*,
+  portability-*,
+  readability-*,
+  -readability-magic-numbers,
+  -readability-function-cognitive-complexity,
+  -readability-identifier-length
+
+WarningsAsErrors: ''
+
+# Only check your code, NOT the SFML or standard library headers!
+HeaderFilterRegex: ''
+
+# Let clang-format handle formatting, don't let tidy try to fix whitespace
+FormatStyle: none
+
+# Example CheckOptions to enforce a naming convention (optional but recommended)
+CheckOptions:
+  readability-identifier-naming.ClassCase: CamelCase
+  readability-identifier-naming.VariableCase: snake_case
+  readability-identifier-naming.FunctionCase: snake_case
+  readability-identifier-naming.GlobalConstantCase: UPPER_CASE
+...

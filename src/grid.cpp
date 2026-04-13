@@ -63,7 +63,7 @@ void Grid::super_rotate_block(bool clockwise) {
     int next_rotation = get_next_rotation(clockwise);
     for (const auto [rotation_point, offset] :
          SuperRotationSystem::ALL.at(crbl_tretomino)
-                 .at(crbl_rotation * 2 + clockwise) |
+                 .at((crbl_rotation * 2) + clockwise) |
              views::enumerate) {
         if (is_block_movable_to(crbl_center + offset, next_rotation)) {
             crbl_center += offset;

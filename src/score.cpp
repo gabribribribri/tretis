@@ -168,7 +168,6 @@ sf::Time Score::get_drop_speed_from_level() {
     return sf::seconds(std::powf(base, exp));
 }
 
-
 ScoreEvent Score::copy_score_event() const {
     return score_event;
 }

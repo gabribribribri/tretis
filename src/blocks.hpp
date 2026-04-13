@@ -82,9 +82,7 @@ const Coo NEGX_NEGY { -1, -1 };
 
 namespace SuperRotationSystem {
 
-const CenterOffSets T_north_to_west {
-    { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } }
-};
+const CenterOffSets T_north_to_west { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
 
 const OneTretominoRotations T { {
     T_north_to_west * POSX_POSY,
@@ -97,9 +95,7 @@ const OneTretominoRotations T { {
     T_north_to_west* NEGX_NEGY,  //
 } };
 
-const CenterOffSets O_north_to_west {
-    { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }
-};
+const CenterOffSets O_north_to_west { { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
 
 const OneTretominoRotations O { {
     O_north_to_west,
@@ -149,9 +145,7 @@ const OneTretominoRotations I { {
 
 } };
 
-const CenterOffSets L_north_to_west {
-    { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } }
-};
+const CenterOffSets L_north_to_west { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } };
 
 const OneTretominoRotations L { {
     L_north_to_west * POSX_POSY,
@@ -178,9 +172,7 @@ const std::array<OneTretominoRotations, TRETOMINO_COUNT> ALL { {
 
 namespace Tretominos {
 
-const TretominoRotation T_north {
-    { { -1, 0 }, { 0, -1 }, { 1, 0 }, { 0, 0 } }
-};
+const TretominoRotation T_north { { { -1, 0 }, { 0, -1 }, { 1, 0 }, { 0, 0 } } };
 const TretominoRotation T_east { { { 0, -1 }, { 1, 0 }, { 0, 1 }, { 0, 0 } } };
 const TretominoRotation T_south { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } } };
 const TretominoRotation T_west { { { -1, 0 }, { 0, 0 }, { 0, -1 }, { 0, 1 } } };
@@ -193,44 +185,28 @@ const TretominoRotation I_north { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 2, 0 } } };
 const TretominoRotation I_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 0, 2 } } };
 const AllTretominoRotations I { { I_north, I_east, I_north, I_east } };
 
-const TretominoRotation L_north {
-    { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 1, -1 } }
-};
+const TretominoRotation L_north { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 1, -1 } } };
 const TretominoRotation L_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, 1 } } };
-const TretominoRotation L_south {
-    { { 1, 0 }, { 0, 0 }, { -1, 0 }, { -1, 1 } }
-};
-const TretominoRotation L_west {
-    { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, -1 } }
-};
+const TretominoRotation L_south { { { 1, 0 }, { 0, 0 }, { -1, 0 }, { -1, 1 } } };
+const TretominoRotation L_west { { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, -1 } } };
 const AllTretominoRotations L { { L_north, L_east, L_south, L_west } };
 
-const TretominoRotation J_north {
-    { { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, -1 } }
-};
+const TretominoRotation J_north { { { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, -1 } } };
 const TretominoRotation J_east { { { 0, -1 }, { 0, 0 }, { 0, 1 }, { 1, -1 } } };
 const TretominoRotation J_south { { { 1, 0 }, { 0, 0 }, { -1, 0 }, { 1, 1 } } };
 const TretominoRotation J_west { { { 0, 1 }, { 0, 0 }, { 0, -1 }, { -1, 1 } } };
 const AllTretominoRotations J { { J_north, J_east, J_south, J_west } };
 
-const TretominoRotation S_north {
-    { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, -1 } }
-};
+const TretominoRotation S_north { { { 0, 0 }, { -1, 0 }, { 0, -1 }, { 1, -1 } } };
 const TretominoRotation S_east { { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, -1 } } };
 const TretominoRotation S_south { { { 0, 0 }, { 1, 0 }, { 0, 1 }, { -1, 1 } } };
-const TretominoRotation S_west {
-    { { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, 1 } }
-};
+const TretominoRotation S_west { { { 0, 0 }, { -1, 0 }, { -1, -1 }, { 0, 1 } } };
 const AllTretominoRotations S { { S_north, S_east, S_south, S_west } };
 
-const TretominoRotation Z_north {
-    { { 0, 0 }, { 0, -1 }, { -1, -1 }, { 1, 0 } }
-};
+const TretominoRotation Z_north { { { 0, 0 }, { 0, -1 }, { -1, -1 }, { 1, 0 } } };
 const TretominoRotation Z_east { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 1 } } };
 const TretominoRotation Z_south { { { 0, 0 }, { -1, 0 }, { 0, 1 }, { 1, 1 } } };
-const TretominoRotation Z_west {
-    { { 0, 0 }, { -1, 0 }, { -1, 1 }, { 0, -1 } }
-};
+const TretominoRotation Z_west { { { 0, 0 }, { -1, 0 }, { -1, 1 }, { 0, -1 } } };
 const AllTretominoRotations Z { { Z_north, Z_east, Z_south, Z_west } };
 
 const std::array<AllTretominoRotations, TRETOMINO_COUNT> ALL { {

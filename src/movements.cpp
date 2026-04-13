@@ -63,7 +63,7 @@ void Movements::stop_lateral() {
     lateral_auto_repeat_enabled = false;
 }
 
-void Movements::set_hard_drop_lock(bool locked)  {
+void Movements::set_hard_drop_lock(bool locked) {
     hard_drop_locked = locked;
 }
 
