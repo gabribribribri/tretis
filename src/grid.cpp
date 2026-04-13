@@ -70,8 +70,7 @@ void Grid::super_rotate_block(bool clockwise) {
         if (is_block_movable_to(crbl_center + offset, next_rotation)) {
             crbl_center += offset;
             crbl_rotation = next_rotation;
-            Log::Debug("Rotation to ", next_rotation, " with offset ", offset.x,
-                       " ", offset.y);
+            Log::Debug("Rotation to ", next_rotation, " with offset ", offset.x, " ", offset.y);
             if (crbl_tretomino == Tretomino::T) {
                 Score::Get().did_just_rotate();
                 if (rotation_point == 4) {
@@ -88,7 +87,7 @@ int Grid::get_next_rotation(bool clockwise) const {
 }
 
 bool Grid::move_crbl_down_or_place() {
-    if (!move_crbl(MOVE_DOWN)) {
+    if (not move_crbl(MOVE_DOWN)) {
         place_and_select_crbl();
         return true;
     }
@@ -199,31 +198,15 @@ void Grid::move_line(int from, int to) {
 
 void Grid::create_score_report(uint8_t num_cleared_lines) {
     if (crbl_tretomino == Tretomino::T) {
-        //!\\ C and D are inverted because C is bottom left and D is bottom
-        //! right
-        bool a_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at(
-                                                (crbl_rotation + 0) % 4))
-                          .getFillColor() != EMPTY_CELL_COLOR;
-        bool b_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at(
-                                                (crbl_rotation + 1) % 4))
-                          .getFillColor() != EMPTY_CELL_COLOR;
-        Coo d_side_coo = crbl_center +
-                         T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 2) % 4);
-        bool d_side =
-            (d_side_coo.x >= 0 and d_side_coo.x < GRID_WIDTH and
-             d_side_coo.y >= 0 and d_side_coo.y < GRID_HEIGHT)
-                ? grid_at(d_side_coo).getFillColor() != EMPTY_CELL_COLOR
-                : true;
-        Coo c_side_coo = crbl_center +
-                         T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 3) % 4);
-        bool c_side =
-            (c_side_coo.x >= 0 and c_side_coo.x < GRID_WIDTH and
-             c_side_coo.y >= 0 and c_side_coo.y < GRID_HEIGHT)
-                ? grid_at(c_side_coo).getFillColor() != EMPTY_CELL_COLOR
-                : true;
+        //!\\ C and D are inverted because C is bottom left and D is bottom right
+        bool a_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at( (crbl_rotation + 0) % 4)) .getFillColor() != EMPTY_CELL_COLOR;
+        bool b_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at( (crbl_rotation + 1) % 4)) .getFillColor() != EMPTY_CELL_COLOR;
+        Coo d_side_coo = crbl_center + T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 2) % 4);
+        bool d_side = (d_side_coo.x >= 0 and d_side_coo.x < GRID_WIDTH and d_side_coo.y >= 0 and d_side_coo.y < GRID_HEIGHT) ? grid_at(d_side_coo).getFillColor() != EMPTY_CELL_COLOR : true;
+        Coo c_side_coo = crbl_center + T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 3) % 4);
+        bool c_side = (c_side_coo.x >= 0 and c_side_coo.x < GRID_WIDTH and c_side_coo.y >= 0 and c_side_coo.y < GRID_HEIGHT) ? grid_at(c_side_coo).getFillColor() != EMPTY_CELL_COLOR : true;
 
-        Log::Warn("a_side=", a_side, " b_side=", b_side, " c_side=", c_side,
-                  " d_side=", d_side);
+        Log::Warn("a_side=", a_side, " b_side=", b_side, " c_side=", c_side, " d_side=", d_side);
 
         if (a_side and b_side and (c_side or d_side)) {
             Log::Warn("T-Spin side acted !");

@@ -31,10 +31,8 @@ private:
     sf::Font text_font;
 
     // Delimiter boxes
-    sf::RectangleShape whole_game_delimiter =
-        sf::RectangleShape(GAME_DELIMITER_SIZE);
-    sf::RectangleShape hold_piece_delimiter =
-        sf::RectangleShape(HOLD_PIECE_DELIMITER_SIZE);
+    sf::RectangleShape whole_game_delimiter = sf::RectangleShape(GAME_DELIMITER_SIZE);
+    sf::RectangleShape hold_piece_delimiter = sf::RectangleShape(HOLD_PIECE_DELIMITER_SIZE);
 
     // Various texts
     sf::Text level_title;

@@ -58,6 +58,7 @@ void Score::update_strings() {
 
 void Score::report_score(int num_cleared_lines, bool t_spin, bool mini_t_spin) {
     assert(not(t_spin and mini_t_spin));
+
     if (num_cleared_lines < 1 or num_cleared_lines > 4) {
         Log::Warn("report_score called with num_cleared_lines=",
                   num_cleared_lines);
@@ -181,7 +182,6 @@ sf::String const& Score::get_lines_str() const { return lines_str; };
 
 Score::Score() {
     set_default_values();
-    update_strings();
 }
 
 Score& Score::Get() {

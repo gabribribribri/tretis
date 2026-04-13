@@ -144,14 +144,14 @@ void Tretis::update_texts() {
     lines_value.setString(score.get_lines_str());
 
     if (score.do_we_have_events_to_report()) {
+        Log::Debug("Reporting Events !");
         indicators_clock.restart();
 
-        t_spin_indicator_activation =
-            score_event.t_spin or score_event.mini_t_spin;
+
+        t_spin_indicator_activation = score_event.t_spin or score_event.mini_t_spin;
         mini_indicator_activation = score_event.mini_t_spin;
         b2b_indicator_activation = score_event.b2b_bonus;
-        line_clear_indicator_activation =
-            score_event.lines_clear != LinesClear::None;
+        line_clear_indicator_activation = score_event.lines_clear != LinesClear::None;
 
         switch (score_event.lines_clear) {
             case LinesClear::None:
@@ -179,41 +179,37 @@ void Tretis::update_texts() {
         }
 
         score_added_indicator_activation = true;
-        score_added_indicator.setString(
-            std::format("+{}", score_event.score_added));
+        score_added_indicator.setString(std::format("+{}", score_event.score_added));
 
         // Don't forget to clean the events after !
         score.reset_score_event();
     }
 
-
     sf::Uint8 text_fading = fade_texts_progression();
-
-    score_added_indicator.setFillColor(
-        sf::Color(255, 255, 255, text_fading));
-
-    sf::Color line_clear_color = line_clear_indicator.getFillColor();
-    line_clear_color.a = text_fading;
-    line_clear_indicator.setFillColor(line_clear_color);
-
-    b2b_indicator.setFillColor(sf::Color(255, 255, text_fading));
-    mini_indicator.setFillColor(sf::Color(255, 0, 255, text_fading));
-    t_spin_indicator.setFillColor(
-        sf::Color(255, 0, 255, text_fading));
-
     if (text_fading == 0) {
         b2b_indicator_activation = false;
         mini_indicator_activation = false;
         line_clear_indicator_activation = false;
         score_added_indicator_activation = false;
         t_spin_indicator_activation = false;
+    } else {        
+        score_added_indicator.setFillColor(sf::Color(255, 255, 255, text_fading));
+
+        sf::Color line_clear_color = line_clear_indicator.getFillColor();
+        line_clear_color.a = text_fading;
+        line_clear_indicator.setFillColor(line_clear_color);
+
+        b2b_indicator.setFillColor(sf::Color(255, 255, text_fading));
+        mini_indicator.setFillColor(sf::Color(255, 0, 255, text_fading));
+        t_spin_indicator.setFillColor(sf::Color(255, 0, 255, text_fading));
+
     }
+
 }
 
 sf::Uint8 Tretis::fade_texts_progression() {
     // ugly line
-    return static_cast<sf::Uint8>(
-        max(1 - indicators_clock.getElapsedTime().asSeconds(), 0.0F) * 255.);
+    return static_cast<sf::Uint8>(max(1 - indicators_clock.getElapsedTime().asSeconds(), 0.0F) * 255.);
 }
 
 void Tretis::handle_events() {

@@ -1,6 +1,6 @@
 #pragma once
 #include <cassert>
-#include <iostream>
+#include <print>
 
 constexpr int ERROR_LOG_LEVEL = 1;
 constexpr int WARN_LOG_LEVEL = 2;
@@ -11,15 +11,15 @@ class Log {
 private:
     inline static int LOG_LEVEL;
     static constexpr std::string_view INFO_PREFIX = "\033[1;36m >>> \033[0m";
-    static constexpr std::string_view const WARN_PREFIX = "\033[1;33m >>> \033[0m";
-    static constexpr std::string_view const ERROR_PREFIX = "\033[1;31m >>> \033[0m";
-    static constexpr std::string_view const DEBUG_PREFIX = "\033[1;35m >>> \033[0m";
+    static constexpr std::string_view WARN_PREFIX = "\033[1;33m >>> \033[0m";
+    static constexpr std::string_view ERROR_PREFIX = "\033[1;31m >>> \033[0m";
+    static constexpr std::string_view DEBUG_PREFIX = "\033[1;35m >>> \033[0m";
 
     template <typename... Args>
     static void Logger(std::string_view level_prefix, Args const&... args) {
-        std::cout << level_prefix;
-        (std::cout << ... << args);
-        std::cout << '\n';
+        std::print("{}", level_prefix);
+        std::print("{}", args...);
+        std::print("\n");
     }
 
 public:
