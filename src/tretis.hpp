@@ -72,6 +72,7 @@ private:
     bool line_clear_indicator_flag = false;
     bool score_added_indicator_flag = false;
 
+    float zoom = 0.9;
 
     /// METHODS ///
     void debug_fps_cout() const;
@@ -84,7 +85,7 @@ private:
 
     void handle_events();
 
-    void resize_window(float screen_width, float screen_height);
+    void resize_window(uint32_t screen_width, uint32_t screen_height);
 
     ~Tretis() = default;
     Tretis();

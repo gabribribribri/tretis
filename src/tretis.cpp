@@ -222,7 +222,7 @@ void Tretis::handle_events() {
                 render_window.close();
                 break;
             case sf::Event::Resized:
-                resize_window(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
+                resize_window(event.size.width,event.size.height);
                 break;
             case sf::Event::KeyPressed:
                 switch (event.key.code) {
@@ -264,11 +264,20 @@ void Tretis::handle_events() {
                     case sf::Keyboard::Num4: grid.select_new_crbl(Tretomino::J); break;
                     case sf::Keyboard::Num5: grid.select_new_crbl(Tretomino::S); break;
                     case sf::Keyboard::Num6: grid.select_new_crbl(Tretomino::Z); break;
+                    case sf::Keyboard::Hyphen:
+                        zoom -= 0.05;
+                        resize_window(render_window.getSize().x,render_window.getSize().y);
+                        break;
+                    case sf::Keyboard::Equal:
+                        zoom += 0.05;
+                        resize_window(render_window.getSize().x,render_window.getSize().y);
+                        break;
                         
                     default:
                         break;
                 }
                 break;
+
             case sf::Event::KeyReleased:
                 switch (event.key.code) {
                     case sf::Keyboard::Down:
@@ -292,12 +301,13 @@ void Tretis::handle_events() {
     // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 }
 
-void Tretis::resize_window(float screen_width, float screen_height) {
+void Tretis::resize_window(uint32_t screen_width, uint32_t screen_height) {
     // I finallly mother flipping did this
     // I am having a stroke at the moment
-    const float screen_ratio = (screen_width / screen_height);
+    const auto screen_width_f = static_cast<float>(screen_width);
+    const auto screen_height_f =static_cast<float>(screen_height);
+    const float screen_ratio = screen_width_f / screen_height_f;
     const float game_delimiter_ratio = GAME_DELIMITER_SIZE.x / GAME_DELIMITER_SIZE.y;
-    const float zoom = 0.9;
     float view_height = NAN;
     float view_width = NAN;
 
@@ -311,10 +321,8 @@ void Tretis::resize_window(float screen_width, float screen_height) {
         view_height = GAME_DELIMITER_SIZE.x / screen_ratio;
     }
 
-    view_width = std::max(view_width, screen_width);
-    view_height = std::max(view_height, screen_height);
-    view_width /= zoom;
-    view_height /= zoom;
+    view_width = std::max(view_width, screen_width_f) / zoom;
+    view_height = std::max(view_height, screen_height_f) / zoom;
 
     float rectLeft = (-view_width / 2) + (GAME_DELIMITER_SIZE.x / 2);
     float rectTop = (-view_height / 2) + (GAME_DELIMITER_SIZE.y / 2);

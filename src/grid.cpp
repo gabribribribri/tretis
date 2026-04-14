@@ -19,6 +19,11 @@ sf::RectangleShape create_grid_cell() {
     sf::RectangleShape cell { sf::Vector2f(CELL_SIZE, CELL_SIZE) };
     return cell;
 }
+
+bool is_in_grid(Coo coo) {
+    return coo.x >= 0 and coo.x < GRID_WIDTH and coo.y >= 0 and coo.y < GRID_HEIGHT;
+}
+
 }  // namespace
 
 // NOLINTNEXTLINE(cert-err58-cpp)
@@ -41,12 +46,8 @@ bool Grid::is_block_movable_to(Coo center, int rotation) {
     auto const& cells = get_block_relative_cells(rotation);
     // if ONE OF THEM is true, then we return false
     return not std::ranges::any_of(cells.begin(), cells.end(), [center, this](Coo block_cell) {
-        Coo new_pos = center + block_cell;
-        return new_pos.x < 0 or
-               new_pos.x >= GRID_WIDTH or
-               new_pos.y < 0 or
-               new_pos.y >= GRID_HEIGHT or
-               grid_at(new_pos).getFillColor() != EMPTY_CELL_COLOR;
+        return not is_in_grid(center + block_cell) or
+               grid_at(center + block_cell).getFillColor() != EMPTY_CELL_COLOR;
     });
 }
 
@@ -78,7 +79,6 @@ void Grid::super_rotate_block(bool clockwise) {
                 if (rotation_point == 4) {
                     Score::Get().did_t_rotation_point_5();
                 }
-
             }
             return;
         }
@@ -231,9 +231,9 @@ void Grid::detect_t_spins() {
     bool b_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 1) % 4)).getFillColor() != EMPTY_CELL_COLOR;
     //!\\ C and D are inverted because C is bottom left and D is bottom right
     Coo d_side_coo = crbl_center + T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 2) % 4);
-    bool d_side = (d_side_coo.x >= 0 and d_side_coo.x < GRID_WIDTH and d_side_coo.y >= 0 and d_side_coo.y < GRID_HEIGHT) ? grid_at(d_side_coo).getFillColor() != EMPTY_CELL_COLOR : true;
+    bool d_side = is_in_grid(d_side_coo) ? grid_at(d_side_coo).getFillColor() != EMPTY_CELL_COLOR : true;
     Coo c_side_coo = crbl_center + T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 3) % 4);
-    bool c_side = (c_side_coo.x >= 0 and c_side_coo.x < GRID_WIDTH and c_side_coo.y >= 0 and c_side_coo.y < GRID_HEIGHT) ? grid_at(c_side_coo).getFillColor() != EMPTY_CELL_COLOR : true;
+    bool c_side = is_in_grid(c_side_coo) ? grid_at(c_side_coo).getFillColor() != EMPTY_CELL_COLOR : true;
 
     Log::Warn("a_side=", a_side, " b_side=", b_side, " c_side=", c_side, " d_side=", d_side);
 

@@ -15,6 +15,8 @@ No.
 1. `xmake f -m debug` for debug mode and `xmake f -m release` for release mode
 1. `xmake run` if you just want to run it and `xmake install --admin` if you want to install it.
 
+*(tips: `xmake project -k compile_commands` for compile_commands.json)*
+
 ## Functionalities (for now...)
 - There is every Tetromino (called Tretominos here)
 - Functionning hard drop
@@ -27,7 +29,7 @@ No.
 
 
 ## Controls
-*Only QWERTY Keyboards are supported right now*
+*Only QWERTY Keyboards are supported*
 - **A, Left** : Go left
 - **D, Right** : Go right
 - **W, X** : Rotate block clockwise
@@ -36,6 +38,8 @@ No.
 - **Space** : Hard drop
 - **C** : Hold
 - **P** : On/Off phantom block
+- **0-6** : Summon a Tretomino (DEBUG)
+- **-/=** : Dezoom / Zoom
 
 
 ## TODO

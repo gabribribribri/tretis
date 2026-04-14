@@ -6,7 +6,6 @@
 # We start by disabling everything (-*), then selectively enable entire suites,
 # and finally use minus signs (-) to surgically remove the noisy/unhelpful ones.
 Checks: >
-  -*,
   bugprone-*,
   -bugprone-easily-swappable-parameters,
   cert-*,
@@ -15,8 +14,6 @@ Checks: >
   cppcoreguidelines-*,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
-  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
-  -cppcoreguidelines-owning-memory,
   misc-*,
   -misc-non-private-member-variables-in-classes,
   modernize-*,
@@ -26,7 +23,6 @@ Checks: >
   portability-*,
   readability-*,
   -readability-magic-numbers,
-  -readability-function-cognitive-complexity,
   -readability-identifier-length
 
 WarningsAsErrors: ''
