@@ -24,11 +24,15 @@ void Score::add_level(uint32_t n) {
     level_str = std::to_string(level);
 }
 
-void Score::t_did_just_rotate() { t_just_rotated = true; }
+void Score::did_t_just_rotate() { t_just_rotated = true; }
 
 void Score::did_just_move() { t_just_rotated = false; }
 
-void Score::t_used_rotation_point_5() { t_rotation_point_5_used = true; }
+void Score::did_t_rotation_point_5() { t_rotation_point_5_used = true; }
+
+void Score::did_t_spin_sides() { t_spin_sides = true; }
+
+void Score::did_t_spin_mini_sides() { t_spin_mini_sides = true; }
 
 bool Score::do_we_have_events_to_report() {
     bool event = has_events_to_report;
@@ -64,10 +68,9 @@ void Score::report_score(int num_cleared_lines) {
 
     has_events_to_report = true;
 
-    if (t_just_rotated and (t_spin or t_rotation_point_5_used)) {
+    if (t_just_rotated and (t_spin_sides or t_rotation_point_5_used)) {
         // T-SPIN !
-        Log::Debug("T-Spin detected with ", num_cleared_lines,
-                   " lines cleared !");
+        Log::Debug("T-Spin detected with ", num_cleared_lines, " lines cleared !");
         score_event.t_spin = true;
         switch (num_cleared_lines) {
             case 0:
@@ -95,10 +98,9 @@ void Score::report_score(int num_cleared_lines) {
                 Log::Error("Number of lines cleared received is ", num_cleared_lines, " in a T-Spin");
                 break;
         }
-    } else if (t_just_rotated and t_spin_mini) {
+    } else if (t_just_rotated and t_spin_mini_sides) {
         // MINI T-SPIN !
-        Log::Debug("Mini T-Spin detected with ", num_cleared_lines,
-                   " lines cleared !");
+        Log::Debug("Mini T-Spin detected with ", num_cleared_lines, " lines cleared !");
         score_event.mini_t_spin = true;
         switch (num_cleared_lines) {
             case 0:
@@ -155,8 +157,8 @@ void Score::report_score(int num_cleared_lines) {
 void Score::clear_t_spin_flags() {
     t_just_rotated = false;
     t_rotation_point_5_used = false;
-    t_spin = false;
-    t_spin_mini = false;
+    t_spin_sides = false;
+    t_spin_mini_sides = false;
 }
 
 void Score::add_soft_drop() {

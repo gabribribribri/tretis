@@ -28,11 +28,15 @@ class Score {
 public:
     static Score& Get();
 
-    void t_did_just_rotate();
+    void did_t_just_rotate();
 
     void did_just_move();
 
-    void t_used_rotation_point_5();
+    void did_t_rotation_point_5();
+
+    void did_t_spin_sides();
+
+    void did_t_spin_mini_sides();
 
     void clear_t_spin_flags();
 
@@ -77,8 +81,8 @@ private:
     // T-Spin flags
     bool t_just_rotated = false;
     bool t_rotation_point_5_used = false;
-    bool t_spin = false;
-    bool t_spin_mini = false;
+    bool t_spin_sides = false;
+    bool t_spin_mini_sides = false;
 
     sf::String score_str;
     sf::String level_str;

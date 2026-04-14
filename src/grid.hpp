@@ -57,7 +57,7 @@ public:
 
     void move_line(int from, int to);
 
-    void create_score_report(uint8_t num_cleared_lines);
+    void detect_t_spins();
 
     void adjust_crbl_shape_position();
 
