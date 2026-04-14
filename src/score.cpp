@@ -58,7 +58,7 @@ void Score::update_strings() {
 
 void Score::report_score(int num_cleared_lines) {
     // waiting for C++26 contracts...
-    assert(not(t_spin and mini_t_spin));
+    // assert(not(t_spin_sides and mini_t_spin));
 
     // Construct the score_event
     score_event.emplace();

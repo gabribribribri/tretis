@@ -51,11 +51,11 @@ No.
 - [x] Hold block
 - [x] Logging System
 - [x] SFML installed from xmake.lua
+- [x] Make the font work when you're not inside project dir
 - [ ] Levels (going faster)
 - [ ] Combo Bonus
 - [ ] Score registration in a file
 - [ ] Saves & Load
-- [ ] Make the font work when you're not inside project dir !!!
 - [ ] Game Over
 - [ ] Start menu
 - [ ] Pause menu

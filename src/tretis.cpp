@@ -1,11 +1,8 @@
 #include "tretis.hpp"
 
 #include <cmath>
-#include "SFML/Graphics/Color.hpp"
-#include "SFML/Graphics/Drawable.hpp"
-#include "SFML/Graphics/Rect.hpp"
-#include "SFML/Graphics/RenderTarget.hpp"
-#include "SFML/Window/Keyboard.hpp"
+#include <filesystem>
+#include <string>
 #include "blocks.hpp"
 #include "grid.hpp"
 #include "logging.hpp"
@@ -14,6 +11,35 @@
 #include "selection.hpp"
 #include "time.hpp"
 
+#ifdef _WIN32
+#include <windows.h>
+#elif __APPLE__
+#include <mach-o/dyld.h>
+#else
+#include <unistd.h>
+#endif
+
+namespace {
+
+std::string get_exe_dir() {
+    char path[1024];  // NOLINT shut the fuck up
+    uint32_t size = sizeof(path);
+
+#ifdef _WIN32
+    GetModuleFileNameA(NULL, path, size);
+#elif __APPLE__
+    _NSGetExecutablePath(path, &size);
+#else
+    ssize_t count = ::readlink("/proc/self/exe", path, size);  // NOLINT I swear I have murderous intents
+    if (count != -1) {
+        path[count] = '\0';  // NOLINT I am going to send your grandparents to a pig farm in New Zealand
+    }
+#endif
+    std::filesystem::path p(path);
+    return p.parent_path().string();  // Returns the folder containing the exe
+}
+
+}  // namespace
 void Tretis::gameloop() {
     while (render_window.isOpen()) {
         state();
@@ -421,7 +447,7 @@ Tretis::Tretis() {
 
     /// TEXT RELATED INITIALIZATION ///
 
-    if (!text_font.loadFromFile("apercumovistarbold.ttf")) {
+    if (!text_font.loadFromFile(get_exe_dir() + "/apercumovistarbold.ttf")) {
         Log::Error("Could not load font ! Aborting !");
         std::quick_exit(1);
     }
