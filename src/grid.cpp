@@ -99,6 +99,7 @@ bool Grid::move_crbl_down_or_place() {
 
 void Grid::hard_drop() {
     Score::Get().add_hard_drop(phbl_center.y - crbl_center.y);
+    Movements::Get().restart_crbl_fall_by_one_countdown();
     crbl_center = phbl_center;
 }
 
@@ -152,6 +153,8 @@ void Grid::select_new_crbl(std::optional<Tretomino> tretomino) {
     Selection::Get().hold_locked = false;
     // Release hold lock
     Movements::Get().set_hard_drop_lock(false);
+    // Restart fall by one countdown
+    Movements::Get().restart_crbl_fall_by_one_countdown();
 
     // crbl color adjustement
     crbl_shape_color = get_crbl_color();

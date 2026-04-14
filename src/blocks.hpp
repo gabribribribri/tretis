@@ -33,6 +33,7 @@ const int LEFT_OFFSET = 320;
 const sf::Vector2f GRID_ORIGIN = sf::Vector2f(-1320.0, -200.0); 
 const int CELL_SIZE = 140;
 const sf::Vector2f GAME_DELIMITER_SIZE = sf::Vector2f(3920, 3480);
+const float BLUR_SCALE_FACTOR = 8.0;
 const float BETWEEN_CELL_LINE_THICKNESS = 8.0;
 const float GAME_DELIMITER_LINE_THICHNESS = 16.0;
 const sf::Vector2f HOLD_PIECE_DELIMITER_SIZE = sf::Vector2f(680, 680);

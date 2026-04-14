@@ -6,7 +6,9 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <functional>
 
+#include "SFML/Graphics/RenderTarget.hpp"
 #include "blocks.hpp"
 #include "time.hpp"
 
@@ -57,13 +59,15 @@ private:
         sf::VideoMode(1280, 720),
         "Tretis",
     };
+    mutable sf::RenderTexture pause_rentex;
+    std::function<void()> state = [this] { state_running(); };
+
+    bool is_paused = false;
 
     // Pretty lines
-    std::array<sf::RectangleShape, GRID_WIDTH + 1>
-        vertical_cell_lines;  // in constructor
+    std::array<sf::RectangleShape, GRID_WIDTH + 1> vertical_cell_lines;  // in constructor
 
-    std::array<sf::RectangleShape, GRID_HEIGHT + 1>
-        horizontal_cell_lines;  // in constructor
+    std::array<sf::RectangleShape, GRID_HEIGHT + 1> horizontal_cell_lines;  // in constructor
 
     // Indicators
     bool t_spin_indicator_flag = false;
@@ -77,15 +81,21 @@ private:
     /// METHODS ///
     void debug_fps_cout() const;
 
-    void draw_game() const;
+    void draw_game_on(sf::RenderTarget& target) const;
 
     void update_texts();
 
     sf::Uint8 fade_texts_progression();
 
-    void handle_events();
+    void handle_basic_event(sf::Event event);
 
-    void resize_window(uint32_t screen_width, uint32_t screen_height);
+    static void handle_running_event(sf::Event event); // somehow this can be made static ?...
+
+    void resize_window(uint32_t screen_width, uint32_t screen_height) const;
+
+    /// GAME STATES ///
+    void state_running();
+    void state_pause();
 
     ~Tretis() = default;
     Tretis();

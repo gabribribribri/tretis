@@ -7,6 +7,7 @@ bool Chronometre::has_time_passed() {
         clock.restart();
         return true;
     }
+
     return false;
 }
 

@@ -2,6 +2,9 @@
 
 #include <cmath>
 #include "SFML/Graphics/Color.hpp"
+#include "SFML/Graphics/Drawable.hpp"
+#include "SFML/Graphics/Rect.hpp"
+#include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Window/Keyboard.hpp"
 #include "blocks.hpp"
 #include "grid.hpp"
@@ -11,24 +14,46 @@
 #include "selection.hpp"
 #include "time.hpp"
 
-using std::max;
-
 void Tretis::gameloop() {
     while (render_window.isOpen()) {
-        /// DEBUG ///
-        debug_fps_cout();
-
-        /// GAME LOGIC ///
-        handle_events();
-        Movements::Get().ping();
-        update_texts();  // I hate this method
-        Grid::Get().adjust_everything_if_moved();
-
-        /// DRAWING ///
-        render_window.clear(sf::Color::Black);
-        draw_game();
-        render_window.display();
+        state();
     }
+}
+
+void Tretis::state_running() {
+    /// DEBUGGING ///
+    debug_fps_cout();
+
+    /// HANDLE EVENTS ///
+    sf::Event event {};
+    while (render_window.pollEvent(event)) {
+        handle_basic_event(event);
+        handle_running_event(event);
+    }
+
+    /// GAME LOGIC ///
+    Movements::Get().ping();
+    update_texts();  // I hate this method
+    Grid::Get().adjust_everything_if_moved();
+
+    /// DRAWING ///
+    render_window.clear();
+    draw_game_on(render_window);
+    render_window.display();
+}
+void Tretis::state_pause() {
+    /// DEBUGGING ///
+    debug_fps_cout();
+
+    sf::Event event {};
+    while (render_window.pollEvent(event)) {
+        handle_basic_event(event);
+    }
+
+    /// DRAWING ///
+    render_window.clear();
+    draw_game_on(render_window);
+    render_window.display();
 }
 
 void Tretis::debug_fps_cout() const {
@@ -37,11 +62,7 @@ void Tretis::debug_fps_cout() const {
     fis++;
     if (cl.getElapsedTime() > sf::seconds(1.0F)) {
         Log::Info("FPS : ", fis);
-        Log::Debug("tspin=", t_spin_indicator_flag,
-                   " mini=", mini_indicator_flag,
-                   " b2b=", b2b_indicator_flag,
-                   " line_clear=", line_clear_indicator_flag,
-                   " score_added=", score_added_indicator_flag);
+        Log::Debug("tspin=", t_spin_indicator_flag, " mini=", mini_indicator_flag, " b2b=", b2b_indicator_flag, " line_clear=", line_clear_indicator_flag, " score_added=", score_added_indicator_flag);
         cl.restart();
         fis = 0;
     }
@@ -52,79 +73,76 @@ Tretis& Tretis::Get() {
     return instance;
 }
 
-void Tretis::draw_game() const {
+void Tretis::draw_game_on(sf::RenderTarget& target) const {
     Grid& grid = Grid::Get();
     Selection& selection = Selection::Get();
+
+    /// CLEAR ///
+    target.clear();
 
     /// HUD ///
 
     // Draw the whole game delimiter (Nothing should be drawn outside of it)
-    render_window.draw(whole_game_delimiter);
+    target.draw(whole_game_delimiter);
 
     // Draw the hold piece delimiter
-    render_window.draw(hold_piece_delimiter);
+    target.draw(hold_piece_delimiter);
 
     // Draw the hold piece Tretomino shape
     if (selection.hold_tretomino.has_value()) {
         for (auto const& cell : selection.hold_shape.shape) {
-            render_window.draw(cell);
+            target.draw(cell);
         }
     }
 
     /// TEXT ///
-
-    render_window.draw(level_title);
-    render_window.draw(level_value);
-    render_window.draw(score_title);
-    render_window.draw(score_value);
-    render_window.draw(lines_title);
-    render_window.draw(lines_value);
-
+    target.draw(level_title);
+    target.draw(level_value);
+    target.draw(score_title);
+    target.draw(score_value);
+    target.draw(lines_title);
+    target.draw(lines_value);
     if (t_spin_indicator_flag) {
-        render_window.draw(t_spin_indicator);
+        target.draw(t_spin_indicator);
     }
-
     if (mini_indicator_flag) {
-        render_window.draw(mini_indicator);
+        target.draw(mini_indicator);
     }
-
     if (b2b_indicator_flag) {
-        render_window.draw(b2b_indicator);
+        target.draw(b2b_indicator);
     }
-
     if (line_clear_indicator_flag) {
-        render_window.draw(line_clear_indicator);
+        target.draw(line_clear_indicator);
     }
-
     if (score_added_indicator_flag) {
-        render_window.draw(score_added_indicator);
+        target.draw(score_added_indicator);
     }
 
     ///  GRID  ///
 
     // Draw the grid cells
     for (sf::RectangleShape const& cell : grid.get_data()) {
-        render_window.draw(cell);
+        target.draw(cell);
     }
 
     // Draw the phantom block
     if (grid.is_phantom_enabled()) {
         for (sf::RectangleShape const& cell : grid.get_phbl_shapes()) {
-            render_window.draw(cell);
+            target.draw(cell);
         }
     }
 
     // Draw the current block
     for (sf::RectangleShape const& cell : grid.get_crbl_shapes()) {
-        render_window.draw(cell);
+        target.draw(cell);
     }
 
     // Draw Separation lines
     for (sf::RectangleShape const& line : vertical_cell_lines) {
-        render_window.draw(line);
+        target.draw(line);
     }
     for (sf::RectangleShape const& line : horizontal_cell_lines) {
-        render_window.draw(line);
+        target.draw(line);
     }
 
     /// NEXT QUEUE ///
@@ -132,7 +150,7 @@ void Tretis::draw_game() const {
     // Draw the next queue shapes
     for (auto const& queue_tretomino : selection.next_queue_shapes) {
         for (sf::RectangleShape const& cell : queue_tretomino.shape) {
-            render_window.draw(cell);
+            target.draw(cell);
         }
     }
 }
@@ -179,7 +197,6 @@ void Tretis::update_texts() {
                 line_clear_indicator.setString("TRETIS");
                 break;
         }
-
     }
 
     sf::Uint8 text_fading = fade_texts_progression();
@@ -189,7 +206,7 @@ void Tretis::update_texts() {
         line_clear_indicator_flag = false;
         score_added_indicator_flag = false;
         t_spin_indicator_flag = false;
-    } else {        
+    } else {
         score_added_indicator.setFillColor(sf::Color(255, 255, 255, text_fading));
 
         sf::Color line_clear_color = line_clear_indicator.getFillColor();
@@ -199,113 +216,145 @@ void Tretis::update_texts() {
         b2b_indicator.setFillColor(sf::Color(255, 255, text_fading));
         mini_indicator.setFillColor(sf::Color(255, 0, 255, text_fading));
         t_spin_indicator.setFillColor(sf::Color(255, 0, 255, text_fading));
-
     }
-
 }
 
 sf::Uint8 Tretis::fade_texts_progression() {
     // ugly line
-    return static_cast<sf::Uint8>(max(1 - indicators_clock.getElapsedTime().asSeconds(), 0.0F) * 255.);
+    return static_cast<sf::Uint8>(std::max(1 - indicators_clock.getElapsedTime().asSeconds(), 0.0F) * 255.);
 }
 
-void Tretis::handle_events() {
-    Grid& grid = Grid::Get();
-    Movements& movements = Movements::Get();
-
-    sf::Event event {};
-
-    while (render_window.pollEvent(event)) {
-        // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
-        switch (event.type) {
-            case sf::Event::Closed:
-                render_window.close();
-                break;
-            case sf::Event::Resized:
-                resize_window(event.size.width,event.size.height);
-                break;
-            case sf::Event::KeyPressed:
-                switch (event.key.code) {
-                    case sf::Keyboard::Down:
-                    case sf::Keyboard::S:
-                        movements.go_vertical();
-                        break;
-                    case sf::Keyboard::Left:
-                    case sf::Keyboard::A:
-                        movements.go_lateral(MOVE_LEFT);
-                        break;
-                    case sf::Keyboard::Right:
-                    case sf::Keyboard::D:
-                        movements.go_lateral(MOVE_RIGHT);
-                        break;
-                    case sf::Keyboard::Z:
-                        grid.super_rotate_block(false);
-                        break;
-                    case sf::Keyboard::Up:
-                    case sf::Keyboard::W:
-                    case sf::Keyboard::X:
-                        grid.super_rotate_block(true);
-                        break;
-                    case sf::Keyboard::P:
-                        grid.switch_phantom_block();
-                        break;
-                    case sf::Keyboard::Space:
-                        // I really wonder HOW to connect everything up !
-                        Grid::hard_drop_ifnlocked();
-                        break;
-                    case sf::Keyboard::C:
-                        grid.hold_crbl_ifnlocked();
-                        break;
-                    // Select your Tretomino (for debug purposes)
-                    case sf::Keyboard::Num0: grid.select_new_crbl(Tretomino::T); break;
-                    case sf::Keyboard::Num1: grid.select_new_crbl(Tretomino::O); break;
-                    case sf::Keyboard::Num2: grid.select_new_crbl(Tretomino::I); break;
-                    case sf::Keyboard::Num3: grid.select_new_crbl(Tretomino::L); break;
-                    case sf::Keyboard::Num4: grid.select_new_crbl(Tretomino::J); break;
-                    case sf::Keyboard::Num5: grid.select_new_crbl(Tretomino::S); break;
-                    case sf::Keyboard::Num6: grid.select_new_crbl(Tretomino::Z); break;
-                    case sf::Keyboard::Hyphen:
-                        zoom -= 0.05;
-                        resize_window(render_window.getSize().x,render_window.getSize().y);
-                        break;
-                    case sf::Keyboard::Equal:
-                        zoom += 0.05;
-                        resize_window(render_window.getSize().x,render_window.getSize().y);
-                        break;
-                        
-                    default:
-                        break;
-                }
-                break;
-
-            case sf::Event::KeyReleased:
-                switch (event.key.code) {
-                    case sf::Keyboard::Down:
-                    case sf::Keyboard::S:
-                        movements.stop_vertical();
-                        break;
-                    case sf::Keyboard::Left:
-                    case sf::Keyboard::A:
-                    case sf::Keyboard::Right:
-                    case sf::Keyboard::D:
-                        movements.stop_lateral();
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            default:
-                break;
-        }
+void Tretis::handle_basic_event(sf::Event event) {
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+    switch (event.type) {
+        case sf::Event::Closed:
+            render_window.close();
+            break;
+        case sf::Event::Resized:
+            resize_window(event.size.width, event.size.height);
+            break;
+        case sf::Event::KeyPressed:
+            switch (event.key.code) {
+                case sf::Keyboard::Hyphen:
+                    zoom -= 0.05;
+                    resize_window(render_window.getSize().x, render_window.getSize().y);
+                    break;
+                case sf::Keyboard::Equal:
+                    zoom += 0.05;
+                    resize_window(render_window.getSize().x, render_window.getSize().y);
+                    break;
+                case sf::Keyboard::P:
+                    if (is_paused) {
+                        is_paused = false;
+                        state = [this] { state_running(); };
+                    } else {
+                        is_paused = true;
+                        state = [this] { state_pause(); };
+                    }
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
     }
     // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 }
 
-void Tretis::resize_window(uint32_t screen_width, uint32_t screen_height) {
+void Tretis::handle_running_event(sf::Event event) {
+    Grid& grid = Grid::Get();
+    Movements& movements = Movements::Get();
+
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+    switch (event.type) {
+        case sf::Event::KeyPressed:
+            switch (event.key.code) {
+                case sf::Keyboard::Down:
+                case sf::Keyboard::S:
+                    movements.go_vertical();
+                    break;
+                case sf::Keyboard::Left:
+                case sf::Keyboard::A:
+                    movements.go_lateral(MOVE_LEFT);
+                    break;
+                case sf::Keyboard::Right:
+                case sf::Keyboard::D:
+                    movements.go_lateral(MOVE_RIGHT);
+                    break;
+                case sf::Keyboard::Z:
+                    grid.super_rotate_block(false);
+                    break;
+                case sf::Keyboard::Up:
+                case sf::Keyboard::W:
+                case sf::Keyboard::X:
+                    grid.super_rotate_block(true);
+                    break;
+                case sf::Keyboard::BackSlash:
+                    grid.switch_phantom_block();
+                    break;
+                case sf::Keyboard::Space:
+                    // I really wonder HOW to connect everything up !
+                    Grid::hard_drop_ifnlocked();
+                    break;
+                case sf::Keyboard::C:
+                    grid.hold_crbl_ifnlocked();
+                    break;
+                // Select your Tretomino (for debug purposes)
+                case sf::Keyboard::Num0:
+                    grid.select_new_crbl(Tretomino::T);
+                    break;
+                case sf::Keyboard::Num1:
+                    grid.select_new_crbl(Tretomino::O);
+                    break;
+                case sf::Keyboard::Num2:
+                    grid.select_new_crbl(Tretomino::I);
+                    break;
+                case sf::Keyboard::Num3:
+                    grid.select_new_crbl(Tretomino::L);
+                    break;
+                case sf::Keyboard::Num4:
+                    grid.select_new_crbl(Tretomino::J);
+                    break;
+                case sf::Keyboard::Num5:
+                    grid.select_new_crbl(Tretomino::S);
+                    break;
+                case sf::Keyboard::Num6:
+                    grid.select_new_crbl(Tretomino::Z);
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+
+        case sf::Event::KeyReleased:
+            switch (event.key.code) {
+                case sf::Keyboard::Down:
+                case sf::Keyboard::S:
+                    movements.stop_vertical();
+                    break;
+                case sf::Keyboard::Left:
+                case sf::Keyboard::A:
+                case sf::Keyboard::Right:
+                case sf::Keyboard::D:
+                    movements.stop_lateral();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+    // NOLINTEND(cppcoreguidelines-pro-type-union-access)
+}
+
+void Tretis::resize_window(uint32_t screen_width, uint32_t screen_height) const {
     // I finallly mother flipping did this
     // I am having a stroke at the moment
     const auto screen_width_f = static_cast<float>(screen_width);
-    const auto screen_height_f =static_cast<float>(screen_height);
+    const auto screen_height_f = static_cast<float>(screen_height);
     const float screen_ratio = screen_width_f / screen_height_f;
     const float game_delimiter_ratio = GAME_DELIMITER_SIZE.x / GAME_DELIMITER_SIZE.y;
     float view_height = NAN;
@@ -331,17 +380,18 @@ void Tretis::resize_window(uint32_t screen_width, uint32_t screen_height) {
     render_window.setView(sf::View(visibleArea));
 }
 
-
 Tretis::Tretis() {
-    /// SETTING FRAMERATE ///
+    /// RENDERING RELATED INIT ///
     render_window.setFramerateLimit(FRAME_PER_SECOND);
+    // We add 100 pixels each side to fit the blur
+    pause_rentex.create(static_cast<int>(GAME_DELIMITER_SIZE.x / BLUR_SCALE_FACTOR) + 200, static_cast<int>(GAME_DELIMITER_SIZE.y / BLUR_SCALE_FACTOR) + 200);
+    pause_rentex.setView(sf::View(sf::FloatRect(-100, -100, GAME_DELIMITER_SIZE.x + 100, GAME_DELIMITER_SIZE.y + 100)));
 
     /// SHAPED RELATED INITIALIZATIONS ///
 
     // Whole game delimiter initialization
     whole_game_delimiter.setFillColor(sf::Color::Transparent);
-    whole_game_delimiter.setPosition(sf::Vector2f(
-        GAME_DELIMITER_LINE_THICHNESS, GAME_DELIMITER_LINE_THICHNESS));
+    whole_game_delimiter.setPosition(sf::Vector2f(GAME_DELIMITER_LINE_THICHNESS, GAME_DELIMITER_LINE_THICHNESS));
     whole_game_delimiter.setOutlineColor(BETWEEN_CELL_LINE_COLOR);
     whole_game_delimiter.setOutlineThickness(GAME_DELIMITER_LINE_THICHNESS);
 
@@ -356,15 +406,12 @@ Tretis::Tretis() {
         auto i_f = static_cast<float>(i);
         line = sf::RectangleShape(sf::Vector2f(8, (GRID_HEIGHT * CELL_SIZE) + 4));
         line.setOrigin(GRID_ORIGIN);
-        line.setPosition(
-            sf::Vector2f((i_f * CELL_SIZE) - (BETWEEN_CELL_LINE_THICKNESS / 2),
-                         -BETWEEN_CELL_LINE_THICKNESS / 2));
+        line.setPosition(sf::Vector2f((i_f * CELL_SIZE) - (BETWEEN_CELL_LINE_THICKNESS / 2), -BETWEEN_CELL_LINE_THICKNESS / 2));
         line.setFillColor(BETWEEN_CELL_LINE_COLOR);
     }
 
     // Horizontal Lines initialization
-    for (auto [i, line] :
-         horizontal_cell_lines | std::ranges::views::enumerate) {
+    for (auto [i, line] : horizontal_cell_lines | std::ranges::views::enumerate) {
         auto i_f = static_cast<float>(i);
         line = sf::RectangleShape(sf::Vector2f((GRID_WIDTH * CELL_SIZE) + 4, 8));
         line.setOrigin(GRID_ORIGIN);

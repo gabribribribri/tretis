@@ -32,12 +32,12 @@ No.
 *Only QWERTY Keyboards are supported*
 - **A, Left** : Go left
 - **D, Right** : Go right
-- **W, X** : Rotate block clockwise
+- **W, X** : Rotate blousck clockwise
 - **Z** : Rotate block counterclockwise
 - **S** : Soft Drop
 - **Space** : Hard drop
 - **C** : Hold
-- **P** : On/Off phantom block
+- **\\** : On/Off phantom block
 - **0-6** : Summon a Tretomino (DEBUG)
 - **-/=** : Dezoom / Zoom
 
@@ -60,6 +60,7 @@ No.
 - [ ] Start menu
 - [ ] Pause menu
 - [ ] Mouse control
+- [ ] TODO: Fix horrible bug clock restarting when depausing
 
 
 (I won't make sound, I don't like sound).
