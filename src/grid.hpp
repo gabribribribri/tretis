@@ -115,7 +115,6 @@ private:
     Tretomino crbl_tretomino {};  // Silence clang wanting initialization in constructor
 
     bool phantom_enabled = true;
-    bool hard_drop_locked = false;
 
     Grid();
     ~Grid() = default;

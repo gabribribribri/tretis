@@ -71,11 +71,14 @@ void Grid::super_rotate_block(bool clockwise) {
             crbl_center += offset;
             crbl_rotation = next_rotation;
             Log::Debug("Rotation to ", next_rotation, " with offset ", offset.x, " ", offset.y);
+
+            // Checks for T-Spins
             if (crbl_tretomino == Tretomino::T) {
-                Score::Get().did_just_rotate();
+                Score::Get().t_did_just_rotate();
                 if (rotation_point == 4) {
-                    Score::Get().using_rotation_point_5();
+                    Score::Get().t_used_rotation_point_5();
                 }
+
             }
             return;
         }
@@ -104,26 +107,20 @@ void Grid::place_and_select_crbl() {
     uint64_t modified_lines_index_mask = place_crbl_on_grid();
 
     // Clear full modified lines, getting back how many
-    uint8_t num_cleared_lines =
-        clear_full_modified_lines(modified_lines_index_mask);
+    uint8_t num_cleared_lines = clear_full_modified_lines(modified_lines_index_mask);
 
+    // TODO Check for T-Spins
     // Checking for T-Spins and adding score
     create_score_report(num_cleared_lines);
 
     // Selecting new current block
     select_new_crbl(std::nullopt);
-
-    // Releasing "once per block" hold lock
-    // and hard drop locks
-    Selection::Get().hold_locked = false;
-    Movements::Get().set_hard_drop_lock(false);
 }
 
 uint64_t Grid::place_crbl_on_grid() {
     uint64_t modified_lines_index_mask = 0b0;
     for (Coo cell_relative_position : get_block_relative_cells(crbl_rotation)) {
-        sf::Vector2i cell_absolute_position =
-            crbl_center + cell_relative_position;
+        sf::Vector2i cell_absolute_position = crbl_center + cell_relative_position;
         modified_lines_index_mask |= 0b1 << cell_absolute_position.y;
         grid_at(cell_absolute_position).setFillColor(get_crbl_color());
     }
@@ -131,6 +128,8 @@ uint64_t Grid::place_crbl_on_grid() {
 }
 
 void Grid::select_new_crbl(std::optional<Tretomino> tretomino) {
+    Log::Debug("New crbl selected");
+
     crbl_center = NEW_CRBL_INITIAL_CENTER_POSITION;
     crbl_rotation = 0;
     if (tretomino.has_value()) {
@@ -138,17 +137,34 @@ void Grid::select_new_crbl(std::optional<Tretomino> tretomino) {
     } else {
         crbl_tretomino = Selection::Get().next_tretomino();
     }
-    adjust_everything_new_crbl();
+
+    // Release "once per block" hold lock
+    Selection::Get().hold_locked = false;
+    // Release hold lock
+    Movements::Get().set_hard_drop_lock(false);
+
+    // crbl color adjustement
+    crbl_shape_color = get_crbl_color();
+    adjust_crbl_shape_color();
+
+    // crbl shape adjustement
+    crbl_shape_center = crbl_center;
+    crbl_shape_rotation = crbl_rotation;
+    adjust_crbl_shape_position();
+
+    // phbl adjustement (need crbl adjustement)
+    adjust_phbl_center();
+    adjust_phbl_shape_position();
 }
 
 void Grid::hold_crbl_ifnlocked() {
     Selection& selec = Selection::Get();
-    if (!selec.hold_locked) {
-        auto new_current = selec.replace_hold_tretomino(crbl_tretomino);
-        select_new_crbl(new_current);
-        selec.hold_locked = true;
-        hard_drop_locked = false;  // Ah Ah ! Did not think of that !
+    if (selec.hold_locked) {
+        return;
     }
+    auto new_current = selec.replace_hold_tretomino(crbl_tretomino);
+    select_new_crbl(new_current);
+    selec.hold_locked = true;
 }
 
 int Grid::clear_full_modified_lines(uint64_t modified_lines_index_mask) {
@@ -191,16 +207,16 @@ void Grid::clear_lines(uint64_t lines_to_clear_index_mask) {
 
 void Grid::move_line(int from, int to) {
     for (int x_index = 0; x_index < GRID_WIDTH; x_index++) {
-        grid_at(x_index, to)
-            .setFillColor(grid_at(x_index, from).getFillColor());
+        grid_at(x_index, to).setFillColor(grid_at(x_index, from).getFillColor());
     }
 }
 
+// TODO delete this function
 void Grid::create_score_report(uint8_t num_cleared_lines) {
     if (crbl_tretomino == Tretomino::T) {
         //!\\ C and D are inverted because C is bottom left and D is bottom right
-        bool a_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at( (crbl_rotation + 0) % 4)) .getFillColor() != EMPTY_CELL_COLOR;
-        bool b_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at( (crbl_rotation + 1) % 4)) .getFillColor() != EMPTY_CELL_COLOR;
+        bool a_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 0) % 4)).getFillColor() != EMPTY_CELL_COLOR;
+        bool b_side = grid_at(crbl_center + T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 1) % 4)).getFillColor() != EMPTY_CELL_COLOR;
         Coo d_side_coo = crbl_center + T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 2) % 4);
         bool d_side = (d_side_coo.x >= 0 and d_side_coo.x < GRID_WIDTH and d_side_coo.y >= 0 and d_side_coo.y < GRID_HEIGHT) ? grid_at(d_side_coo).getFillColor() != EMPTY_CELL_COLOR : true;
         Coo c_side_coo = crbl_center + T_SPIN_RECOGNITION_PATTERN.at((crbl_rotation + 3) % 4);
@@ -227,12 +243,9 @@ void Grid::create_score_report(uint8_t num_cleared_lines) {
 }
 
 void Grid::adjust_crbl_shape_position() {
-    for (auto [i, cell] : get_block_relative_cells(crbl_shape_rotation) |
-                              std::ranges::views::enumerate) {
-        auto pos_x =
-            static_cast<float>(CELL_SIZE * (crbl_shape_center.x + cell.x));
-        auto pos_y =
-            static_cast<float>(CELL_SIZE * (crbl_shape_center.y + cell.y));
+    for (auto [i, cell] : get_block_relative_cells(crbl_shape_rotation) | std::ranges::views::enumerate) {
+        auto pos_x = static_cast<float>(CELL_SIZE * (crbl_shape_center.x + cell.x));
+        auto pos_y = static_cast<float>(CELL_SIZE * (crbl_shape_center.y + cell.y));
         crbl_shape.at(i).setPosition(sf::Vector2f(pos_x, pos_y));
     }
 }
@@ -245,8 +258,7 @@ void Grid::adjust_crbl_shape_color() {
 }
 
 void Grid::adjust_phbl_shape_position() {
-    for (auto [i, cell] : get_block_relative_cells(crbl_shape_rotation) |
-                              std::ranges::views::enumerate) {
+    for (auto [i, cell] : get_block_relative_cells(crbl_shape_rotation) | std::ranges::views::enumerate) {
         auto pos_x = static_cast<float>(CELL_SIZE * (phbl_center.x + cell.x));
         auto pos_y = static_cast<float>(CELL_SIZE * (phbl_center.y + cell.y));
         phbl_shape.at(i).setPosition(sf::Vector2f(pos_x, pos_y));
@@ -257,18 +269,15 @@ void Grid::adjust_phbl_center() {
     assert(crbl_rotation == crbl_shape_rotation);
     assert(crbl_center == crbl_shape_center);
     Coo potential_phbl_center = crbl_shape_center;
-    while (is_block_movable_to(potential_phbl_center + MOVE_DOWN,
-                               crbl_shape_rotation)) {
+    while (is_block_movable_to(potential_phbl_center + MOVE_DOWN, crbl_shape_rotation)) {
         potential_phbl_center.y += 1;
     }
     phbl_center = potential_phbl_center;
-    Log::Debug("Adjusting Phantom Block center at x=", phbl_center.x,
-               " to y=", phbl_center.y);
+    Log::Debug("Adjusting Phantom Block center at x=", phbl_center.x, " to y=", phbl_center.y);
 }
 
 void Grid::adjust_everything_if_moved() {
-    if (crbl_shape_rotation != crbl_rotation or
-        crbl_center.x != crbl_shape_center.x) {
+    if (crbl_shape_rotation != crbl_rotation or crbl_center.x != crbl_shape_center.x) {
         crbl_shape_center = crbl_center;
         crbl_shape_rotation = crbl_rotation;
         adjust_crbl_shape_position();
@@ -278,20 +287,6 @@ void Grid::adjust_everything_if_moved() {
         crbl_shape_center = crbl_center;
         adjust_crbl_shape_position();
     }
-}
-
-void Grid::adjust_everything_new_crbl() {
-    Log::Debug("New crbl selected");
-    // crbl color adjustement
-    crbl_shape_color = get_crbl_color();
-    adjust_crbl_shape_color();
-    // crbl shape adjustement
-    crbl_shape_center = crbl_center;
-    crbl_shape_rotation = crbl_rotation;
-    adjust_crbl_shape_position();
-    // phbl adjustement (need crbl adjustement)
-    adjust_phbl_center();
-    adjust_phbl_shape_position();
 }
 
 GridData const& Grid::get_data() const {

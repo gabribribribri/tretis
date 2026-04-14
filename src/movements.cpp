@@ -6,8 +6,7 @@ void Movements::ping_lateral() {
         return;
     }
 
-    if (lateral_auto_repeat_enabled and
-        lateral_auto_repeat_interval.has_time_passed()) {
+    if (lateral_auto_repeat_enabled and lateral_auto_repeat_interval.has_time_passed()) {
         Grid::Get().move_crbl(lateral_direction);
     } else if (lateral_auto_repeat_delay.has_time_passed()) {
         Grid::Get().move_crbl(lateral_direction);

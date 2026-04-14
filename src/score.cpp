@@ -24,14 +24,13 @@ void Score::add_level(uint32_t n) {
     level_str = std::to_string(level);
 }
 
-void Score::did_just_rotate() { just_rotated = true; }
+void Score::t_did_just_rotate() { t_just_rotated = true; }
 
-void Score::did_just_move() { just_rotated = false; }
+void Score::did_just_move() { t_just_rotated = false; }
 
-void Score::using_rotation_point_5() { rotation_point_5_used = true; }
+void Score::t_used_rotation_point_5() { t_rotation_point_5_used = true; }
 
 bool Score::do_we_have_events_to_report() {
-    // return std::exchange(has_events_to_report, false);
     bool event = has_events_to_report;
     has_events_to_report = false;
     return event;
@@ -56,16 +55,16 @@ void Score::update_strings() {
     lines_str = std::format("{} / {}", lines, lines_to_clear);
 }
 
-void Score::report_score(int num_cleared_lines, bool t_spin, bool mini_t_spin) {
+void Score::report_score(int num_cleared_lines) {
     assert(not(t_spin and mini_t_spin));
 
     if (num_cleared_lines < 1 or num_cleared_lines > 4) {
-        Log::Warn("report_score called with num_cleared_lines=",
-                  num_cleared_lines);
+        Log::Error("report_score called with num_cleared_lines=", num_cleared_lines);
     }
+
     has_events_to_report = true;
 
-    if (just_rotated and (t_spin or rotation_point_5_used)) {
+    if (t_just_rotated and (t_spin or t_rotation_point_5_used)) {
         // T-SPIN !
         Log::Debug("T-Spin detected with ", num_cleared_lines,
                    " lines cleared !");
@@ -93,11 +92,10 @@ void Score::report_score(int num_cleared_lines, bool t_spin, bool mini_t_spin) {
                 break;
             case 4:
             default:
-                Log::Error("Number of lines cleared received is ",
-                           num_cleared_lines, " in a T-Spin");
+                Log::Error("Number of lines cleared received is ", num_cleared_lines, " in a T-Spin");
                 break;
         }
-    } else if (just_rotated and mini_t_spin) {
+    } else if (t_just_rotated and t_spin_mini) {
         // MINI T-SPIN !
         Log::Debug("Mini T-Spin detected with ", num_cleared_lines,
                    " lines cleared !");
@@ -117,8 +115,7 @@ void Score::report_score(int num_cleared_lines, bool t_spin, bool mini_t_spin) {
             case 3:
             case 4:
             default:
-                Log::Error("Number of lines cleared received is ",
-                           num_cleared_lines, " in a Mini T-Spin");
+                Log::Error("Number of lines cleared received is ", num_cleared_lines, " in a Mini T-Spin");
                 break;
         }
     } else {
@@ -146,12 +143,20 @@ void Score::report_score(int num_cleared_lines, bool t_spin, bool mini_t_spin) {
                 break;
             case 0:
             default:
-                Log::Error("Number of lines cleared received is ",
-                           num_cleared_lines);
+                Log::Error("Number of lines cleared received is ", num_cleared_lines);
                 break;
         }
     }
     Log::Debug("Score updated to ", score);
+
+    clear_t_spin_flags();
+}
+
+void Score::clear_t_spin_flags() {
+    t_just_rotated = false;
+    t_rotation_point_5_used = false;
+    t_spin = false;
+    t_spin_mini = false;
 }
 
 void Score::add_soft_drop() {

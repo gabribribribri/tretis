@@ -1,6 +1,7 @@
 #include "tretis.hpp"
 
 #include <cmath>
+#include "SFML/Window/Keyboard.hpp"
 #include "blocks.hpp"
 #include "grid.hpp"
 #include "logging.hpp"
@@ -260,6 +261,15 @@ void Tretis::handle_events() {
                     case sf::Keyboard::C:
                         grid.hold_crbl_ifnlocked();
                         break;
+                    // Select your Tretomino (for debug purposes)
+                    case sf::Keyboard::Num0: grid.select_new_crbl(Tretomino::T); break;
+                    case sf::Keyboard::Num1: grid.select_new_crbl(Tretomino::O); break;
+                    case sf::Keyboard::Num2: grid.select_new_crbl(Tretomino::I); break;
+                    case sf::Keyboard::Num3: grid.select_new_crbl(Tretomino::L); break;
+                    case sf::Keyboard::Num4: grid.select_new_crbl(Tretomino::J); break;
+                    case sf::Keyboard::Num5: grid.select_new_crbl(Tretomino::S); break;
+                    case sf::Keyboard::Num6: grid.select_new_crbl(Tretomino::Z); break;
+                        
                     default:
                         break;
                 }

@@ -13,6 +13,8 @@ enum class LinesClear : std::uint8_t {
     Tretis
 };
 
+/// ScoreEvent only stores relevant informations
+/// to be displayed
 struct ScoreEvent {
     bool t_spin {};
     bool mini_t_spin {};
@@ -26,11 +28,13 @@ class Score {
 public:
     static Score& Get();
 
-    void did_just_rotate();
+    void t_did_just_rotate();
 
     void did_just_move();
 
-    void using_rotation_point_5();
+    void t_used_rotation_point_5();
+
+    void clear_t_spin_flags();
 
     bool do_we_have_events_to_report();
 
@@ -40,7 +44,7 @@ public:
 
     void update_strings();
 
-    void report_score(int num_cleared_lines, bool t_spin, bool mini_t_spin);
+    void report_score(int num_cleared_lines);
 
     void add_soft_drop();
 
@@ -70,15 +74,18 @@ private:
     uint32_t lines = 0;
     uint32_t lines_to_clear = 5 * level;
 
-    bool just_rotated = false;
-    bool rotation_point_5_used = false;  // Only for T of course
-
-    bool has_events_to_report = false;
+    // T-Spin flags
+    bool t_just_rotated = false;
+    bool t_rotation_point_5_used = false;
+    bool t_spin = false;
+    bool t_spin_mini = false;
 
     sf::String score_str;
     sf::String level_str;
     sf::String lines_str;
 
+    // TODO Make this a std::optional
+    bool has_events_to_report = false;
     ScoreEvent score_event;
 
     void add_score(uint32_t n);

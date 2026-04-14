@@ -18,7 +18,7 @@ private:
     template <typename... Args>
     static void Logger(std::string_view level_prefix, Args const&... args) {
         std::print("{}", level_prefix);
-        std::print("{}", args...);
+        (std::print("{}", args), ...);
         std::print("\n");
     }
 
