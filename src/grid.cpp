@@ -102,6 +102,15 @@ void Grid::hard_drop() {
     crbl_center = phbl_center;
 }
 
+void Grid::hard_drop_ifnlocked() {
+    if (Movements::Get().is_hard_drop_locked()) {
+        return;
+    }
+    Movements::Get().set_hard_drop_lock(true);
+    Movements::Get().restart_crbl_fall_by_one_countdown();
+    Grid::Get().hard_drop();
+}
+
 void Grid::place_and_select_crbl() {
     // Placing the block, getting back modified lines
     uint64_t modified_lines_index_mask = place_crbl_on_grid();

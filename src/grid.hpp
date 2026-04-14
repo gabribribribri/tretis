@@ -31,6 +31,8 @@ public:
     /// returns true if block has been placed, false if not
     bool move_crbl_down_or_place();
 
+    static void hard_drop_ifnlocked();
+
     void hard_drop();
 
     void place_and_select_crbl();

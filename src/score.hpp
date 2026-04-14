@@ -40,10 +40,6 @@ public:
 
     void clear_t_spin_flags();
 
-    bool do_we_have_events_to_report();
-
-    void reset_score_event();
-
     void set_default_values();
 
     void update_strings();
@@ -54,9 +50,9 @@ public:
 
     void add_hard_drop(int length);
 
-    [[nodiscard]] sf::Time get_drop_speed_from_level() const;
+    [[nodiscard]] std::optional<ScoreEvent> take_score_event();
 
-    [[nodiscard]] ScoreEvent copy_score_event() const;
+    [[nodiscard]] sf::Time get_drop_speed_from_level() const;
 
     [[nodiscard]] sf::String const& get_score_str() const;
 
@@ -88,9 +84,7 @@ private:
     sf::String level_str;
     sf::String lines_str;
 
-    // TODO Make this a std::optional
-    bool has_events_to_report = false;
-    ScoreEvent score_event;
+    std::optional<ScoreEvent> score_event;
 
     void add_score(uint32_t n);
 

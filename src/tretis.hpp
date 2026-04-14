@@ -66,11 +66,11 @@ private:
         horizontal_cell_lines;  // in constructor
 
     // Indicators
-    bool t_spin_indicator_activation = false;
-    bool mini_indicator_activation = false;
-    bool b2b_indicator_activation = false;
-    bool line_clear_indicator_activation = false;
-    bool score_added_indicator_activation = false;
+    bool t_spin_indicator_flag = false;
+    bool mini_indicator_flag = false;
+    bool b2b_indicator_flag = false;
+    bool line_clear_indicator_flag = false;
+    bool score_added_indicator_flag = false;
 
 
     /// METHODS ///
@@ -85,8 +85,6 @@ private:
     void handle_events();
 
     void resize_window(float screen_width, float screen_height);
-
-    static void hard_drop_ifnlocked();
 
     ~Tretis() = default;
     Tretis();

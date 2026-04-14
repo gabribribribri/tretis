@@ -1,6 +1,7 @@
 #include "tretis.hpp"
 
 #include <cmath>
+#include "SFML/Graphics/Color.hpp"
 #include "SFML/Window/Keyboard.hpp"
 #include "blocks.hpp"
 #include "grid.hpp"
@@ -20,7 +21,7 @@ void Tretis::gameloop() {
         /// GAME LOGIC ///
         handle_events();
         Movements::Get().ping();
-        update_texts();  // I hope I'll find a better way...
+        update_texts();  // I hate this method
         Grid::Get().adjust_everything_if_moved();
 
         /// DRAWING ///
@@ -36,11 +37,11 @@ void Tretis::debug_fps_cout() const {
     fis++;
     if (cl.getElapsedTime() > sf::seconds(1.0F)) {
         Log::Info("FPS : ", fis);
-        Log::Debug("tspin=", t_spin_indicator_activation,
-                   " mini=", mini_indicator_activation,
-                   " b2b=", b2b_indicator_activation,
-                   " line_clear=", line_clear_indicator_activation,
-                   " score_added=", score_added_indicator_activation);
+        Log::Debug("tspin=", t_spin_indicator_flag,
+                   " mini=", mini_indicator_flag,
+                   " b2b=", b2b_indicator_flag,
+                   " line_clear=", line_clear_indicator_flag,
+                   " score_added=", score_added_indicator_flag);
         cl.restart();
         fis = 0;
     }
@@ -79,23 +80,23 @@ void Tretis::draw_game() const {
     render_window.draw(lines_title);
     render_window.draw(lines_value);
 
-    if (t_spin_indicator_activation) {
+    if (t_spin_indicator_flag) {
         render_window.draw(t_spin_indicator);
     }
 
-    if (mini_indicator_activation) {
+    if (mini_indicator_flag) {
         render_window.draw(mini_indicator);
     }
 
-    if (b2b_indicator_activation) {
+    if (b2b_indicator_flag) {
         render_window.draw(b2b_indicator);
     }
 
-    if (line_clear_indicator_activation) {
+    if (line_clear_indicator_flag) {
         render_window.draw(line_clear_indicator);
     }
 
-    if (score_added_indicator_activation) {
+    if (score_added_indicator_flag) {
         render_window.draw(score_added_indicator);
     }
 
@@ -138,23 +139,23 @@ void Tretis::draw_game() const {
 
 void Tretis::update_texts() {
     Score& score = Score::Get();
-    ScoreEvent score_event = score.copy_score_event();
 
-    level_value.setString(score.get_level_str());
     score_value.setString(score.get_score_str());
-    lines_value.setString(score.get_lines_str());
 
-    if (score.do_we_have_events_to_report()) {
-        Log::Debug("Reporting Events !");
+    if (auto score_event = score.take_score_event()) {
+        level_value.setString(score.get_level_str());
+        lines_value.setString(score.get_lines_str());
+
         indicators_clock.restart();
 
+        t_spin_indicator_flag = score_event->t_spin or score_event->mini_t_spin;
+        mini_indicator_flag = score_event->mini_t_spin;
+        b2b_indicator_flag = score_event->b2b_bonus;
+        line_clear_indicator_flag = score_event->lines_clear != LinesClear::None;
+        score_added_indicator_flag = score_event->score_added != 0;
+        score_added_indicator.setString(std::format("+{}", score_event->score_added));
 
-        t_spin_indicator_activation = score_event.t_spin or score_event.mini_t_spin;
-        mini_indicator_activation = score_event.mini_t_spin;
-        b2b_indicator_activation = score_event.b2b_bonus;
-        line_clear_indicator_activation = score_event.lines_clear != LinesClear::None;
-
-        switch (score_event.lines_clear) {
+        switch (score_event->lines_clear) {
             case LinesClear::None:
                 // lol
                 break;
@@ -179,20 +180,15 @@ void Tretis::update_texts() {
                 break;
         }
 
-        score_added_indicator_activation = true;
-        score_added_indicator.setString(std::format("+{}", score_event.score_added));
-
-        // Don't forget to clean the events after !
-        score.reset_score_event();
     }
 
     sf::Uint8 text_fading = fade_texts_progression();
     if (text_fading == 0) {
-        b2b_indicator_activation = false;
-        mini_indicator_activation = false;
-        line_clear_indicator_activation = false;
-        score_added_indicator_activation = false;
-        t_spin_indicator_activation = false;
+        b2b_indicator_flag = false;
+        mini_indicator_flag = false;
+        line_clear_indicator_flag = false;
+        score_added_indicator_flag = false;
+        t_spin_indicator_flag = false;
     } else {        
         score_added_indicator.setFillColor(sf::Color(255, 255, 255, text_fading));
 
@@ -226,8 +222,7 @@ void Tretis::handle_events() {
                 render_window.close();
                 break;
             case sf::Event::Resized:
-                resize_window(static_cast<float>(event.size.width),
-                              static_cast<float>(event.size.height));
+                resize_window(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
                 break;
             case sf::Event::KeyPressed:
                 switch (event.key.code) {
@@ -256,7 +251,7 @@ void Tretis::handle_events() {
                         break;
                     case sf::Keyboard::Space:
                         // I really wonder HOW to connect everything up !
-                        hard_drop_ifnlocked();
+                        Grid::hard_drop_ifnlocked();
                         break;
                     case sf::Keyboard::C:
                         grid.hold_crbl_ifnlocked();
@@ -328,14 +323,6 @@ void Tretis::resize_window(float screen_width, float screen_height) {
     render_window.setView(sf::View(visibleArea));
 }
 
-void Tretis::hard_drop_ifnlocked() {
-    if (Movements::Get().is_hard_drop_locked()) {
-        return;
-    }
-    Movements::Get().set_hard_drop_lock(true);
-    Movements::Get().restart_crbl_fall_by_one_countdown();
-    Grid::Get().hard_drop();
-}
 
 Tretis::Tretis() {
     /// SETTING FRAMERATE ///
@@ -421,14 +408,12 @@ Tretis::Tretis() {
     lines_value.setPosition(TEXT_POS.x, TEXT_POS.y + 440);
 
     score_added_indicator.setFont(text_font);
-    score_added_indicator.setFillColor(sf::Color::Magenta);
-    score_added_indicator.setString("");
+    score_added_indicator.setString(Score::Get().get_score_str());
     score_added_indicator.setCharacterSize(120);
     score_added_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 600);
 
     line_clear_indicator.setFont(text_font);
-    line_clear_indicator.setFillColor(sf::Color::Magenta);
-    line_clear_indicator.setString("Mini");
+    line_clear_indicator.setFillColor(sf::Color::White);
     line_clear_indicator.setCharacterSize(120);
     line_clear_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 720);
     line_clear_indicator.setStyle(sf::Text::Bold);
@@ -441,10 +426,11 @@ Tretis::Tretis() {
 
     t_spin_indicator.setFont(text_font);
     t_spin_indicator.setFillColor(sf::Color::Magenta);
-    t_spin_indicator.setString("T-Spin");
+    t_spin_indicator.setString("T-SPIN");
     t_spin_indicator.setCharacterSize(200);
     t_spin_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 1080);
 
+    // TODO make use of this
     b2b_indicator.setFont(text_font);
     b2b_indicator.setFillColor(sf::Color::Yellow);
     b2b_indicator.setString("B2B Bonus");
