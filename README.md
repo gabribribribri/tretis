@@ -61,6 +61,8 @@ No.
 - [ ] Pause menu
 - [ ] Mouse control
 - [ ] TODO: Fix horrible bug clock restarting when depausing
+- [ ] TODO: Fix Score sometimes displaying added score
+- [ ] TODO: Fix soft drop score not adding
 
 
 (I won't make sound, I don't like sound).
