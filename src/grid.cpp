@@ -1,6 +1,7 @@
 #include "grid.hpp"
 #include <algorithm>
 #include "blocks.hpp"
+#include "displayer.hpp"
 #include "logging.hpp"
 #include "movements.hpp"
 #include "score.hpp"

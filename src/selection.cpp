@@ -1,4 +1,5 @@
 #include "selection.hpp"
+#include "displayer.hpp"
 
 ShuffleBag::ShuffleBag() : rng(device()) { repopulate(); }
 

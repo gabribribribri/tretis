@@ -1,4 +1,5 @@
 #include "tretomino_render_shape.hpp"
+#include "displayer.hpp"
 
 constexpr float REC_SIZE = 160;
 

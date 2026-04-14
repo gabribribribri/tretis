@@ -273,7 +273,7 @@ Displayer::Displayer() {
 
     line_clear_indicator.setFont(text_font);
     line_clear_indicator.setFillColor(sf::Color::White);
-    line_clear_indicator.setCharacterSize(120);
+    line_clear_indicator.setCharacterSize(160);
     line_clear_indicator.setPosition(TEXT_POS.x, TEXT_POS.y + 720);
     line_clear_indicator.setStyle(sf::Text::Bold);
 
