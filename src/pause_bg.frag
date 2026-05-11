@@ -1,4 +1,3 @@
-// blur.frag
 uniform sampler2D texture;
 uniform float blur_radius;
 

@@ -3,7 +3,7 @@
 #include <SFML/System/Time.hpp>
 
 #include "blocks.hpp"
-#include "score.hpp"
+#include "score.hpp" // va falloir enlever ça plus tard
 #include "time.hpp"
 
 class Movements {
